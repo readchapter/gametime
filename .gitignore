@@ -1,0 +1,8 @@
+# Godot cache/import metadata
+.godot/
+
+# Unpacked engine binary (fetched from engine-bin branch by tools/setup_engine.sh)
+engine/
+
+# Capture pipeline output
+artifacts/

@@ -1,0 +1,56 @@
+name: Fetch Godot engine
+
+# One-time bootstrap: downloads the latest stable Godot 4.x Linux binary on a
+# GitHub runner (this repo's dev container cannot reach GitHub release assets)
+# and commits it to the orphan branch `engine-bin`, which dev sessions fetch
+# over git. Re-run manually to bump the engine version.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-engine.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve latest stable Godot 4.x
+        id: resolve
+        run: |
+          TAG=$(curl -sf https://api.github.com/repos/godotengine/godot/releases/latest | jq -r .tag_name)
+          case "$TAG" in
+            4.*-stable) ;;
+            *) echo "Unexpected tag: $TAG" >&2; exit 1 ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved Godot $TAG"
+
+      - name: Download and verify binary
+        env:
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: |
+          ASSET="Godot_v${TAG}_linux.x86_64.zip"
+          BASE="https://github.com/godotengine/godot/releases/download/${TAG}"
+          curl -sfL -o "/tmp/${ASSET}" "${BASE}/${ASSET}"
+          curl -sfL -o /tmp/SHA512-SUMS.txt "${BASE}/SHA512-SUMS.txt"
+          (cd /tmp && grep " ${ASSET}\$" SHA512-SUMS.txt | sha512sum -c -)
+
+      - name: Commit to engine-bin branch
+        env:
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan engine-bin
+          git rm -rf . >/dev/null
+          cp "/tmp/Godot_v${TAG}_linux.x86_64.zip" godot_linux.zip
+          echo "$TAG" > ENGINE_VERSION
+          git add godot_linux.zip ENGINE_VERSION
+          git commit -m "Godot ${TAG} Linux binary for dev sessions"
+          git push -f origin engine-bin
