@@ -10,9 +10,9 @@ tone. Text-based, data-driven dialogue.
 
 ## Running the game locally
 
-1. Install **Godot 4.x** (the exact pinned version is in `ENGINE_VERSION` on
-   the `engine-bin` branch — or run `tools/setup_engine.sh` and check
-   `engine/ENGINE_VERSION`). Download from https://godotengine.org/download
+1. Install **Godot 4.7-stable** (the pinned version; also recorded in
+   `ENGINE_VERSION` on the `engine-bin` branch). Download from
+   https://godotengine.org/download
 2. Clone this repo and open `project.godot` in the Godot editor.
 3. Press **Play** (F5).
 

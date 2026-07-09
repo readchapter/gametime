@@ -1,0 +1,30 @@
+; Engine configuration file.
+; Renderer is pinned to gl_compatibility: it is what the dev container can
+; render (llvmpipe, no Vulkan) and what the art direction targets. Do not
+; switch to Forward+.
+config_version=5
+
+[application]
+
+config/name="The Fall"
+config/description="First-person WWII narrative game — Chapter 1: The Fall"
+run/main_scene="res://src/dev/graybox.tscn"
+
+[autoload]
+
+Boot="*res://src/autoload/boot.gd"
+GameState="*res://src/autoload/game_state.gd"
+SceneDirector="*res://src/autoload/scene_director.gd"
+DialogueManager="*res://src/autoload/dialogue_manager.gd"
+AudioManager="*res://src/autoload/audio_manager.gd"
+CaptureHarness="*res://tools/capture/capture_harness.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
