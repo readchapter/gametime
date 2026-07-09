@@ -1,0 +1,10 @@
+{
+	"id": "farmhouse_end",
+	"steps": [
+		{"type": "fade_out", "duration": 3.0},
+		{"type": "wait", "seconds": 0.8},
+		{"type": "caption", "text": "He slept without dreams.", "seconds": 3.5},
+		{"type": "wait", "seconds": 0.5},
+		{"type": "caption", "text": "— CHAPTER ONE —", "seconds": 4.0}
+	]
+}

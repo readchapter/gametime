@@ -35,6 +35,18 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= 20.0 * delta
 	move_and_slide()
+	_update_prompt()
+
+func _update_prompt() -> void:
+	var text := ""
+	if move_enabled and interactor.is_colliding():
+		var hit: Object = interactor.get_collider()
+		if hit and hit.has_method("get_prompt"):
+			text = hit.get_prompt()
+	if text.is_empty():
+		Hud.hide_prompt()
+	else:
+		Hud.show_prompt(text)
 
 func _try_interact() -> void:
 	if not interactor.is_colliding():

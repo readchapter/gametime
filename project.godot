@@ -17,6 +17,9 @@ GameState="*res://src/autoload/game_state.gd"
 SceneDirector="*res://src/autoload/scene_director.gd"
 DialogueManager="*res://src/autoload/dialogue_manager.gd"
 AudioManager="*res://src/autoload/audio_manager.gd"
+Hud="*res://src/autoload/hud.gd"
+CutscenePlayer="*res://src/autoload/cutscene_player.gd"
+DialogueBox="*res://src/systems/dialogue/dialogue_box.gd"
 CaptureHarness="*res://tools/capture/capture_harness.gd"
 
 [display]

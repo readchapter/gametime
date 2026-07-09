@@ -56,7 +56,7 @@ func _terrain() -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
 	mi.name = "Terrain"
 	mi.mesh = st.commit()
-	mi.material_override = _vertex_color_material()
+	mi.material_override = MeshBuilder.vertex_color_material()
 	return mi
 
 func _ground_color(p: Vector3) -> Color:
@@ -65,12 +65,6 @@ func _ground_color(p: Vector3) -> Color:
 	# Worn dirt in the dips.
 	var dip := clampf(-p.y * 0.5, 0.0, 1.0)
 	return c.lerp(DIRT, dip * 0.5)
-
-func _vertex_color_material() -> StandardMaterial3D:
-	var mat := StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.roughness = 1.0
-	return mat
 
 func _hedgerow_line(from: Vector3, to: Vector3, spacing: float, seed_v: int) -> MultiMeshInstance3D:
 	var rng := RandomNumberGenerator.new()
@@ -95,90 +89,18 @@ func _hedgerow_line(from: Vector3, to: Vector3, spacing: float, seed_v: int) -> 
 	return mmi
 
 func _tree_mesh() -> ArrayMesh:
-	var verts := PackedVector3Array()
-	var norms := PackedVector3Array()
-	var cols := PackedColorArray()
-	var idx := PackedInt32Array()
-
-	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.14
-	trunk.bottom_radius = 0.22
-	trunk.height = 1.6
-	trunk.radial_segments = 5
-	trunk.rings = 1
-	_append_part(trunk, Transform3D(Basis.IDENTITY, Vector3(0, 0.8, 0)), TRUNK, verts, norms, cols, idx)
-
-	var canopy := SphereMesh.new()
-	canopy.radius = 1.5
-	canopy.height = 2.6
-	canopy.radial_segments = 6
-	canopy.rings = 3
-	_append_part(canopy, Transform3D(Basis.IDENTITY, Vector3(0, 2.5, 0)), CANOPY, verts, norms, cols, idx)
-
-	var canopy2 := SphereMesh.new()
-	canopy2.radius = 1.0
-	canopy2.height = 1.8
-	canopy2.radial_segments = 6
-	canopy2.rings = 3
-	_append_part(canopy2, Transform3D(Basis.IDENTITY, Vector3(0.7, 3.3, 0.3)), CANOPY_LIT, verts, norms, cols, idx)
-
-	return _commit_arrays(verts, norms, cols, idx)
+	var mb := MeshBuilder.new()
+	mb.cylinder(0.14, 0.22, 1.6, Vector3(0, 0.8, 0), TRUNK, 5)
+	mb.sphere(1.5, 2.6, Vector3(0, 2.5, 0), CANOPY)
+	mb.sphere(1.0, 1.8, Vector3(0.7, 3.3, 0.3), CANOPY_LIT)
+	return mb.commit()
 
 func _farmhouse(at: Vector3) -> Node3D:
-	var verts := PackedVector3Array()
-	var norms := PackedVector3Array()
-	var cols := PackedColorArray()
-	var idx := PackedInt32Array()
-
-	var walls := BoxMesh.new()
-	walls.size = Vector3(9, 4, 6)
-	_append_part(walls, Transform3D(Basis.IDENTITY, Vector3(0, 2, 0)), PLASTER, verts, norms, cols, idx)
-
-	var roof := PrismMesh.new()
-	roof.size = Vector3(9.6, 2.6, 6.6)
-	_append_part(roof, Transform3D(Basis.IDENTITY, Vector3(0, 5.3, 0)), ROOF, verts, norms, cols, idx)
-
-	var barn := BoxMesh.new()
-	barn.size = Vector3(6, 3.4, 10)
-	_append_part(barn, Transform3D(Basis(Vector3.UP, 0.35), Vector3(11, 1.7, 4)), PLASTER.darkened(0.15), verts, norms, cols, idx)
-
-	var barn_roof := PrismMesh.new()
-	barn_roof.size = Vector3(6.6, 2.2, 10.6)
-	_append_part(barn_roof, Transform3D(Basis(Vector3.UP, 0.35), Vector3(11, 4.5, 4)), ROOF.darkened(0.1), verts, norms, cols, idx)
-
-	var mi := MeshInstance3D.new()
-	mi.name = "Farmhouse"
-	mi.mesh = _commit_arrays(verts, norms, cols, idx)
-	mi.material_override = _vertex_color_material()
+	var mb := MeshBuilder.new()
+	mb.box(Vector3(9, 4, 6), Vector3(0, 2, 0), PLASTER)
+	mb.prism(Vector3(9.6, 2.6, 6.6), Vector3(0, 5.3, 0), ROOF)
+	mb.box(Vector3(6, 3.4, 10), Vector3(11, 1.7, 4), PLASTER.darkened(0.15), 0.35)
+	mb.prism(Vector3(6.6, 2.2, 10.6), Vector3(11, 4.5, 4), ROOF.darkened(0.1), 0.35)
+	var mi := mb.commit_instance("Farmhouse")
 	mi.position = Vector3(at.x, height_at(at.x, at.z), at.z)
 	return mi
-
-func _append_part(prim: PrimitiveMesh, xform: Transform3D, color: Color,
-		verts: PackedVector3Array, norms: PackedVector3Array,
-		cols: PackedColorArray, idx: PackedInt32Array) -> void:
-	var arr := prim.get_mesh_arrays()
-	var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
-	var nrm: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
-	var ix: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
-	var base := verts.size()
-	for p in v:
-		verts.append(xform * p)
-	for nn in nrm:
-		norms.append((xform.basis * nn).normalized())
-	for _k in v.size():
-		cols.append(color)
-	for k in ix:
-		idx.append(base + k)
-
-func _commit_arrays(verts: PackedVector3Array, norms: PackedVector3Array,
-		cols: PackedColorArray, idx: PackedInt32Array) -> ArrayMesh:
-	var arrays := []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = verts
-	arrays[Mesh.ARRAY_NORMAL] = norms
-	arrays[Mesh.ARRAY_COLOR] = cols
-	arrays[Mesh.ARRAY_INDEX] = idx
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	mesh.surface_set_material(0, _vertex_color_material())
-	return mesh

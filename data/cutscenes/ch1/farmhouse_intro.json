@@ -1,0 +1,9 @@
+{
+	"id": "farmhouse_intro",
+	"steps": [
+		{"type": "fade_out", "duration": 0.0},
+		{"type": "wait", "seconds": 0.6},
+		{"type": "caption", "text": "NORTHERN FRANCE — LATE, THE SAME NIGHT", "seconds": 3.0},
+		{"type": "fade_in", "duration": 2.5}
+	]
+}

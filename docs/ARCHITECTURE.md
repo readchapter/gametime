@@ -13,6 +13,9 @@ replay-variation mechanics stay custom-fit.
 | `SceneDirector` | Scene transitions with fade; owns chapter beat flow. Ch1 is linear; later chapters branch on GameState flags. |
 | `DialogueManager` | Data-driven dialogue runtime (schema documented in the script header). `lines` is an array per node — the replay-variation pool; Ch1 uses index 0. |
 | `AudioManager` | Music/SFX playback so scenes never own players. |
+| `Hud` | Interaction prompt only — no health bars or meters by design. |
+| `CutscenePlayer` | Data-driven step timeline (data/cutscenes/**), Esc-skippable after first viewing; captions render above the fade layer. |
+| `DialogueBox` | Dialogue UI (code-built): typewriter line, speaker, keyboard/mouse choices. Reactive to DialogueManager signals only. |
 | `CaptureHarness` | Dev-only screenshot loop; inert without `++ --capture` user args. |
 
 ## Players (src/player/)

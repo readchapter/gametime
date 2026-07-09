@@ -1,0 +1,107 @@
+{
+	"id": "farm_table",
+	"start": "eat",
+	"nodes": {
+		"eat": {
+			"speaker": "Henri",
+			"lines": ["Eat. You will think better with food in you."],
+			"next": "thin"
+		},
+		"thin": {
+			"speaker": "Marguerite",
+			"lines": ["He is too thin for a soldier. They are sending boys now."],
+			"next": "how_many"
+		},
+		"how_many": {
+			"speaker": "Henri",
+			"lines": ["Your aeroplane. How many came out of it?"],
+			"choices": [
+				{
+					"text": "I counted four chutes. Maybe more.",
+					"next": "counted",
+					"effects": {"told_crew_count": true}
+				},
+				{
+					"text": "I don't know. It was dark, and it was fast.",
+					"next": "counted_vague"
+				},
+				{
+					"text": "Why do you need to know that?",
+					"next": "why_ask",
+					"effects": {"wary_with_hosts": true}
+				}
+			]
+		},
+		"counted": {
+			"speaker": "Henri",
+			"lines": ["Four. Then there are three others walking tonight, or worse. The country will be full of eyes by morning."],
+			"next": "pat"
+		},
+		"counted_vague": {
+			"speaker": "Henri",
+			"lines": ["No one ever knows. That is the trouble with the sky — it does not keep records."],
+			"next": "pat"
+		},
+		"why_ask": {
+			"speaker": "Henri",
+			"lines": ["Because the Germans will know. They count everything. If four men fell and they find three, they keep looking."],
+			"next": "pat"
+		},
+		"pat": {
+			"speaker": "Travis",
+			"lines": ["There was another chute, short of the treeline. My friend was on the waist gun. If he came down anywhere near—"],
+			"next": "pat_answer"
+		},
+		"pat_answer": {
+			"speaker": "Henri",
+			"lines": ["If he is alive, the country will find him before you do. Eat."],
+			"next": "landing_branch"
+		},
+		"landing_branch": {
+			"branch": {
+				"flag": "landing_bad",
+				"if_true": "seen",
+				"if_false": "not_seen"
+			}
+		},
+		"seen": {
+			"speaker": "Henri",
+			"lines": ["Your parachute was seen from the road. Men came asking before sunset — not soldiers. Worse. The ones who write things down."],
+			"next": "luc"
+		},
+		"not_seen": {
+			"speaker": "Henri",
+			"lines": ["The wind carried you well. No one saw you come down but Luc, and Luc does not talk. Do you, Luc."],
+			"next": "luc"
+		},
+		"luc": {
+			"speaker": "Luc",
+			"lines": ["Is it true the bombers fly higher than birds can breathe?"],
+			"choices": [
+				{
+					"text": "Higher. You wear a mask, or you go to sleep and you don't wake up.",
+					"next": "luc_wonder",
+					"effects": {"kind_to_luc": true}
+				},
+				{
+					"text": "Say nothing.",
+					"next": "enough"
+				}
+			]
+		},
+		"luc_wonder": {
+			"speaker": "Luc",
+			"lines": ["Higher than birds. And you jumped from there."],
+			"next": "enough"
+		},
+		"enough": {
+			"speaker": "Marguerite",
+			"lines": ["Enough, Luc. — You. Sleep. Tomorrow Henri decides what is to be done with you."],
+			"next": "luck"
+		},
+		"luck": {
+			"speaker": "Henri",
+			"lines": ["You were lucky with the field, American. Luck is not a plan."]
+		}
+	}
+}
