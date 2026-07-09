@@ -32,6 +32,12 @@ replay variation, localization, and future voice work extend without
 rewrites. Interaction is a duck-typed `interact(player)` method on any
 collider (see `fps_controller.gd::_try_interact`).
 
+## Gotchas
+
+- The 12 numbers in a `.tscn` `Transform3D(...)` are the **basis rows** then
+  the origin — not columns. When hand-authoring rotations, serialize the
+  transpose of the column matrix you derived (or set rotations from script).
+
 ## Chapter flow (Ch1)
 
 hardstand → bomber_tail (raid → bail-out, silent document grab) → descent
