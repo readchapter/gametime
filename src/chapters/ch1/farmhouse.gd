@@ -147,11 +147,20 @@ func _chair(mb: MeshBuilder, at: Vector3, yaw: float) -> void:
 		mb.box(Vector3(0.05, 0.46, 0.05), at + b * leg, WOOD_DARK)
 
 func _build_family() -> void:
-	var mb := MeshBuilder.new()
-	_figure(mb, Vector3(-0.65, 0, -0.5), PI / 2, CLOTH_HENRI)
-	_figure(mb, Vector3(0.3, 0, -1.15), 0.0, CLOTH_MARG)
-	_figure(mb, Vector3(1.25, 0, -0.5), -PI / 2, CLOTH_LUC)
-	add_child(mb.commit_instance("Family"))
+	var seats := [
+		[Vector3(-0.65, 0, -0.5), PI / 2, CLOTH_HENRI],
+		[Vector3(0.3, 0, -1.15), 0.0, CLOTH_MARG],
+		[Vector3(1.25, 0, -0.5), -PI / 2, CLOTH_LUC],
+	]
+	for s in seats:
+		var cloth: Color = s[2]
+		var node := ModelLib.get_model("villager_seated", func() -> Node3D:
+			var mb := MeshBuilder.new()
+			_figure(mb, Vector3.ZERO, 0.0, cloth)
+			return mb.commit_instance("Villager"))
+		node.position = s[0]
+		node.rotation.y = s[1]
+		add_child(node)
 
 ## A seated figure: abstract, dark-clothed, readable in lamplight.
 func _figure(mb: MeshBuilder, at: Vector3, yaw: float, cloth: Color) -> void:

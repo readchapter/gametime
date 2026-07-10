@@ -85,7 +85,7 @@ func _build_ground() -> void:
 	add_child(body)
 
 func _build_bomber() -> void:
-	var ship := Aircraft.b17("Ship")
+	var ship := ModelLib.get_model("b17", Aircraft.b17)
 	ship.position = Vector3(0, 3.4, 4)
 	ship.rotation.y = 0.35
 	add_child(ship)
@@ -106,7 +106,7 @@ func _build_bomber() -> void:
 	add_child(mb.commit_instance("Gear"))
 	# Distant sister ships swallowed by the fog
 	for spec in [[Vector3(-90, 3.4, 60), 1.1], [Vector3(70, 3.4, 110), -0.7]]:
-		var far := Aircraft.b17()
+		var far := ModelLib.get_model("b17", Aircraft.b17)
 		far.position = spec[0]
 		far.rotation.y = spec[1]
 		add_child(far)
@@ -149,7 +149,8 @@ func _build_pat() -> void:
 	cs.shape = shape
 	cs.position = Vector3(0, 0.9, 0)
 	pat.add_child(cs)
-	pat.add_child(mb.commit_instance("Visual"))
+	pat.add_child(ModelLib.get_model("airman_standing",
+		func() -> Node3D: return mb.commit_instance("Visual")))
 	pat.interacted.connect(_on_talk_pat)
 	add_child(pat)
 

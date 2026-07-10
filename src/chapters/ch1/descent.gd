@@ -12,7 +12,7 @@ var _para: ParachuteController
 var _field: Node3D
 var _fired_at := false
 var _tracers: Array[Dictionary] = []
-var _bomber: MeshInstance3D
+var _bomber: Node3D
 var _bomber_vel := Vector3(-14, -3.5, 26)
 var _smoke_accum := 0.0
 var _t := 0.0
@@ -178,8 +178,11 @@ func _wake_figure(at: Vector3, toward: Vector3) -> Node3D:
 	mb.sphere(0.12, 0.24, b * Vector3(0, 1.42, 0.26), Color(0.48, 0.38, 0.31))
 	for side in [-0.13, 0.13]:
 		mb.box(Vector3(0.15, 0.80, 0.18), b * Vector3(side, 0.40, 0), cloth.darkened(0.15), yaw)
-	var fig := mb.commit_instance("Figure")
+	var fig := ModelLib.get_model("villager_standing",
+		func() -> Node3D: return mb.commit_instance("Figure"))
 	fig.position = at
+	if fig.name != "Figure":  # imported model: orient it ourselves
+		fig.rotation.y = yaw
 	return fig
 
 func _ground_fire() -> void:
@@ -247,7 +250,7 @@ func _far_ground() -> MeshInstance3D:
 	return mi
 
 func _build_bomber() -> void:
-	_bomber = Aircraft.b17("DyingShip")
+	_bomber = ModelLib.get_model("b17", Aircraft.b17)
 	_bomber.position = Vector3(30, 320, 60)
 	_bomber.rotation.y = 0.5
 	_bomber.rotation.z = 0.12

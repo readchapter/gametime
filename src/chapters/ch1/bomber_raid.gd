@@ -150,7 +150,7 @@ func _build_interior() -> void:
 
 func _build_formation() -> void:
 	for spec in [[Vector3(25, 8, 90), 0.0], [Vector3(-32, 16, 130), 0.06], [Vector3(12, 24, 175), -0.05]]:
-		var b17 := Aircraft.b17()
+		var b17 := ModelLib.get_model("b17", Aircraft.b17)
 		b17.position = spec[0]
 		b17.rotation.y = spec[1]
 		add_child(b17)
