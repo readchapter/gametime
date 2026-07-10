@@ -39,6 +39,7 @@ func _ready() -> void:
 	_build_colliders()
 	_build_interactables()
 	_spawn_player()
+	AudioManager.play_ambient("night_interior")
 	_intro()
 
 func _process(delta: float) -> void:
@@ -278,4 +279,5 @@ func _on_bed(player: Node) -> void:
 	Hud.hide_prompt()
 	GameState.set_flag("ch1_complete")
 	GameState.save_game()
+	AudioManager.stop_ambient(3.0)
 	await CutscenePlayer.play("res://data/cutscenes/ch1/farmhouse_end.json", self)

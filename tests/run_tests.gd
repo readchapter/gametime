@@ -7,6 +7,8 @@ var _failures: Array[String] = []
 
 func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch1/farm_table.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch1/hardstand.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch1/field_wake.json")
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()

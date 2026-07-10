@@ -44,6 +44,7 @@ func _ready() -> void:
 	_turret.fired.connect(_on_player_fired)
 	add_child(_turret)
 	Hud.show_crosshair(true)
+	AudioManager.play_ambient("bomber_interior")
 
 	_run_script()
 
@@ -149,39 +150,12 @@ func _build_interior() -> void:
 
 func _build_formation() -> void:
 	for spec in [[Vector3(25, 8, 90), 0.0], [Vector3(-32, 16, 130), 0.06], [Vector3(12, 24, 175), -0.05]]:
-		var b17 := _b17_mesh()
+		var b17 := Aircraft.b17()
 		b17.position = spec[0]
 		b17.rotation.y = spec[1]
 		add_child(b17)
 		for engine_x in [-8.6, -4.4, 4.4, 8.6]:
 			_contrail(spec[0] + Vector3(engine_x, -0.4, 130), 240.0, 0.28)
-
-func _b17_mesh() -> MeshInstance3D:
-	var mb := MeshBuilder.new()
-	var lie := Basis(Vector3.RIGHT, PI / 2)
-	var body := CylinderMesh.new()
-	body.top_radius = 1.1
-	body.bottom_radius = 1.3
-	body.height = 20.0
-	body.radial_segments = 7
-	mb.add(body, Transform3D(lie, Vector3.ZERO), OLIVE)
-	var nose := CylinderMesh.new()
-	nose.top_radius = 1.3
-	nose.bottom_radius = 0.3
-	nose.height = 3.0
-	nose.radial_segments = 7
-	mb.add(nose, Transform3D(lie, Vector3(0, 0, -11.5)), OLIVE.darkened(0.1))
-	mb.box(Vector3(31, 0.28, 4.2), Vector3(0, 0, -2.0), OLIVE)
-	mb.box(Vector3(10.5, 0.22, 2.6), Vector3(0, 0.4, 8.6), OLIVE)
-	mb.box(Vector3(0.18, 3.4, 3.0), Vector3(0, 1.6, 8.9), OLIVE.darkened(0.08))
-	for ex in [-8.6, -4.4, 4.4, 8.6]:
-		var nac := CylinderMesh.new()
-		nac.top_radius = 0.42
-		nac.bottom_radius = 0.5
-		nac.height = 2.6
-		nac.radial_segments = 6
-		mb.add(nac, Transform3D(lie, Vector3(ex, -0.35, -2.4)), METAL)
-	return mb.commit_instance("B17")
 
 func _build_own_contrails() -> void:
 	for spec in [Vector3(-8.6, -0.9, 90), Vector3(-4.4, -0.75, 90),
@@ -295,6 +269,7 @@ func on_fighter_killed(f: Fighter) -> void:
 		Hud.subtitle("PAT", "Smoke! He's out of it — that's yours, Tex!", 3.5)
 
 func _on_player_fired(muzzle: Vector3, dir: Vector3) -> void:
+	AudioManager.play_sfx("m2_shot", -6.0)
 	_add_tracer(muzzle, dir * 340.0, Color(1.0, 0.72, 0.32), true)
 
 func spawn_enemy_tracer(muzzle: Vector3, delay: float) -> void:
@@ -379,6 +354,7 @@ func _flak_burst() -> void:
 	tw.tween_callback(mi.queue_free)
 	if dist < 95.0:
 		_turret.add_trauma(0.3)
+		AudioManager.play_sfx("flak_close")
 
 ## Smoke with a drift vector — fire smoke streams down the fuselage past the
 ## turret; wreck smoke just billows.
@@ -466,10 +442,8 @@ func _crawl_out() -> void:
 
 	await SceneDirector.fade_out(0.9)
 	_papers_active = false
-	GameState.beat = "descent"
-	GameState.save_game()
 	await CutscenePlayer.caption("— THE JUMP —", 3.0)
-	get_tree().change_scene_to_file("res://src/chapters/ch1/descent.tscn")
+	SceneDirector.goto_beat("descent")
 
 ## Loose papers from a shot-up map case, swirling in the wind blast. One of
 ## them ends up in Travis's jacket. No callout — the reveal is chapters away.

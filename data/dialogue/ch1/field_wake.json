@@ -1,0 +1,37 @@
+{
+	"id": "field_wake",
+	"start": "breathes",
+	"nodes": {
+		"breathes": {
+			"speaker": "Henri",
+			"lines": ["Il respire. He breathes."],
+			"next": "arm"
+		},
+		"arm": {
+			"speaker": "Marguerite",
+			"lines": ["His arm — mind his arm. Luc, keep the lamp low."],
+			"next": "wake_branch"
+		},
+		"wake_branch": {
+			"branch": {
+				"flag": "landing_bad",
+				"if_true": "seen_silk",
+				"if_false": "unseen"
+			}
+		},
+		"seen_silk": {
+			"speaker": "Henri",
+			"lines": ["American. Listen to me. Your silk was seen from the road. No sound — the night has ears, and they will come to count."],
+			"next": "shoulders"
+		},
+		"unseen": {
+			"speaker": "Henri",
+			"lines": ["American. Listen to me. No one saw you fall but the boy. Keep it that way — not a word, not a light."],
+			"next": "shoulders"
+		},
+		"shoulders": {
+			"speaker": "Henri",
+			"lines": ["Luc. Take his shoulders. Quickly now."]
+		}
+	}
+}

@@ -48,6 +48,7 @@ func _ready() -> void:
 
 	_build_bomber()
 	_build_distant_chutes()
+	AudioManager.play_ambient("wind_descent")
 	SceneDirector.fade_in(0.5)
 	_beats()
 	# Headless verification can't steer: bias the wind east so the run
@@ -108,6 +109,7 @@ static func grade_landing(pos: Vector3) -> String:
 	return "neutral"
 
 func _on_deploy() -> void:
+	AudioManager.play_sfx("chute_open")
 	CaptureHarness.snap("canopy")
 
 func _on_landed(pos: Vector3) -> void:
@@ -115,15 +117,73 @@ func _on_landed(pos: Vector3) -> void:
 	var grade := grade_landing(pos)
 	GameState.set_flag("landing_grade", grade)
 	GameState.set_flag("landing_bad", grade == "bad" or GameState.get_flag("seen_during_descent"))
-	GameState.beat = "farmhouse"
-	GameState.save_game()
 	Hud.damage_flash(1.3)
 	_para.add_shake(1.0)
+	AudioManager.play_sfx("impact_thud")
+	AudioManager.stop_ambient(1.5)
 	await SceneDirector.fade_out(0.4)
-	await get_tree().create_timer(1.2).timeout
-	get_tree().change_scene_to_file("res://src/chapters/ch1/farmhouse.tscn")
+	await get_tree().create_timer(2.0).timeout
+	await _wake_beat(pos)
+	SceneDirector.goto_beat("farmhouse", 0.1)
+
+## Spec beat 6: he comes to in the grass, the family standing over him,
+## wary, a lamp kept low. Night has fallen while he was out.
+func _wake_beat(pos: Vector3) -> void:
+	var h := float(_field.height_at(pos.x, pos.z))
+	var cam := _para.camera
+	_para.position = Vector3(pos.x, h, pos.z)
+	cam.position = Vector3(0, 0.45, 0)
+	cam.rotation = Vector3(1.15, 0.2, -0.15)
+	_para.set_process(false)
+
+	# Night falls while he's out.
+	var we: WorldEnvironment = _field.get_node("WorldEnvironment")
+	we.environment.ambient_light_color = Color(0.10, 0.11, 0.17)
+	we.environment.ambient_light_energy = 0.8
+	we.environment.fog_density = 0.006
+	var sun: DirectionalLight3D = _field.get_node("Sun")
+	sun.light_energy = 0.12
+	sun.light_color = Color(0.5, 0.6, 0.8)
+	var sky_mat: ShaderMaterial = we.environment.sky.sky_material
+	sky_mat.set_shader_parameter("top_color", Color(0.03, 0.04, 0.08))
+	sky_mat.set_shader_parameter("horizon_color", Color(0.10, 0.10, 0.14))
+	sky_mat.set_shader_parameter("sun_color", Color(0.0, 0.0, 0.0))
+
+	# The family, leaning over him; Luc's lamp kept low.
+	var around := [Vector3(1.1, 0, 0.8), Vector3(-1.0, 0, 1.0), Vector3(0.2, 0, 1.5)]
+	for i in around.size():
+		add_child(_wake_figure(_para.position + around[i], cam.global_position))
+	var lamp := OmniLight3D.new()
+	lamp.position = _para.position + Vector3(0.2, 1.1, 0.9)
+	lamp.light_color = Color(1.0, 0.72, 0.45)
+	lamp.light_energy = 1.4
+	lamp.omni_range = 4.0
+	add_child(lamp)
+
+	await SceneDirector.fade_in(2.4)
+	CaptureHarness.snap("wake")
+	DialogueManager.start("res://data/dialogue/ch1/field_wake.json")
+	if "--autoplay" in OS.get_cmdline_user_args():
+		DialogueManager.autoplay()
+	await DialogueManager.dialogue_ended
+	await get_tree().create_timer(0.8).timeout
+
+func _wake_figure(at: Vector3, toward: Vector3) -> Node3D:
+	var mb := MeshBuilder.new()
+	var cloth := Color(0.16, 0.15, 0.13)
+	var yaw := atan2(toward.x - at.x, toward.z - at.z)
+	var b := Basis(Vector3.UP, yaw)
+	# Leaning in over him — torso and head shifted toward the camera.
+	mb.box(Vector3(0.44, 0.60, 0.26), b * Vector3(0, 1.05, 0.14), cloth, yaw)
+	mb.sphere(0.12, 0.24, b * Vector3(0, 1.42, 0.26), Color(0.48, 0.38, 0.31))
+	for side in [-0.13, 0.13]:
+		mb.box(Vector3(0.15, 0.80, 0.18), b * Vector3(side, 0.40, 0), cloth.darkened(0.15), yaw)
+	var fig := mb.commit_instance("Figure")
+	fig.position = at
+	return fig
 
 func _ground_fire() -> void:
+	AudioManager.play_sfx("distant_gunfire")
 	Hud.subtitle("", "(Muzzle flashes. The road— they see the canopy—)", 4.0)
 	for volley in 8:
 		if _para.down:
@@ -187,19 +247,7 @@ func _far_ground() -> MeshInstance3D:
 	return mi
 
 func _build_bomber() -> void:
-	var mb := MeshBuilder.new()
-	var olive := Color(0.23, 0.24, 0.20)
-	var lie := Basis(Vector3.RIGHT, PI / 2)
-	var body := CylinderMesh.new()
-	body.top_radius = 1.1
-	body.bottom_radius = 1.3
-	body.height = 20.0
-	body.radial_segments = 7
-	mb.add(body, Transform3D(lie, Vector3.ZERO), olive)
-	mb.box(Vector3(31, 0.28, 4.2), Vector3(0, 0, -2.0), olive)
-	mb.box(Vector3(10.5, 0.22, 2.6), Vector3(0, 0.4, 8.6), olive)
-	mb.box(Vector3(0.18, 3.4, 3.0), Vector3(0, 1.6, 8.9), olive.darkened(0.08))
-	_bomber = mb.commit_instance("DyingShip")
+	_bomber = Aircraft.b17("DyingShip")
 	_bomber.position = Vector3(30, 320, 60)
 	_bomber.rotation.y = 0.5
 	_bomber.rotation.z = 0.12

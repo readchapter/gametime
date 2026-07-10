@@ -10,9 +10,9 @@ replay-variation mechanics stay custom-fit.
 |---|---|
 | `Boot` | Registers the input map in code (keeps project.godot hand-maintainable). |
 | `GameState` | Story flags, inventory, seen-cutscenes, chapter/beat; JSON save to `user://save.json`. The later trust mechanic is flags consulted by dialogue conditions — never a visible meter. |
-| `SceneDirector` | Scene transitions with fade; owns chapter beat flow. Ch1 is linear; later chapters branch on GameState flags. |
+| `SceneDirector` | Scene transitions with fade; `CH1_BEATS` map + `goto_beat()` own chapter flow and record progress for the title screen's Continue. Ch1 is linear; later chapters branch on GameState flags before calling goto_beat. |
 | `DialogueManager` | Data-driven dialogue runtime (schema documented in the script header). `lines` is an array per node — the replay-variation pool; Ch1 uses index 0. |
-| `AudioManager` | Music/SFX playback so scenes never own players. |
+| `AudioManager` | File-based music/ambient/sfx with graceful degradation: missing assets warn once and stay silent (see assets/audio/MANIFEST.md). Scenes never own players. |
 | `Hud` | Interaction prompt only — no health bars or meters by design. |
 | `CutscenePlayer` | Data-driven step timeline (data/cutscenes/**), Esc-skippable after first viewing; captions render above the fade layer. |
 | `DialogueBox` | Dialogue UI (code-built): typewriter line, speaker, keyboard/mouse choices. Reactive to DialogueManager signals only. |
@@ -46,6 +46,11 @@ collider (see `fps_controller.gd::_try_interact`).
 
 ## Chapter flow (Ch1)
 
-hardstand → bomber_tail (raid → bail-out, silent document grab) → descent
-(steering + zone grading) → field (landing, blackout) → farmhouse (wake
-cutscene, table dialogue, bed → end card). No fail state anywhere in Ch1.
+title → hardstand (Pat dialogue, board) → bomber_tail (raid → bail-out,
+silent document grab) → descent (steering + zone grading + ground-fire
+consequence → landing blackout → field wake beat with the family) →
+farmhouse (table dialogue, bed → end card). No fail state anywhere in Ch1.
+
+Headless verification: every interactive gate self-advances under
+`--autoplay` (capture.sh passes it), so the whole chapter runs end-to-end
+unattended — see docs/VERIFY.md.

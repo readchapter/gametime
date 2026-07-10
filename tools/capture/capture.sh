@@ -18,7 +18,7 @@ mkdir -p "$OUT"
 
 export LIBGL_ALWAYS_SOFTWARE=1
 set +e
-timeout 180 xvfb-run -a -s "-screen 0 1280x720x24" \
+timeout "${CAPTURE_TIMEOUT:-180}" xvfb-run -a -s "-screen 0 1280x720x24" \
 	"$ROOT/engine/godot" --path "$ROOT" --rendering-driver opengl3 \
 	--resolution 1280x720 "$SCENE" \
 	++ --capture "$TIMES" --out "$OUT" --autoplay >"$OUT/log.txt" 2>&1

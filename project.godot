@@ -8,7 +8,7 @@ config_version=5
 
 config/name="The Fall"
 config/description="First-person WWII narrative game — Chapter 1: The Fall"
-run/main_scene="res://src/dev/graybox.tscn"
+run/main_scene="res://src/ui/title.tscn"
 
 [autoload]
 

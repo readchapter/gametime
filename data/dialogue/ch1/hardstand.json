@@ -1,0 +1,80 @@
+{
+	"id": "hardstand",
+	"start": "there_he_is",
+	"nodes": {
+		"there_he_is": {
+			"speaker": "Pat",
+			"lines": ["There he is. You sleep? Don't answer. Nobody slept."],
+			"next": "eggs"
+		},
+		"eggs": {
+			"speaker": "Pat",
+			"lines": ["Powdered eggs again. I'm telling you, Tex — when this is over I am never again eating anything that arrives as a powder. Real eggs. A dozen. Fried in butter."],
+			"choices": [
+				{
+					"text": "You say that every raid.",
+					"next": "every_raid"
+				},
+				{
+					"text": "Butter's rationed, Pat.",
+					"next": "butter"
+				}
+			]
+		},
+		"every_raid": {
+			"speaker": "Pat",
+			"lines": ["And every raid it gets more true."],
+			"next": "medal"
+		},
+		"butter": {
+			"speaker": "Pat",
+			"lines": ["Then I'll marry a dairy farmer's daughter. Sister Immaculata always said: aim practical, Pasquale."],
+			"next": "medal"
+		},
+		"medal": {
+			"speaker": "Pat",
+			"lines": ["Twice this morning. Once for the takeoff, once for the getting back. Forty-one missions this medal's flown and counting. It works, Tex."],
+			"next": "book"
+		},
+		"book": {
+			"speaker": "Pat",
+			"lines": ["You and that pamphlet again. Paine. The man's been dead a hundred years — what's he know about a B-17?"],
+			"choices": [
+				{
+					"text": "'The harder the conflict, the more glorious the triumph.' He knew plenty.",
+					"next": "quote",
+					"effects": {"paine_quoted": true}
+				},
+				{
+					"text": "It's something to hold. Same as your medal.",
+					"next": "same_church",
+					"effects": {"pat_bond": true}
+				}
+			]
+		},
+		"quote": {
+			"speaker": "Pat",
+			"lines": ["See, this is why the fellas think you're strange. Quoting ghosts before breakfast."],
+			"next": "captain_call"
+		},
+		"same_church": {
+			"speaker": "Pat",
+			"lines": ["...Yeah. All right, Professor. Same church, different pew."],
+			"next": "captain_call"
+		},
+		"captain_call": {
+			"speaker": "Captain",
+			"lines": ["Boyd! Costa! Saddle up — engines in ten."],
+			"next": "other_side"
+		},
+		"other_side": {
+			"speaker": "Pat",
+			"lines": ["That's us. See you on the other side, Tex."],
+			"next": "travis_reply"
+		},
+		"travis_reply": {
+			"speaker": "Travis",
+			"lines": ["Other side, Pat."]
+		}
+	}
+}

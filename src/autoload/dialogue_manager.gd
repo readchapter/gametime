@@ -123,6 +123,19 @@ func _apply_effects(effects: Dictionary) -> void:
 	for k in effects:
 		GameState.set_flag(str(k), effects[k])
 
+## Dev-only: drives the active dialogue to completion (first choice each
+## time) so headless verification runs can pass interactive gates.
+func autoplay(interval := 0.6) -> void:
+	while active:
+		await get_tree().create_timer(interval).timeout
+		if not active:
+			return
+		var cs := available_choices()
+		if cs.size() > 0:
+			choose(int(cs[0]["index"]))
+		else:
+			advance()
+
 func _end() -> void:
 	active = false
 	current_node_id = ""
