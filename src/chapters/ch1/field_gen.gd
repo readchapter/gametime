@@ -30,6 +30,8 @@ func _ready() -> void:
 	add_child(_hedgerow_line(Vector3(-95, 0, -45), Vector3(-95, 0, 110), 8.0, 102))
 	add_child(_hedgerow_line(Vector3(-10, 0, -30), Vector3(-90, 0, 60), 8.0, 103))
 	add_child(_farmhouse(Vector3(-40, 0, 30)))
+	add_child(_road())
+	add_child(_village())
 
 func height_at(x: float, z: float) -> float:
 	return _height.get_noise_2d(x, z) * 2.4
@@ -87,6 +89,44 @@ func _hedgerow_line(from: Vector3, to: Vector3, spacing: float, seed_v: int) -> 
 	mmi.name = "Hedgerow%d" % seed_v
 	mmi.multimesh = mm
 	return mmi
+
+## The road east of the field — the danger the descent can drift toward.
+## Built as short segments following the terrain.
+func _road() -> MeshInstance3D:
+	var mb := MeshBuilder.new()
+	var z := -SIZE / 2.0
+	while z < SIZE / 2.0:
+		mb.box(Vector3(9, 0.18, 6.8), Vector3(80, height_at(80, z), z),
+			Color(0.24, 0.22, 0.20))
+		z += 6.0
+	return mb.commit_instance("Road")
+
+## Hamlet past the road; warm window lights read at dusk as a warning beacon.
+func _village() -> Node3D:
+	var root := Node3D.new()
+	root.name = "Village"
+	var mb := MeshBuilder.new()
+	for spec in [[Vector3(88, 0, 40), 0.2], [Vector3(97, 0, 53), -0.3],
+			[Vector3(91, 0, 66), 0.5], [Vector3(104, 0, 47), 0.0]]:
+		var at: Vector3 = spec[0]
+		at.y = height_at(at.x, at.z)
+		var yaw: float = spec[1]
+		mb.box(Vector3(5.5, 3.0, 4.2), at + Vector3(0, 1.5, 0), PLASTER.darkened(0.25), yaw)
+		mb.prism(Vector3(6.0, 1.8, 4.7), at + Vector3(0, 3.9, 0), ROOF, yaw)
+		var win := MeshInstance3D.new()
+		var wb := BoxMesh.new()
+		wb.size = Vector3(0.08, 0.55, 0.5)
+		win.mesh = wb
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(1.0, 0.75, 0.40)
+		mat.emission_enabled = true
+		mat.emission = Color(1.0, 0.75, 0.40)
+		mat.emission_energy_multiplier = 2.0
+		win.material_override = mat
+		win.position = at + Vector3(-2.8, 1.4, 0)
+		root.add_child(win)
+	root.add_child(mb.commit_instance("Houses"))
+	return root
 
 func _tree_mesh() -> ArrayMesh:
 	var mb := MeshBuilder.new()

@@ -468,8 +468,8 @@ func _crawl_out() -> void:
 	_papers_active = false
 	GameState.beat = "descent"
 	GameState.save_game()
-	await CutscenePlayer.caption("— THE JUMP —", 3.5)
-	await CutscenePlayer.caption("(continued in the next build)", 3.0)
+	await CutscenePlayer.caption("— THE JUMP —", 3.0)
+	get_tree().change_scene_to_file("res://src/chapters/ch1/descent.tscn")
 
 ## Loose papers from a shot-up map case, swirling in the wind blast. One of
 ## them ends up in Travis's jacket. No callout — the reveal is chapters away.

@@ -1,0 +1,242 @@
+extends Node3D
+## Chapter 1 — the descent. Reuses the field scene (same seed: this is the
+## exact field Travis lands in), adds the dying bomber receding, distant
+## chutes (Pat ambiguity), drift steering, and the landing-grade consequence:
+## drift toward the road/village and you get shot at and marked as seen.
+## No fail state — the grade persists as flags the farmhouse dialogue and
+## Chapter 2 read.
+
+const FIELD_SCENE := preload("res://src/chapters/ch1/field.tscn")
+
+var _para: ParachuteController
+var _field: Node3D
+var _fired_at := false
+var _tracers: Array[Dictionary] = []
+var _bomber: MeshInstance3D
+var _bomber_vel := Vector3(-14, -3.5, 26)
+var _smoke_accum := 0.0
+var _t := 0.0
+
+func _ready() -> void:
+	_field = FIELD_SCENE.instantiate()
+	add_child(_field)
+	# Much thinner haze than the ground-level scene: the player has to read
+	# the hedgerow / road / village zones from altitude to steer.
+	var we: WorldEnvironment = _field.get_node("WorldEnvironment")
+	we.environment.fog_density = 0.0006
+	we.environment.fog_light_color = Color(0.42, 0.35, 0.28)
+	we.environment.ambient_light_energy = 1.15
+	# Earlier in the evening than the ground scene: sun high enough (~25 deg)
+	# that the terrain is actually lit from above — the player steers by it.
+	var sun: DirectionalLight3D = _field.get_node("Sun")
+	sun.rotation_degrees = Vector3(-25, -110, 0)
+	sun.light_energy = 1.5
+	# The detailed field is only ~260m wide; from altitude most of the view
+	# is past its edge. Continue the world: far countryside plane + a
+	# field-toned sky ground hemisphere instead of the void.
+	var sky_mat: ShaderMaterial = we.environment.sky.sky_material
+	sky_mat.set_shader_parameter("ground_color", Color(0.14, 0.13, 0.10))
+	add_child(_far_ground())
+
+	_para = ParachuteController.new()
+	_para.position = Vector3(-25, 340, -15)
+	_para.height_probe = _field.height_at
+	_para.deployed_canopy.connect(_on_deploy)
+	_para.landed.connect(_on_landed)
+	add_child(_para)
+	_para.camera.make_current()
+
+	_build_bomber()
+	_build_distant_chutes()
+	SceneDirector.fade_in(0.5)
+	_beats()
+	# Headless verification can't steer: bias the wind east so the run
+	# exercises the ground-fire / bad-landing path.
+	if "--autoplay" in OS.get_cmdline_user_args():
+		_para.wind.x = 2.4
+
+func _process(delta: float) -> void:
+	_t += delta
+	# The burning ship flies on without him.
+	if is_instance_valid(_bomber):
+		_bomber.position += _bomber_vel * delta
+		_smoke_accum += delta
+		if _smoke_accum > 0.25:
+			_smoke_accum = 0.0
+			_spawn_smoke(_bomber.position + Vector3(2, 0.5, -3))
+	# Drifting toward the road gets Travis seen and shot at.
+	if not _fired_at and _para.deployed and not _para.down \
+			and _para.position.x > 40.0 and _para.position.y < 280.0:
+		_fired_at = true
+		GameState.set_flag("seen_during_descent")
+		_ground_fire()
+
+func _physics_process(delta: float) -> void:
+	for i in range(_tracers.size() - 1, -1, -1):
+		var tr: Dictionary = _tracers[i]
+		var node: MeshInstance3D = tr["node"]
+		node.position += tr["vel"] * delta
+		tr["life"] -= delta
+		if not tr["near"] and node.position.distance_to(_para.position) < 14.0:
+			tr["near"] = true
+			_para.add_shake(0.35)
+		if tr["life"] <= 0.0:
+			node.queue_free()
+			_tracers.remove_at(i)
+
+func _beats() -> void:
+	await _para.deployed_canopy
+	await get_tree().create_timer(1.5).timeout
+	Hud.subtitle("", "(Canopy. Breathe.)", 3.0)
+	await get_tree().create_timer(6.5).timeout
+	Hud.subtitle("", "(Two more chutes, east — one short of the treeline. Pat—)", 4.5)
+	CaptureHarness.snap("descent_view")
+
+## Where you land is what tomorrow costs. Grade thresholds tuned so passive
+## wind drift ends near the road (bad) and deliberate steering west reaches
+## the hedgerow (good).
+static func grade_landing(pos: Vector3) -> String:
+	var a := Vector2(-10, -30)
+	var b := Vector2(-90, 60)
+	var p := Vector2(pos.x, pos.z)
+	var ab := b - a
+	var t := clampf((p - a).dot(ab) / ab.length_squared(), 0.0, 1.0)
+	if p.distance_to(a + ab * t) < 20.0:
+		return "good"
+	if pos.x > 50.0:
+		return "bad"
+	return "neutral"
+
+func _on_deploy() -> void:
+	CaptureHarness.snap("canopy")
+
+func _on_landed(pos: Vector3) -> void:
+	CaptureHarness.snap("impact")
+	var grade := grade_landing(pos)
+	GameState.set_flag("landing_grade", grade)
+	GameState.set_flag("landing_bad", grade == "bad" or GameState.get_flag("seen_during_descent"))
+	GameState.beat = "farmhouse"
+	GameState.save_game()
+	Hud.damage_flash(1.3)
+	_para.add_shake(1.0)
+	await SceneDirector.fade_out(0.4)
+	await get_tree().create_timer(1.2).timeout
+	get_tree().change_scene_to_file("res://src/chapters/ch1/farmhouse.tscn")
+
+func _ground_fire() -> void:
+	Hud.subtitle("", "(Muzzle flashes. The road— they see the canopy—)", 4.0)
+	for volley in 8:
+		if _para.down:
+			return
+		var from := Vector3(randf_range(72, 95), 0, _para.position.z + randf_range(-50, 50))
+		from.y = _field.height_at(from.x, from.z) + 1.5
+		for i in 3:
+			var target := _para.position + Vector3(randf_range(-10, 10), randf_range(-6, 6), randf_range(-10, 10))
+			var dir := (target - from).normalized()
+			_add_tracer(from + dir * (8.0 + i * 4.0), dir * 190.0)
+		if volley == 2:
+			CaptureHarness.snap("ground_fire")
+		await get_tree().create_timer(0.55).timeout
+
+func _add_tracer(from: Vector3, vel: Vector3) -> void:
+	var mi := MeshInstance3D.new()
+	var b := BoxMesh.new()
+	b.size = Vector3(0.09, 0.09, 2.2)
+	mi.mesh = b
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(0.75, 1.0, 0.80)
+	mat.emission_enabled = true
+	mat.emission = Color(0.75, 1.0, 0.80)
+	mat.emission_energy_multiplier = 2.5
+	mi.material_override = mat
+	mi.position = from
+	mi.basis = Basis.looking_at(vel.normalized(), Vector3.UP)
+	add_child(mi)
+	_tracers.append({"node": mi, "vel": vel, "life": 2.8, "near": false})
+
+## Coarse patchwork countryside continuing beyond the detailed field.
+func _far_ground() -> MeshInstance3D:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var tint := FastNoiseLite.new()
+	tint.seed = 33
+	tint.frequency = 0.004
+	var cell := 90.0
+	var half := 1800.0
+	var y := -3.0
+	var x := -half
+	while x < half:
+		var z := -half
+		while z < half:
+			var t := (tint.get_noise_2d(x, z) + 1.0) * 0.5
+			var c := Color(0.19, 0.26, 0.13).lerp(Color(0.30, 0.28, 0.15), t)
+			if tint.get_noise_2d(x * 3.0 + 500.0, z * 3.0) > 0.32:
+				c = Color(0.24, 0.19, 0.13)  # plowed patches
+			for p in [Vector3(x, y, z), Vector3(x + cell, y, z), Vector3(x + cell, y, z + cell),
+					Vector3(x, y, z), Vector3(x + cell, y, z + cell), Vector3(x, y, z + cell)]:
+				st.set_color(c)
+				st.set_normal(Vector3.UP)
+				st.add_vertex(p)
+			z += cell
+		x += cell
+	var mi := MeshInstance3D.new()
+	mi.name = "FarGround"
+	mi.mesh = st.commit()
+	mi.material_override = MeshBuilder.vertex_color_material()
+	return mi
+
+func _build_bomber() -> void:
+	var mb := MeshBuilder.new()
+	var olive := Color(0.23, 0.24, 0.20)
+	var lie := Basis(Vector3.RIGHT, PI / 2)
+	var body := CylinderMesh.new()
+	body.top_radius = 1.1
+	body.bottom_radius = 1.3
+	body.height = 20.0
+	body.radial_segments = 7
+	mb.add(body, Transform3D(lie, Vector3.ZERO), olive)
+	mb.box(Vector3(31, 0.28, 4.2), Vector3(0, 0, -2.0), olive)
+	mb.box(Vector3(10.5, 0.22, 2.6), Vector3(0, 0.4, 8.6), olive)
+	mb.box(Vector3(0.18, 3.4, 3.0), Vector3(0, 1.6, 8.9), olive.darkened(0.08))
+	_bomber = mb.commit_instance("DyingShip")
+	_bomber.position = Vector3(30, 320, 60)
+	_bomber.rotation.y = 0.5
+	_bomber.rotation.z = 0.12
+	add_child(_bomber)
+
+func _spawn_smoke(at: Vector3) -> void:
+	var mi := MeshInstance3D.new()
+	var s := SphereMesh.new()
+	s.radius = 1.4
+	s.height = 2.8
+	s.radial_segments = 5
+	s.rings = 2
+	mi.mesh = s
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(0.14, 0.13, 0.12, 0.65)
+	mi.material_override = mat
+	mi.position = at
+	add_child(mi)
+	var tw := create_tween()
+	tw.tween_property(mi, "scale", Vector3.ONE * 3.0, 2.2)
+	tw.parallel().tween_property(mat, "albedo_color:a", 0.0, 2.2)
+	tw.tween_callback(mi.queue_free)
+
+func _build_distant_chutes() -> void:
+	for spec in [Vector3(260, 240, 190), Vector3(310, 210, 240)]:
+		var mb := MeshBuilder.new()
+		var s := SphereMesh.new()
+		s.radius = 3.0
+		s.height = 2.2
+		s.radial_segments = 8
+		s.rings = 3
+		mb.add(s, Transform3D(Basis.IDENTITY, Vector3(0, 5, 0)), Color(0.70, 0.68, 0.62))
+		mb.box(Vector3(0.5, 0.9, 0.4), Vector3.ZERO, Color(0.15, 0.14, 0.13))
+		var chute := mb.commit_instance("DistantChute")
+		chute.position = spec
+		add_child(chute)
+		var tw := create_tween()
+		tw.tween_property(chute, "position", spec + Vector3(25, -235, 15), 55.0)

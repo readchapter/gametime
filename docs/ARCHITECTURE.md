@@ -22,11 +22,14 @@ replay-variation mechanics stay custom-fit.
 
 - `fps_controller.gd` — ground movement + mouse-look + interact raycast.
   Single entry point that Ch2 stealth (crouch, noise) will extend.
-- `turret_controller.gd` (M3) — tail-gunner position: constrained aim cone,
-  fire, scripted fighter waves.
-- `parachute_controller.gd` (M4) — descent drift steering, landing-zone
-  grading (`landing_grade` flag: good/neutral/bad — has dialogue and Ch2
-  consequences, never a fail state).
+- `turret_controller.gd` — tail-gunner position: constrained aim cone,
+  twin guns, trauma shake. Fighter waves are choreographed (fighter.gd
+  bezier runs), driven by data/ch1/raid_script.json.
+- `parachute_controller.gd` — freefall + canopy deploy + drift steering
+  against wind. descent.gd grades the landing zone (`landing_grade`:
+  good/neutral/bad and `landing_bad` — dialogue + Ch2 consequences, never
+  a fail state) and triggers ground fire if the player drifts toward the
+  road/village.
 
 ## Data (data/)
 

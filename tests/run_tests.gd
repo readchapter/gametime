@@ -11,6 +11,7 @@ func _ready() -> void:
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()
 	_test_game_state_persistence()
+	_test_landing_grades()
 
 	if _failures.is_empty():
 		print("ALL TESTS PASSED")
@@ -110,6 +111,17 @@ func _test_choice_conditions() -> void:
 	_check(after.size() == 2, "negated condition hides after flag set (got %d)" % after.size())
 	_check(str(after[0]["text"]) == "gated", "gated choice appears once flag set")
 	DialogueManager.active = false
+
+func _test_landing_grades() -> void:
+	const Descent := preload("res://src/chapters/ch1/descent.gd")
+	_check(Descent.grade_landing(Vector3(-50, 0, 15)) == "good",
+		"landing on the hedgerow line grades good")
+	_check(Descent.grade_landing(Vector3(0, 0, 0)) == "neutral",
+		"landing mid-field grades neutral")
+	_check(Descent.grade_landing(Vector3(60, 0, 0)) == "bad",
+		"landing near the road grades bad")
+	_check(Descent.grade_landing(Vector3(100, 0, 50)) == "bad",
+		"landing in the village grades bad")
 
 func _test_game_state_persistence() -> void:
 	GameState.flags.clear()
