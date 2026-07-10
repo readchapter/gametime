@@ -11,6 +11,12 @@ tools/capture/capture.sh res://src/chapters/ch1/field.tscn 0.5,2.0,5.0
 Runs the game under Xvfb with llvmpipe (software GL, matches the pinned
 gl_compatibility renderer) and writes `shot_NN.png` + `log.txt` to
 `artifacts/`. Inspect the PNGs — do not trust a clean log alone.
+
+Timed shots drift on llvmpipe for long scripted sequences; for event-exact
+frames call `CaptureHarness.snap("tag")` from gameplay code (saves
+`mark_<tag>.png`, no-op outside capture runs). capture.sh passes
+`--autoplay`, which scripted sequences may use to self-advance past
+interactive gates (see bomber_raid.gd's bailout step).
 For motion (tracers, descent), use Godot's movie writer:
 `engine/godot --path . --write-movie artifacts/seq/f.png <scene>`.
 

@@ -87,6 +87,11 @@ func _do_step(step: Dictionary, root: Node) -> void:
 		_:
 			push_warning("Unknown cutscene step: " + str(step))
 
+## Public one-off caption for scenes that need a title card outside a full
+## cutscene (e.g. the raid's ending).
+func caption(text: String, seconds := 3.0) -> void:
+	await _show_caption(text, seconds)
+
 func _show_caption(text: String, seconds: float) -> void:
 	_caption.text = text
 	var tw := create_tween()
