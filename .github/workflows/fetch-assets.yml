@@ -24,15 +24,11 @@ jobs:
       - name: Discover and download packs
         run: |
           mkdir -p /tmp/zips /tmp/packs
-          # Discover zip links on Quaternius' site (all packs are CC0).
-          curl -sL --max-time 30 https://quaternius.com/ -o /tmp/q.html || true
-          grep -oE 'https?://[^"'"'"' ]+\.zip' /tmp/q.html | sort -u > /tmp/qlinks.txt || true
-          echo "--- discovered on quaternius.com:"; cat /tmp/qlinks.txt || true
-          # Keep packs that sound useful for a WWII farm/airfield game.
-          grep -iE 'men|people|charact|human|farm|plane|air|war|village|medieval|furnit|nature' \
-            /tmp/qlinks.txt | head -8 > /tmp/wanted.txt || true
-          # Kenney pages embed direct zip links; scrape a few likely pages.
-          for page in blocky-characters mini-characters-1 survival-kit; do
+          : > /tmp/wanted.txt
+          # Kenney asset pages (all CC0) embed a direct .zip link; scrape the
+          # packs that fit a WWII farm/airfield: nature (landscape), furniture
+          # (farmhouse), food (table props), survival (barrels/crates).
+          for page in nature-kit furniture-kit food-kit survival-kit; do
             curl -sL --max-time 30 "https://kenney.nl/assets/$page" 2>/dev/null \
               | grep -oE 'https?://[^"'"'"' ]+\.zip' | head -1 >> /tmp/wanted.txt || true
           done
