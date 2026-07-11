@@ -6,6 +6,7 @@ extends Node3D
 ## tension, not challenge.
 
 const RAID_SCRIPT := "res://data/ch1/raid_script.json"
+const PLAYER_SCENE := preload("res://src/player/player.tscn")
 
 const OLIVE := Color(0.23, 0.24, 0.20)
 const METAL := Color(0.13, 0.14, 0.13)
@@ -21,7 +22,10 @@ var _fire_light: OmniLight3D
 var _smoke_quads: Array[MeshInstance3D] = []
 var _papers: Array[Dictionary] = []
 var _papers_active := false
-var _await_leave := false
+var _player: CharacterBody3D
+var _doc_paper: MeshInstance3D
+var _doc_grabbed := false
+var _jumped := false
 var _kill_subtitle_done := false
 var _t := 0.0
 # Timeline-critical randomness (fighter paths/durations) uses its own seeded
@@ -57,9 +61,6 @@ func _process(delta: float) -> void:
 	_update_flak(delta)
 	_update_fire(delta)
 	_update_papers(delta)
-	if _await_leave and Input.is_action_just_pressed("interact"):
-		_await_leave = false
-		_crawl_out()
 
 func _physics_process(delta: float) -> void:
 	_update_tracers(delta)
@@ -236,14 +237,7 @@ func _do_step(step: Dictionary) -> void:
 		"fire_start":
 			_start_fire()
 		"bailout":
-			_await_leave = true
-			Hud.show_prompt("E — Leave the turret")
-			# Headless verification runs can't press E.
-			if "--autoplay" in OS.get_cmdline_user_args():
-				await get_tree().create_timer(2.0, false).timeout
-				if _await_leave:
-					_await_leave = false
-					_crawl_out()
+			_begin_bailout()
 		_:
 			push_warning("Unknown raid step: " + str(step))
 
@@ -404,50 +398,164 @@ func _update_fire(delta: float) -> void:
 		spawn_smoke(Vector3(-0.6, 0.2, -2.6) + Vector3(randf_range(-0.3, 0.3), 0, 0),
 			0.35, Vector3(0.3, 0.25, 6.5))
 
-func _crawl_out() -> void:
-	if "--autoplay" in OS.get_cmdline_user_args():
-		print("MARK crawl_start t=%.1f" % _t)
+## Bail-out order: hand off from the turret to first-person movement. The
+## player crawls forward through the fuselage to the side hatch, passing over
+## the loose document (grabbed on instinct, no callout), and jumps.
+func _begin_bailout() -> void:
 	Hud.hide_prompt()
 	Hud.show_crosshair(false)
 	_turret.enabled = false
+	if _turret.camera:
+		_turret.camera.current = false
+	_turret.hide()  # remove the gun/muzzle meshes from the walk view
 	GameState.set_flag("bailed_out")
 
-	var cam := Camera3D.new()
-	cam.fov = 70.0
-	add_child(cam)
-	cam.global_transform = _turret.camera.global_transform
-	cam.make_current()
-	# Faint follow light so the crawl stays readable in the dark fuselage.
-	var follow := OmniLight3D.new()
-	follow.light_color = Color(0.75, 0.66, 0.55)
-	follow.light_energy = 0.85
-	follow.omni_range = 3.5
-	cam.add_child(follow)
-
+	_add_interior_collision()
 	_spawn_papers()
-	var tw := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(cam, "position", Vector3(0, -0.25, -1.2), 1.6)
-	tw.parallel().tween_property(cam, "rotation:y", PI * 0.5, 1.6)
-	tw.tween_property(cam, "position", Vector3(0, -0.35, -3.4), 2.2)
-	tw.parallel().tween_property(cam, "rotation:y", 0.15, 2.2)
-	tw.tween_property(cam, "position", Vector3(0, -0.3, -5.6), 2.0)
-	tw.parallel().tween_property(cam, "rotation:y", -0.2, 2.0)
-	tw.parallel().tween_callback(CaptureHarness.snap.bind("crawl_fire")).set_delay(2.6)
-	await tw.finished
+
+	_player = PLAYER_SCENE.instantiate()
+	_player.position = Vector3(0, -0.9, -0.3)
+	_player.rotation.y = 0.0  # face -Z, up the fuselage toward the hatch
+	_player.walk_speed = 2.3  # a cramped, deliberate crawl-pace
+	add_child(_player)
+	_player.camera.make_current()
+	# Follow light so the dark interior stays readable as the player moves.
+	var follow := OmniLight3D.new()
+	follow.light_color = Color(0.82, 0.72, 0.55)
+	follow.light_energy = 0.9
+	follow.omni_range = 4.5
+	follow.position = Vector3(0, 1.3, 0)
+	_player.add_child(follow)
+
+	_add_document_pickup(Vector3(0.3, -0.86, -3.4))
+	_add_hatch(Vector3(1.02, -0.35, -7.0))
+	Hud.subtitle("", "(The hatch — forward, on the right. Go.)", 6.0)
 
 	if "--autoplay" in OS.get_cmdline_user_args():
-		print("MARK document_beat t=%.1f" % _t)
-	await _document_beat(cam)
+		_autoplay_bailout()
 
-	var tw2 := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw2.tween_property(cam, "position", Vector3(0.45, -0.3, -7.2), 1.7)
-	tw2.parallel().tween_property(cam, "rotation:y", -1.05, 1.7)
-	await tw2.finished
+func _add_interior_collision() -> void:
+	var body := StaticBody3D.new()
+	body.name = "InteriorCollision"
+	_col_box(body, Vector3(2.3, 0.15, 9.8), Vector3(0, -1.02, -3.4))    # floor
+	_col_box(body, Vector3(0.12, 2.4, 9.8), Vector3(-1.17, 0.1, -3.4))  # left wall
+	_col_box(body, Vector3(0.12, 2.4, 9.8), Vector3(1.17, 0.1, -3.4))   # right wall
+	_col_box(body, Vector3(2.3, 2.4, 0.12), Vector3(0, 0.1, -8.15))     # forward bulkhead
+	_col_box(body, Vector3(2.3, 2.4, 0.12), Vector3(0, 0.1, 1.1))       # tail behind spawn
+	add_child(body)
 
+func _col_box(body: StaticBody3D, size: Vector3, at: Vector3) -> void:
+	var cs := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = size
+	cs.shape = shape
+	cs.position = at
+	body.add_child(cs)
+
+## The document: a paper on the floor, silently pocketed when the player
+## reaches it. No prompt, no callout — the reveal is chapters away (spec §3).
+func _add_document_pickup(at: Vector3) -> void:
+	_doc_paper = MeshInstance3D.new()
+	var b := BoxMesh.new()
+	b.size = Vector3(0.24, 0.006, 0.32)
+	_doc_paper.mesh = b
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.88, 0.85, 0.74)
+	mat.emission_enabled = true
+	mat.emission = Color(0.88, 0.85, 0.74)
+	mat.emission_energy_multiplier = 0.6
+	_doc_paper.material_override = mat
+	_doc_paper.rotation.y = 0.5
+	_doc_paper.position = at
+	add_child(_doc_paper)
+
+	var area := Area3D.new()
+	area.position = at + Vector3(0, 0.5, 0)
+	var cs := CollisionShape3D.new()
+	var shape := SphereShape3D.new()
+	shape.radius = 1.0
+	cs.shape = shape
+	area.add_child(cs)
+	area.body_entered.connect(_on_document_touched)
+	add_child(area)
+
+func _on_document_touched(body: Node) -> void:
+	if _doc_grabbed or not (body is CharacterBody3D):
+		return
+	_doc_grabbed = true
+	GameState.add_item("document_fragment")  # silent, per brief
+	if is_instance_valid(_doc_paper):
+		var tw := create_tween()
+		tw.tween_property(_doc_paper, "position",
+			_doc_paper.position + Vector3(0, 1.1, 0), 0.3)
+		tw.parallel().tween_property(_doc_paper, "scale", Vector3.ZERO, 0.3)
+		tw.tween_callback(_doc_paper.queue_free)
+
+## The side hatch: an Interactable on the right wall. Interact to jump.
+func _add_hatch(at: Vector3) -> void:
+	var hatch := Interactable.new()
+	hatch.name = "Hatch"
+	hatch.prompt = "Jump"
+	hatch.one_shot = true
+	hatch.position = at
+	var cs := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(0.7, 1.4, 1.1)
+	cs.shape = shape
+	hatch.add_child(cs)
+	# Open hatchway: cold daylight spilling in against the dark interior.
+	var glow := MeshInstance3D.new()
+	var b := BoxMesh.new()
+	b.size = Vector3(0.06, 1.15, 0.95)
+	glow.mesh = b
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.55, 0.66, 0.82)
+	mat.emission_enabled = true
+	mat.emission = Color(0.6, 0.72, 0.9)
+	mat.emission_energy_multiplier = 1.6
+	glow.material_override = mat
+	glow.position = Vector3(0.12, 0.1, 0)
+	hatch.add_child(glow)
+	var spill := OmniLight3D.new()
+	spill.position = Vector3(-0.3, 0.2, 0)
+	spill.light_color = Color(0.6, 0.72, 0.9)
+	spill.light_energy = 1.2
+	spill.omni_range = 3.0
+	hatch.add_child(spill)
+	hatch.interacted.connect(_on_hatch)
+	add_child(hatch)
+
+func _on_hatch(_who: Node) -> void:
+	if _jumped:
+		return
+	_jumped = true
+	if _player:
+		_player.move_enabled = false
+		_player.look_enabled = false
+	Hud.hide_prompt()
 	await SceneDirector.fade_out(0.9)
 	_papers_active = false
 	await CutscenePlayer.caption("— THE JUMP —", 3.0)
 	SceneDirector.goto_beat("descent")
+
+## Headless verification: crawl to the document, then the hatch, then jump.
+func _autoplay_bailout() -> void:
+	await get_tree().create_timer(0.6, false).timeout
+	CaptureHarness.snap("bailout_view")
+	await _autoplay_walk_to(Vector3(0.3, -0.9, -3.4))
+	_on_document_touched(_player)
+	await get_tree().create_timer(0.4, false).timeout
+	await _autoplay_walk_to(Vector3(0.2, -0.9, -6.4))
+	CaptureHarness.snap("hatch_view")
+	await get_tree().create_timer(0.3, false).timeout
+	_on_hatch(_player)
+
+func _autoplay_walk_to(target: Vector3) -> void:
+	var guard := 0
+	while is_instance_valid(_player) and _player.position.distance_to(target) > 0.4 and guard < 800:
+		_player.position = _player.position.move_toward(target, 0.05)
+		guard += 1
+		await get_tree().process_frame
 
 ## Loose papers from a shot-up map case, swirling in the wind blast. One of
 ## them ends up in Travis's jacket. No callout — the reveal is chapters away.
@@ -489,21 +597,3 @@ func _update_papers(delta: float) -> void:
 		node.rotation += p["spin"] * delta
 		if node.position.z > 1.5:
 			node.position.z = -7.5
-
-func _document_beat(cam: Camera3D) -> void:
-	if _papers.is_empty():
-		GameState.add_item("document_fragment")
-		return
-	var p: Dictionary = _papers.pop_back()
-	var node: MeshInstance3D = p["node"]
-	var hold := cam.global_transform * Vector3(0.05, -0.06, -0.38)
-	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(node, "global_position", hold, 0.9)
-	tw.parallel().tween_property(node, "rotation", Vector3(0.1, PI, 0.05), 0.9)
-	tw.tween_interval(0.4)
-	tw.tween_callback(CaptureHarness.snap.bind("document"))
-	tw.tween_interval(0.4)
-	tw.tween_property(node, "position", Vector3(0, -0.8, 0), 0.35).as_relative()
-	await tw.finished
-	node.queue_free()
-	GameState.add_item("document_fragment")
