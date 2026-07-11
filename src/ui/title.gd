@@ -57,6 +57,10 @@ func _ready() -> void:
 
 	AudioManager.play_music("title_theme")
 
+	# Clear the fade overlay: a no-op at game start (already clear), and the
+	# reveal when we arrive here from the Chapter 1 end card (still black).
+	SceneDirector.fade_in(1.5)
+
 	if "--autoplay" in OS.get_cmdline_user_args():
 		await get_tree().create_timer(1.5).timeout
 		_begin()

@@ -47,6 +47,29 @@ func _process(delta: float) -> void:
 	if _fire_light:
 		_fire_light.light_energy = _fire_base_energy \
 			+ sin(_t * 11.0) * 0.05 + sin(_t * 4.7 + 1.3) * 0.06
+	_autoplay_step(delta)
+
+## Headless verification: walk to the chair and sit, then (after the table
+## scene) walk to the bed and sleep, driving the full ending unattended.
+func _autoplay_step(delta: float) -> void:
+	if not ("--autoplay" in OS.get_cmdline_user_args()):
+		return
+	if _player == null or not _player.move_enabled:
+		return
+	if not GameState.get_flag("table_scene_done"):
+		var chair := get_node_or_null("TravisChair")
+		if chair:
+			if _player.position.distance_to(chair.position) > 1.2:
+				_player.position = _player.position.move_toward(chair.position, delta * 3.5)
+			else:
+				chair.interact(_player)
+	elif not GameState.get_flag("ch1_complete"):
+		var bed := get_node_or_null("Bed")
+		if bed:
+			if _player.position.distance_to(bed.position) > 1.3:
+				_player.position = _player.position.move_toward(bed.position, delta * 3.5)
+			else:
+				bed.interact(_player)
 
 func _intro() -> void:
 	_player.move_enabled = false
@@ -273,6 +296,8 @@ func _on_sit(player: Node) -> void:
 	tw.tween_property(cam, "global_transform", _seat_marker.global_transform, 1.1)
 	await tw.finished
 	DialogueManager.start("res://data/dialogue/ch1/farm_table.json")
+	if "--autoplay" in OS.get_cmdline_user_args():
+		DialogueManager.autoplay()
 	await DialogueManager.dialogue_ended
 	GameState.set_flag("table_scene_done")
 	var back := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
@@ -290,3 +315,7 @@ func _on_bed(player: Node) -> void:
 	GameState.save_game()
 	AudioManager.stop_ambient(3.0)
 	await CutscenePlayer.play("res://data/cutscenes/ch1/farmhouse_end.json", self)
+	# End of the build — return to the title rather than sitting on black.
+	# The screen is already faded out from the cutscene; the title fades
+	# itself back in on load (see title.gd).
+	get_tree().change_scene_to_file("res://src/ui/title.tscn")
