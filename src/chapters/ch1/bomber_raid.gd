@@ -46,6 +46,10 @@ func _ready() -> void:
 	Hud.show_crosshair(true)
 	AudioManager.play_ambient("bomber_interior")
 
+	# goto_beat leaves the screen faded to black; every gameplay scene must
+	# reveal itself (descent/farmhouse do the same). Without this the raid
+	# renders under a full-black overlay — looks like a hang.
+	SceneDirector.fade_in(1.2)
 	_run_script()
 
 func _process(delta: float) -> void:
