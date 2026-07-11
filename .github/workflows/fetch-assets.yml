@@ -1,0 +1,71 @@
+name: Fetch CC0 model assets
+
+# Downloads CC0 low-poly model packs on a GitHub runner (the dev container
+# cannot reach asset sites) and commits every .glb/.gltf found to the orphan
+# branch `assets-src`, plus a FILELIST.txt inventory. Dev sessions inspect
+# the list, pick files into assets/models/, and record licenses in
+# assets/models/CREDITS.md. Re-run manually to add packs.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-assets.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Discover and download packs
+        run: |
+          mkdir -p /tmp/zips /tmp/packs
+          # Discover zip links on Quaternius' site (all packs are CC0).
+          curl -sL --max-time 30 https://quaternius.com/ -o /tmp/q.html || true
+          grep -oE 'https?://[^"'"'"' ]+\.zip' /tmp/q.html | sort -u > /tmp/qlinks.txt || true
+          echo "--- discovered on quaternius.com:"; cat /tmp/qlinks.txt || true
+          # Keep packs that sound useful for a WWII farm/airfield game.
+          grep -iE 'men|people|charact|human|farm|plane|air|war|village|medieval|furnit|nature' \
+            /tmp/qlinks.txt | head -8 > /tmp/wanted.txt || true
+          # Kenney pages embed direct zip links; scrape a few likely pages.
+          for page in blocky-characters mini-characters-1 survival-kit; do
+            curl -sL --max-time 30 "https://kenney.nl/assets/$page" 2>/dev/null \
+              | grep -oE 'https?://[^"'"'"' ]+\.zip' | head -1 >> /tmp/wanted.txt || true
+          done
+          sort -u /tmp/wanted.txt -o /tmp/wanted.txt
+          echo "--- downloading:"; cat /tmp/wanted.txt
+          n=0
+          while read -r url; do
+            [ -z "$url" ] && continue
+            n=$((n+1)); [ $n -gt 10 ] && break
+            name=$(basename "$url" | tr -cd 'A-Za-z0-9._-')
+            echo "fetch $url"
+            curl -sL --max-time 300 --max-filesize 120000000 -o "/tmp/zips/$name" "$url" || true
+          done < /tmp/wanted.txt
+          for z in /tmp/zips/*.zip; do
+            [ -e "$z" ] || continue
+            d="/tmp/packs/$(basename "$z" .zip)"
+            mkdir -p "$d"
+            unzip -q -o "$z" -d "$d" || true
+          done
+
+      - name: Collect models and commit to assets-src
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan assets-src
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p models
+          # Keep glb (self-contained) plus gltf+bin, and any license files.
+          (cd /tmp/packs && find . -type f \( -iname '*.glb' -o -iname '*.gltf' \
+            -o -iname '*.bin' -o -iname 'licen*' -o -iname 'readme*' \) \
+            -exec cp --parents {} "$GITHUB_WORKSPACE/models/" \;) || true
+          find models -type f -printf '%10s  %p\n' | sort -k2 > FILELIST.txt
+          echo "--- inventory:"; wc -l FILELIST.txt
+          git add models FILELIST.txt
+          git commit -m "CC0 model pack inventory for asset picking" || exit 0
+          git push -f origin assets-src
