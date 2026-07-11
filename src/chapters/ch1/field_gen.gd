@@ -15,6 +15,10 @@ const CANOPY := Color(0.13, 0.18, 0.10)
 const CANOPY_LIT := Color(0.20, 0.24, 0.12)
 const PLASTER := Color(0.52, 0.47, 0.40)
 const ROOF := Color(0.25, 0.17, 0.13)
+# Cohesion tints for the CC0 Kenney models so they sit in the dusk palette.
+const TREE_TINT := Color(0.54, 0.60, 0.47)
+const CROP_TINT := Color(0.70, 0.64, 0.42)
+const TREE_KINDS := ["tree_default", "tree_oak", "tree_detailed", "tree_fat", "tree_pineRoundA"]
 
 var _height := FastNoiseLite.new()
 var _tint := FastNoiseLite.new()
@@ -29,6 +33,8 @@ func _ready() -> void:
 	add_child(_hedgerow_line(Vector3(-120, 0, -45), Vector3(120, 0, -45), 7.0, 101))
 	add_child(_hedgerow_line(Vector3(-95, 0, -45), Vector3(-95, 0, 110), 8.0, 102))
 	add_child(_hedgerow_line(Vector3(-10, 0, -30), Vector3(-90, 0, 60), 8.0, 103))
+	add_child(_crop_field(Vector3(35, 0, 55), 8, 7, 2.4, 201, "crops_wheatStageB", CROP_TINT, 2.0))
+	add_child(_crop_field(Vector3(-55, 0, -70), 7, 6, 2.6, 202, "crops_cornStageC", Color(0.5, 0.56, 0.4), 2.2))
 	add_child(_farmhouse(Vector3(-40, 0, 30)))
 	add_child(_road())
 	add_child(_village())
@@ -68,27 +74,56 @@ func _ground_color(p: Vector3) -> Color:
 	var dip := clampf(-p.y * 0.5, 0.0, 1.0)
 	return c.lerp(DIRT, dip * 0.5)
 
-func _hedgerow_line(from: Vector3, to: Vector3, spacing: float, seed_v: int) -> MultiMeshInstance3D:
+## Hedgerow of tone-tinted CC0 low-poly trees, jittered along the line.
+## Falls back to a procedural tree if a model is missing.
+func _hedgerow_line(from: Vector3, to: Vector3, spacing: float, seed_v: int) -> Node3D:
+	var root := Node3D.new()
+	root.name = "Hedgerow%d" % seed_v
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_v
 	var dir := to - from
 	var count := int(dir.length() / spacing)
-	var mm := MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = _tree_mesh()
-	mm.instance_count = count
 	for i in count:
 		var pos := from + dir * (float(i) / count)
-		pos.x += rng.randf_range(-2.5, 2.5)
-		pos.z += rng.randf_range(-2.5, 2.5)
+		pos.x += rng.randf_range(-2.2, 2.2)
+		pos.z += rng.randf_range(-2.2, 2.2)
 		pos.y = height_at(pos.x, pos.z)
-		var s := rng.randf_range(0.8, 1.5)
-		var basis := Basis(Vector3.UP, rng.randf_range(0.0, TAU)).scaled(Vector3(s, s * rng.randf_range(0.9, 1.3), s))
-		mm.set_instance_transform(i, Transform3D(basis, pos))
-	var mmi := MultiMeshInstance3D.new()
-	mmi.name = "Hedgerow%d" % seed_v
-	mmi.multimesh = mm
-	return mmi
+		var kind: String = TREE_KINDS[rng.randi() % TREE_KINDS.size()]
+		var tree := Kit.model(kind, TREE_TINT, rng.randf_range(2.6, 4.0))
+		if tree == null:
+			tree = _proc_tree()
+		tree.position = pos
+		tree.rotation.y = rng.randf_range(0.0, TAU)
+		root.add_child(tree)
+	return root
+
+## Field of tone-tinted crop clumps in a jittered grid.
+func _crop_field(center: Vector3, cols: int, rows: int, spacing: float,
+		seed_v: int, crop_name: String, tint: Color, scale: float) -> Node3D:
+	var root := Node3D.new()
+	root.name = "Crop_%d" % seed_v
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_v
+	for r in rows:
+		for c in cols:
+			var pos := center + Vector3(
+				(c - cols / 2.0) * spacing + rng.randf_range(-0.6, 0.6), 0,
+				(r - rows / 2.0) * spacing + rng.randf_range(-0.6, 0.6))
+			pos.y = height_at(pos.x, pos.z)
+			var clump := Kit.model(crop_name, tint, scale * rng.randf_range(0.85, 1.15))
+			if clump == null:
+				continue
+			clump.position = pos
+			clump.rotation.y = rng.randf_range(0.0, TAU)
+			root.add_child(clump)
+	return root
+
+func _proc_tree() -> Node3D:
+	var mb := MeshBuilder.new()
+	mb.cylinder(0.14, 0.22, 1.6, Vector3(0, 0.8, 0), TRUNK, 5)
+	mb.sphere(1.5, 2.6, Vector3(0, 2.5, 0), CANOPY)
+	mb.sphere(1.0, 1.8, Vector3(0.7, 3.3, 0.3), CANOPY_LIT)
+	return mb.commit_instance("ProcTree")
 
 ## The road east of the field — the danger the descent can drift toward.
 ## Built as short segments following the terrain.
@@ -127,13 +162,6 @@ func _village() -> Node3D:
 		root.add_child(win)
 	root.add_child(mb.commit_instance("Houses"))
 	return root
-
-func _tree_mesh() -> ArrayMesh:
-	var mb := MeshBuilder.new()
-	mb.cylinder(0.14, 0.22, 1.6, Vector3(0, 0.8, 0), TRUNK, 5)
-	mb.sphere(1.5, 2.6, Vector3(0, 2.5, 0), CANOPY)
-	mb.sphere(1.0, 1.8, Vector3(0.7, 3.3, 0.3), CANOPY_LIT)
-	return mb.commit()
 
 func _farmhouse(at: Vector3) -> Node3D:
 	var mb := MeshBuilder.new()
