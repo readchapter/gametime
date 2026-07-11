@@ -10,6 +10,7 @@ var _panel: PanelContainer
 var _speaker: Label
 var _text: RichTextLabel
 var _choices_box: VBoxContainer
+var _advance_hint: Label
 var _buttons: Array[Button] = []
 var _selected := 0
 var _typing := false
@@ -62,6 +63,19 @@ func _build_ui() -> void:
 	_choices_box.add_theme_constant_override("separation", 4)
 	vbox.add_child(_choices_box)
 
+	# Blinking "click to continue" affordance so players know a linear line is
+	# waiting on them (hidden while typing and while choices are up).
+	_advance_hint = Label.new()
+	_advance_hint.text = "▾  space / click"
+	_advance_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_advance_hint.add_theme_font_size_override("font_size", 15)
+	_advance_hint.add_theme_color_override("font_color", Color(0.60, 0.57, 0.50))
+	_advance_hint.hide()
+	vbox.add_child(_advance_hint)
+	var blink := create_tween().set_loops()
+	blink.tween_property(_advance_hint, "modulate:a", 0.25, 0.7)
+	blink.tween_property(_advance_hint, "modulate:a", 1.0, 0.7)
+
 func _on_line(speaker: String, text: String) -> void:
 	_clear_choices()
 	_panel.show()
@@ -70,12 +84,16 @@ func _on_line(speaker: String, text: String) -> void:
 	_text.text = text
 	_text.visible_ratio = 0.0
 	_typing = true
+	_advance_hint.hide()
 	var tw := create_tween()
 	tw.tween_property(_text, "visible_ratio", 1.0, text.length() / TYPE_SPEED)
-	tw.tween_callback(func() -> void: _typing = false)
+	tw.tween_callback(func() -> void:
+		_typing = false
+		_advance_hint.show())
 
 func _on_choices(choices: Array) -> void:
 	_clear_choices()
+	_advance_hint.hide()
 	for c: Dictionary in choices:
 		var b := Button.new()
 		b.text = c["text"]
@@ -91,6 +109,7 @@ func _on_choices(choices: Array) -> void:
 
 func _on_ended(_id: String) -> void:
 	_clear_choices()
+	_advance_hint.hide()
 	_panel.hide()
 
 func _clear_choices() -> void:
@@ -133,6 +152,7 @@ func _input(event: InputEvent) -> void:
 		if _typing:
 			_text.visible_ratio = 1.0
 			_typing = false
+			_advance_hint.show()
 		else:
 			DialogueManager.advance()
 		get_viewport().set_input_as_handled()

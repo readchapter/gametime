@@ -9,6 +9,8 @@ replay-variation mechanics stay custom-fit.
 | Autoload | Role |
 |---|---|
 | `Boot` | Registers the input map in code (keeps project.godot hand-maintainable). |
+| `Settings` | Player options (mouse sensitivity) persisted to `user://settings.json`, separate from the save game. Controllers read `Settings.mouse_scale`. |
+| `PauseMenu` | Esc pause overlay (resume / sensitivity slider / restart beat / quit to title); `process_mode = ALWAYS` so it runs while the tree is paused. Yields to CutscenePlayer's Esc-skip and never triggers on the title. |
 | `GameState` | Story flags, inventory, seen-cutscenes, chapter/beat; JSON save to `user://save.json`. The later trust mechanic is flags consulted by dialogue conditions — never a visible meter. |
 | `SceneDirector` | Scene transitions with fade; `CH1_BEATS` map + `goto_beat()` own chapter flow and record progress for the title screen's Continue. Ch1 is linear; later chapters branch on GameState flags before calling goto_beat. |
 | `DialogueManager` | Data-driven dialogue runtime (schema documented in the script header). `lines` is an array per node — the replay-variation pool; Ch1 uses index 0. |

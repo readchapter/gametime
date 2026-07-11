@@ -127,7 +127,7 @@ func _apply_effects(effects: Dictionary) -> void:
 ## time) so headless verification runs can pass interactive gates.
 func autoplay(interval := 0.6) -> void:
 	while active:
-		await get_tree().create_timer(interval).timeout
+		await get_tree().create_timer(interval, false).timeout
 		if not active:
 			return
 		var cs := available_choices()

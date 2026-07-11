@@ -6,3 +6,6 @@ engine/
 
 # Capture pipeline output
 artifacts/
+
+# Unused fetched model packs (available on the assets-src branch)
+assets/models/packs/

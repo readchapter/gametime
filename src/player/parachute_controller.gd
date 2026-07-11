@@ -70,8 +70,9 @@ func add_shake(amount: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and not down:
-		_yaw -= event.relative.x * mouse_sensitivity
-		_pitch = clampf(_pitch - event.relative.y * mouse_sensitivity, -1.25, 0.55)
+		var sens := mouse_sensitivity * Settings.mouse_scale
+		_yaw -= event.relative.x * sens
+		_pitch = clampf(_pitch - event.relative.y * sens, -1.25, 0.55)
 
 func _process(delta: float) -> void:
 	_time += delta

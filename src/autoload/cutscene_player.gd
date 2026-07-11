@@ -67,7 +67,7 @@ func _do_step(step: Dictionary, root: Node) -> void:
 		"fade_in":
 			await SceneDirector.fade_in(float(step.get("duration", 1.0)))
 		"wait":
-			await get_tree().create_timer(float(step.get("seconds", 1.0))).timeout
+			await get_tree().create_timer(float(step.get("seconds", 1.0)), false).timeout
 		"caption":
 			await _show_caption(str(step.get("text", "")), float(step.get("seconds", 3.0)))
 		"dialogue":

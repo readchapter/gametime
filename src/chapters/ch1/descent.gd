@@ -87,9 +87,9 @@ func _physics_process(delta: float) -> void:
 
 func _beats() -> void:
 	await _para.deployed_canopy
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(1.5, false).timeout
 	Hud.subtitle("", "(Canopy. Breathe.)", 3.0)
-	await get_tree().create_timer(6.5).timeout
+	await get_tree().create_timer(6.5, false).timeout
 	Hud.subtitle("", "(Two more chutes, east — one short of the treeline. Pat—)", 4.5)
 	CaptureHarness.snap("descent_view")
 
@@ -122,7 +122,7 @@ func _on_landed(pos: Vector3) -> void:
 	AudioManager.play_sfx("impact_thud")
 	AudioManager.stop_ambient(1.5)
 	await SceneDirector.fade_out(0.4)
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(2.0, false).timeout
 	await _wake_beat(pos)
 	SceneDirector.goto_beat("farmhouse", 0.1)
 
@@ -166,7 +166,7 @@ func _wake_beat(pos: Vector3) -> void:
 	if "--autoplay" in OS.get_cmdline_user_args():
 		DialogueManager.autoplay()
 	await DialogueManager.dialogue_ended
-	await get_tree().create_timer(0.8).timeout
+	await get_tree().create_timer(0.8, false).timeout
 
 func _wake_figure(at: Vector3, toward: Vector3) -> Node3D:
 	var mb := MeshBuilder.new()
@@ -199,7 +199,7 @@ func _ground_fire() -> void:
 			_add_tracer(from + dir * (8.0 + i * 4.0), dir * 190.0)
 		if volley == 2:
 			CaptureHarness.snap("ground_fire")
-		await get_tree().create_timer(0.55).timeout
+		await get_tree().create_timer(0.55, false).timeout
 
 func _add_tracer(from: Vector3, vel: Vector3) -> void:
 	var mi := MeshInstance3D.new()

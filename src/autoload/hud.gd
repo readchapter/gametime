@@ -52,6 +52,9 @@ func _ready() -> void:
 	_subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_subtitle.add_theme_font_size_override("normal_font_size", 22)
 	_subtitle.add_theme_font_size_override("bold_font_size", 22)
+	# Dark outline so intercom lines stay legible over bright sky/flak.
+	_subtitle.add_theme_constant_override("outline_size", 6)
+	_subtitle.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	layer.add_child(_subtitle)
 
 func show_prompt(text: String) -> void:
@@ -70,7 +73,7 @@ func subtitle(speaker: String, text: String, seconds := 4.0) -> void:
 		head = "[color=#d9a866][b]%s[/b][/color] — " % speaker
 	_subtitle.text = "[center]%s%s[/center]" % [head, text]
 	_subtitle.modulate.a = 1.0
-	await get_tree().create_timer(seconds).timeout
+	await get_tree().create_timer(seconds, false).timeout
 	if v == _subtitle_version:
 		var tw := create_tween()
 		tw.tween_property(_subtitle, "modulate:a", 0.0, 0.4)

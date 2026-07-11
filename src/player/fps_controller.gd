@@ -19,8 +19,9 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and look_enabled:
-		rotate_y(-event.relative.x * mouse_sensitivity)
-		camera.rotate_x(-event.relative.y * mouse_sensitivity)
+		var sens := mouse_sensitivity * Settings.mouse_scale
+		rotate_y(-event.relative.x * sens)
+		camera.rotate_x(-event.relative.y * sens)
 		camera.rotation.x = clampf(camera.rotation.x, -PI / 2.2, PI / 2.2)
 	elif event.is_action_pressed("interact"):
 		_try_interact()

@@ -214,7 +214,7 @@ func _run_script() -> void:
 func _do_step(step: Dictionary) -> void:
 	match str(step.get("type", "")):
 		"wait":
-			await get_tree().create_timer(float(step.get("seconds", 1.0))).timeout
+			await get_tree().create_timer(float(step.get("seconds", 1.0)), false).timeout
 		"subtitle":
 			Hud.subtitle(str(step.get("speaker", "")), str(step.get("text", "")),
 				float(step.get("seconds", 4.0)))
@@ -236,7 +236,7 @@ func _do_step(step: Dictionary) -> void:
 			Hud.show_prompt("E — Leave the turret")
 			# Headless verification runs can't press E.
 			if "--autoplay" in OS.get_cmdline_user_args():
-				await get_tree().create_timer(2.0).timeout
+				await get_tree().create_timer(2.0, false).timeout
 				if _await_leave:
 					_await_leave = false
 					_crawl_out()
@@ -256,7 +256,7 @@ func _spawn_wave(count: int) -> void:
 		fighter.gone.connect(_on_fighter_gone)
 		_fighters.append(fighter)
 		add_child(fighter)
-		await get_tree().create_timer(1.2).timeout
+		await get_tree().create_timer(1.2, false).timeout
 
 func _on_fighter_gone(f: Fighter) -> void:
 	_fighters.erase(f)
@@ -274,7 +274,7 @@ func _on_player_fired(muzzle: Vector3, dir: Vector3) -> void:
 
 func spawn_enemy_tracer(muzzle: Vector3, delay: float) -> void:
 	if delay > 0.0:
-		await get_tree().create_timer(delay).timeout
+		await get_tree().create_timer(delay, false).timeout
 	var target := _turret.camera.global_position \
 		+ Vector3(randf_range(-4, 4), randf_range(-4, 4), 0)
 	var dir := (target - muzzle).normalized()
