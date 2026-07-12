@@ -27,6 +27,14 @@ var _noise := FastNoiseLite.new()
 var _muzzle_light: OmniLight3D
 var _muzzle_flash: MeshInstance3D
 var _flash := 0.0
+# Spent .50 casings: pooled meshes simulated in the turret's local space so
+# they tumble to the deck instead of tracking the aim.
+const CASING_LIFE := 1.8
+const CASING_FLOOR_Y := -0.97
+var _casings: Array[Dictionary] = []
+var _casing_pool: Array[MeshInstance3D] = []
+var _casing_mesh: BoxMesh
+var _casing_mat: StandardMaterial3D
 # Dev-only: hold fire during headless capture runs so the muzzle flash and
 # tracers can be verified without input.
 var _auto_fire := "--autoplay" in OS.get_cmdline_user_args()
@@ -72,6 +80,60 @@ func _build_guns() -> void:
 	_muzzle_flash.material_override = fmat
 	camera.add_child(_muzzle_flash)
 
+	_casing_mesh = BoxMesh.new()
+	_casing_mesh.size = Vector3(0.022, 0.022, 0.10)
+	_casing_mat = StandardMaterial3D.new()
+	_casing_mat.vertex_color_use_as_albedo = false
+	_casing_mat.albedo_color = Color(0.72, 0.57, 0.24)
+	_casing_mat.emission_enabled = true
+	_casing_mat.emission = Color(0.72, 0.57, 0.24)
+	_casing_mat.emission_energy_multiplier = 0.18
+
+func _new_casing() -> MeshInstance3D:
+	var inst := MeshInstance3D.new()
+	inst.mesh = _casing_mesh
+	inst.material_override = _casing_mat
+	add_child(inst)
+	return inst
+
+func _eject_casing(side: float) -> void:
+	var inst: MeshInstance3D = _casing_pool.pop_back() if not _casing_pool.is_empty() \
+		else _new_casing()
+	inst.show()
+	var spawn: Vector3 = to_local(camera.global_transform * Vector3(side * 1.5, -0.42, -0.30))
+	var eject_world: Vector3 = camera.global_transform.basis \
+		* Vector3(signf(side), 0.45, randf_range(0.0, 0.25))
+	var vel: Vector3 = global_transform.basis.inverse() * eject_world \
+		* randf_range(1.5, 2.3)
+	_casings.append({
+		"node": inst, "pos": spawn, "vel": vel, "age": 0.0,
+		"axis": Vector3(randf() - 0.5, randf() - 0.5, randf() - 0.5).normalized(),
+		"spin": randf_range(8.0, 16.0),
+	})
+
+func _update_casings(delta: float) -> void:
+	for i in range(_casings.size() - 1, -1, -1):
+		var c: Dictionary = _casings[i]
+		c.age += delta
+		var vel: Vector3 = c.vel
+		vel.y -= 9.8 * delta
+		var pos: Vector3 = c.pos + vel * delta
+		if pos.y < CASING_FLOOR_Y:
+			pos.y = CASING_FLOOR_Y
+			vel.y *= -0.3
+			vel.x *= 0.5
+			vel.z *= 0.5
+			c.spin *= 0.4
+		c.vel = vel
+		c.pos = pos
+		var node: MeshInstance3D = c.node
+		node.position = pos
+		node.rotate(c.axis, c.spin * delta)
+		if c.age >= CASING_LIFE:
+			node.hide()
+			_casing_pool.append(node)
+			_casings.remove_at(i)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and enabled:
 		var sens := mouse_sensitivity * Settings.mouse_scale
@@ -95,6 +157,7 @@ func _process(delta: float) -> void:
 		_muzzle_flash.scale = Vector3(1.0, 1.0, 1.0) * (0.6 + _flash * 0.7)
 		_muzzle_flash.position.x = -0.22 if _gun_left else 0.22
 
+	_update_casings(delta)
 	_cooldown -= delta
 	var firing := Input.is_action_pressed("fire")
 	if _auto_fire:
@@ -112,6 +175,7 @@ func _fire() -> void:
 		randf_range(-0.008, 0.008))).normalized()
 	trauma = minf(trauma + 0.06, 0.45)
 	_flash = 1.0
+	_eject_casing(side)
 	fired.emit(muzzle, dir)
 
 func add_trauma(amount: float) -> void:
