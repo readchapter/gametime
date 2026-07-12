@@ -148,6 +148,8 @@ func _wake_beat(pos: Vector3) -> void:
 	sky_mat.set_shader_parameter("top_color", Color(0.03, 0.04, 0.08))
 	sky_mat.set_shader_parameter("horizon_color", Color(0.10, 0.10, 0.14))
 	sky_mat.set_shader_parameter("sun_color", Color(0.0, 0.0, 0.0))
+	sky_mat.set_shader_parameter("cloud_coverage", 0.15)
+	sky_mat.set_shader_parameter("star_amount", 0.8)  # he wakes under stars
 
 	# The family, leaning over him; Luc's lamp kept low.
 	var around := [Vector3(1.1, 0, 0.8), Vector3(-1.0, 0, 1.0), Vector3(0.2, 0, 1.5)]

@@ -140,6 +140,15 @@ func _build_interior() -> void:
 	# Tail cone behind the glazing
 	mb.box(Vector3(2.3, 0.5, 1.4), Vector3(0, 1.35, 1.4), METAL)
 	mb.box(Vector3(2.3, 0.5, 1.4), Vector3(0, -1.15, 1.4), METAL)
+	# The ship's own fin and rudder, looming directly overhead — the tail
+	# gunner lives under it. Reads at the top of the view when looking up.
+	mb.box(Vector3(0.24, 3.6, 2.6), Vector3(0, 3.2, 1.9), OLIVE)
+	var fin_slope := PrismMesh.new()
+	fin_slope.size = Vector3(0.24, 1.4, 2.6)
+	mb.add(fin_slope, Transform3D(Basis(Vector3.RIGHT, -PI / 2), Vector3(0, 2.0, 0.4)), OLIVE)
+	# Horizontal stabilizers flanking the compartment
+	for s: float in [-1.0, 1.0]:
+		mb.box(Vector3(4.6, 0.22, 2.2), Vector3(s * 3.4, 1.1, 0.9), OLIVE)
 	# Ammo boxes and feed chutes
 	mb.box(Vector3(0.5, 0.4, 0.7), Vector3(-0.75, -0.75, -0.4), OLIVE)
 	mb.box(Vector3(0.5, 0.4, 0.7), Vector3(0.75, -0.75, -0.4), OLIVE)

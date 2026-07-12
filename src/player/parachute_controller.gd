@@ -45,11 +45,11 @@ func _build_canopy() -> void:
 	var mb := MeshBuilder.new()
 	var silk := Color(0.72, 0.70, 0.64)
 	var s := SphereMesh.new()
-	s.radius = 3.4
-	s.height = 2.4
-	s.radial_segments = 10
+	s.radius = 4.3
+	s.height = 2.8
+	s.radial_segments = 12
 	s.rings = 4
-	mb.add(s, Transform3D(Basis.IDENTITY, Vector3(0, 6.2, 0)), silk)
+	mb.add(s, Transform3D(Basis.IDENTITY, Vector3(0, 6.4, 0)), silk)
 	for corner in [Vector3(-2.4, 0, -2.4), Vector3(2.4, 0, -2.4),
 			Vector3(-2.4, 0, 2.4), Vector3(2.4, 0, 2.4)]:
 		var riser := CylinderMesh.new()
