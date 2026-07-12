@@ -85,24 +85,45 @@ func _build_ground() -> void:
 	add_child(body)
 
 func _build_bomber() -> void:
+	# Tail-dragger stance: nose up, tail wheel down (rotation.x < 0 pitches
+	# the -Z nose upward). Gear legs are computed from the pitched hull so
+	# the wheels stay planted.
+	var pitch := -0.10
+	var pos := Vector3(0, 3.2, 4)
 	var ship := ModelLib.get_model("b17", Aircraft.b17)
-	ship.position = Vector3(0, 3.4, 4)
+	ship.position = pos
 	ship.rotation.y = 0.35
+	ship.rotation.x = pitch
 	add_child(ship)
-	# Landing gear so she sits on her wheels instead of floating
+
 	var mb := MeshBuilder.new()
-	var b := Basis(Vector3.UP, 0.35)
+	var hull := Basis(Vector3.UP, 0.35) * Basis(Vector3.RIGHT, pitch)
+	var wheel_r := 0.75
 	for side in [-4.4, 4.4]:
-		var leg_top: Vector3 = Vector3(0, 3.4, 4) + b * Vector3(side, -1.0, -2.4)
-		mb.box(Vector3(0.25, 2.4, 0.25), leg_top + Vector3(0, -1.0, 0), Color(0.1, 0.1, 0.1))
+		# Main gear: from the wing underside straight down to the wheel.
+		var attach: Vector3 = pos + hull * Vector3(side, -1.0, -2.4)
+		var leg_len := attach.y - wheel_r
+		mb.box(Vector3(0.25, leg_len, 0.25),
+			Vector3(attach.x, attach.y - leg_len / 2.0, attach.z), Color(0.1, 0.1, 0.1))
 		var wheel := CylinderMesh.new()
-		wheel.top_radius = 0.75
-		wheel.bottom_radius = 0.75
+		wheel.top_radius = wheel_r
+		wheel.bottom_radius = wheel_r
 		wheel.height = 0.5
 		wheel.radial_segments = 8
-		mb.add(wheel, Transform3D(Basis(Vector3.FORWARD, PI / 2), leg_top + Vector3(0, -2.6, 0)),
-			Color(0.05, 0.05, 0.05))
-	mb.box(Vector3(0.18, 1.2, 0.18), Vector3(0, 3.4, 4) + b * Vector3(0, -2.2, 8.6), Color(0.1, 0.1, 0.1))
+		mb.add(wheel, Transform3D(Basis(Vector3.FORWARD, PI / 2),
+			Vector3(attach.x, wheel_r, attach.z)), Color(0.05, 0.05, 0.05))
+	# Tail wheel under the pitched tail
+	var tail_attach: Vector3 = pos + hull * Vector3(0, -0.8, 8.6)
+	var tail_leg := maxf(tail_attach.y - 0.3, 0.4)
+	mb.box(Vector3(0.16, tail_leg, 0.16),
+		Vector3(tail_attach.x, tail_attach.y - tail_leg / 2.0, tail_attach.z), Color(0.1, 0.1, 0.1))
+	var tw := CylinderMesh.new()
+	tw.top_radius = 0.3
+	tw.bottom_radius = 0.3
+	tw.height = 0.28
+	tw.radial_segments = 8
+	mb.add(tw, Transform3D(Basis(Vector3.FORWARD, PI / 2),
+		Vector3(tail_attach.x, 0.3, tail_attach.z)), Color(0.05, 0.05, 0.05))
 	add_child(mb.commit_instance("Gear"))
 	# Distant sister ships swallowed by the fog
 	for spec in [[Vector3(-90, 3.4, 60), 1.1], [Vector3(70, 3.4, 110), -0.7]]:
