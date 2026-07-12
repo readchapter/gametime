@@ -135,7 +135,37 @@ func _build_fixtures() -> void:
 	mb.box(Vector3(0.1, 1.0, 1.0), Vector3(4.82, 1.5, 1.2), WOOD_DARK)
 	# Sideboard along the main-room north wall
 	mb.box(Vector3(1.6, 0.9, 0.5), Vector3(0.6, 0.45, -2.55), WOOD)
+	# Interior shutters flanking the main window
+	for side in [-0.85, 0.85]:
+		mb.box(Vector3(0.5, 1.15, 0.06), Vector3(-1.0 + side, 1.55, -2.78), WOOD_DARK)
+	# Crucifix on the north wall — a French farm kitchen, 1943
+	mb.box(Vector3(0.05, 0.42, 0.05), Vector3(1.9, 1.85, -2.77), WOOD_DARK)
+	mb.box(Vector3(0.26, 0.05, 0.05), Vector3(1.9, 1.93, -2.77), WOOD_DARK)
+	# Rag rug between the table and the fire
+	mb.box(Vector3(1.4, 0.03, 0.9), Vector3(-2.5, 0.015, 0.35), Color(0.34, 0.22, 0.18))
+	# Firewood stack by the hearth (logs lying along the wall)
+	var log_lie := Basis(Vector3.RIGHT, PI / 2)
+	for i in 5:
+		var log_mesh := CylinderMesh.new()
+		log_mesh.top_radius = 0.07
+		log_mesh.bottom_radius = 0.07
+		log_mesh.height = 0.55
+		log_mesh.radial_segments = 5
+		mb.add(log_mesh, Transform3D(log_lie,
+			Vector3(-3.35 + (i % 3) * 0.16, 0.08 + (i / 3) * 0.14, 1.65)),
+			Color(0.28, 0.20, 0.13))
 	add_child(mb.commit_instance("Fixtures"))
+	# Pot by the fire and a loaf on the sideboard (kit, tinted)
+	# Kenney food-kit models are display-scale; shrink hard to fit the room.
+	var pot := Kit.model("pot", Color(0.30, 0.28, 0.26), 0.6)
+	if pot:
+		pot.position = Vector3(-3.2, 0.02, 0.9)
+		add_child(pot)
+	var loaf := Kit.model("loaf", Color(0.52, 0.38, 0.22), 0.4)
+	if loaf:
+		loaf.position = Vector3(0.35, 0.9, -2.55)
+		loaf.rotation.y = 0.5
+		add_child(loaf)
 	# Glowing surfaces
 	_emissive_box(Vector3(1.1, 0.9, 0.04), Vector3(-1.0, 1.55, -2.86), NIGHT_GLASS, 1.4)
 	_emissive_box(Vector3(0.04, 0.9, 0.9), Vector3(4.9, 1.5, 1.2), NIGHT_GLASS, 1.2)
@@ -175,7 +205,7 @@ func _build_furniture() -> void:
 	mb.cylinder(0.10, 0.07, 0.06, TABLE + Vector3(-0.35, 0.78, -0.1), LINEN.darkened(0.3))
 	mb.cylinder(0.10, 0.07, 0.06, TABLE + Vector3(0.3, 0.78, 0.15), LINEN.darkened(0.3))
 	add_child(mb.commit_instance("TableSettings"))
-	_place("bread", Color(0.5, 0.36, 0.2), 1.3, TABLE + Vector3(0.0, 0.78, -0.05), 0.4, func(): return _null_node())
+	_place("bread", Color(0.5, 0.36, 0.2), 0.4, TABLE + Vector3(0.0, 0.78, -0.05), 0.4, func(): return _null_node())
 	# Family chairs (Travis's is a separate Interactable, built later)
 	_place("chair", WOOD_TINT, 1.4, TABLE + Vector3(-0.95, 0, 0.0), PI / 2, _proc_chair)   # Henri (west)
 	_place("chair", WOOD_TINT, 1.4, TABLE + Vector3(0.0, 0, -0.9), 0.0, _proc_chair)       # Marguerite (north)

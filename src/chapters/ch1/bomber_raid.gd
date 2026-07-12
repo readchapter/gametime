@@ -26,6 +26,9 @@ var _player: CharacterBody3D
 var _doc_paper: MeshInstance3D
 var _doc_grabbed := false
 var _jumped := false
+var _formation: Array[Node3D] = []
+var _falling_ship: Node3D
+var _fall_smoke_t := 0.0
 var _kill_subtitle_done := false
 var _t := 0.0
 # Timeline-critical randomness (fighter paths/durations) uses its own seeded
@@ -61,6 +64,12 @@ func _process(delta: float) -> void:
 	_update_flak(delta)
 	_update_fire(delta)
 	_update_papers(delta)
+	# Smoke trail behind the falling sister ship
+	if is_instance_valid(_falling_ship):
+		_fall_smoke_t += delta
+		if _fall_smoke_t > 0.22:
+			_fall_smoke_t = 0.0
+			spawn_smoke(_falling_ship.position + Vector3(randf_range(-2, 2), 1.0, 3.0), 2.4)
 
 func _physics_process(delta: float) -> void:
 	_update_tracers(delta)
@@ -159,6 +168,7 @@ func _build_formation() -> void:
 		b17.position = spec[0]
 		b17.rotation.y = spec[1]
 		add_child(b17)
+		_formation.append(b17)
 		for engine_x in [-8.6, -4.4, 4.4, 8.6]:
 			_contrail(spec[0] + Vector3(engine_x, -0.4, 130), 240.0, 0.28)
 
@@ -236,6 +246,8 @@ func _do_step(step: Dictionary) -> void:
 				await get_tree().process_frame
 		"fire_start":
 			_start_fire()
+		"ship_down":
+			_ship_down()
 		"bailout":
 			_begin_bailout()
 		_:
@@ -379,6 +391,24 @@ func spawn_smoke(at: Vector3, size := 1.0, drift := Vector3.ZERO) -> void:
 	tw.tween_callback(mi.queue_free)
 
 # --- ship on fire, papers, bail-out -----------------------------------------
+
+## A sister ship takes a hit and falls out of the formation, trailing smoke —
+## the beat that makes the flak real before it's Travis's turn.
+func _ship_down() -> void:
+	if _formation.size() < 2:
+		return
+	_falling_ship = _formation[1]
+	var start := _falling_ship.position
+	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_property(_falling_ship, "position", start + Vector3(-90, -520, 240), 26.0)
+	tw.parallel().tween_property(_falling_ship, "rotation:z", -0.7, 14.0)
+	tw.parallel().tween_property(_falling_ship, "rotation:x", 0.35, 18.0)
+	tw.tween_callback(func() -> void:
+		if is_instance_valid(_falling_ship):
+			_falling_ship.queue_free()
+		_falling_ship = null)
+	await get_tree().create_timer(3.5, false).timeout
+	CaptureHarness.snap("ship_down")
 
 func _start_fire() -> void:
 	_fire_active = true

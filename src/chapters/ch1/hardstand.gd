@@ -167,7 +167,45 @@ func _build_props() -> void:
 	var mb := MeshBuilder.new()
 	mb.box(Vector3(3.2, 0.3, 1.2), Vector3(-6, 0.45, 12), Color(0.16, 0.17, 0.16))
 	mb.cylinder(0.4, 0.4, 2.6, Vector3(-6, 0.9, 12), Color(0.20, 0.21, 0.19))
+	# Ground crew: two figures by the trolley and one at the drums —
+	# somebody was up before the fliers.
+	_crew_figure(mb, Vector3(-4.6, 0, 11.4), 2.2, Color(0.20, 0.21, 0.19))
+	_crew_figure(mb, Vector3(-7.4, 0, 12.6), -0.8, Color(0.23, 0.22, 0.18))
+	_crew_figure(mb, Vector3(-8.6, 0, -5.0), 0.9, Color(0.19, 0.20, 0.17))
+	# Windsock, hanging slack in the still dawn air
+	mb.cylinder(0.06, 0.08, 6.0, Vector3(22, 3.0, -16), Color(0.22, 0.22, 0.22))
+	var sock := CylinderMesh.new()
+	sock.top_radius = 0.10
+	sock.bottom_radius = 0.30
+	sock.height = 1.8
+	sock.radial_segments = 6
+	mb.add(sock, Transform3D(Basis(Vector3(0, 0, 1), 0.5), Vector3(22.5, 5.3, -16)),
+		Color(0.55, 0.30, 0.18))
 	add_child(mb.commit_instance("Props"))
+
+	# Grass tufts along the pad edges (the concrete is an island in a field)
+	var g_rng := RandomNumberGenerator.new()
+	g_rng.seed = 12
+	for i in 26:
+		var tuft := Kit.model("grass", Color(0.40, 0.45, 0.32), g_rng.randf_range(1.0, 1.8))
+		if tuft == null:
+			break
+		var ang := g_rng.randf_range(0, TAU)
+		var r := g_rng.randf_range(22.0, 34.0)
+		tuft.position = Vector3(cos(ang) * r, 0, sin(ang) * r)
+		tuft.rotation.y = g_rng.randf_range(0, TAU)
+		add_child(tuft)
+
+## Standing silhouette figure in work clothes (same visual language as Pat).
+func _crew_figure(mb: MeshBuilder, at: Vector3, yaw: float, cloth: Color) -> void:
+	mb.box(Vector3(0.42, 0.62, 0.26), at + Vector3(0, 1.15, 0), cloth, yaw)
+	mb.sphere(0.12, 0.24, at + Vector3(0, 1.62, 0), SKIN)
+	mb.box(Vector3(0.34, 0.10, 0.30), at + Vector3(0, 1.66, 0), cloth.darkened(0.25), yaw)
+	var b := Basis(Vector3.UP, yaw)
+	for side in [-0.13, 0.13]:
+		mb.box(Vector3(0.15, 0.85, 0.18), at + b * Vector3(side, 0.42, 0), cloth.darkened(0.15), yaw)
+	for side in [-0.28, 0.28]:
+		mb.box(Vector3(0.10, 0.55, 0.13), at + b * Vector3(side, 1.12, 0.02), cloth.darkened(0.08), yaw)
 
 ## Pat, standing near the tail, waiting.
 func _build_pat() -> void:

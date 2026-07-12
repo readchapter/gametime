@@ -23,6 +23,8 @@ var _vel := Vector3.ZERO
 var _last_pos := Vector3.ZERO
 var _fire_accum := 0.0
 var _smoke_accum := 0.0
+var _flashes: Array[MeshInstance3D] = []
+var _flash_left := 0.0
 
 static func make(start: Vector3, attack: Vector3, exit_p: Vector3, dir_node: Node) -> Fighter:
 	var f := Fighter.new()
@@ -38,6 +40,24 @@ static func make(start: Vector3, attack: Vector3, exit_p: Vector3, dir_node: Nod
 
 func _build_mesh() -> void:
 	add_child(ModelLib.get_model("fw190", Aircraft.fw190))
+	# Wing muzzle flashes: hidden emissive quads pulsed during firing bursts.
+	# At attack range these read as flickering points — "they're shooting".
+	for side in [-1.7, 1.7]:
+		var mi := MeshInstance3D.new()
+		var b := BoxMesh.new()
+		b.size = Vector3(0.45, 0.45, 0.7)
+		mi.mesh = b
+		var mat := StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.albedo_color = Color(1.0, 0.85, 0.5)
+		mat.emission_enabled = true
+		mat.emission = Color(1.0, 0.8, 0.45)
+		mat.emission_energy_multiplier = 3.0
+		mi.material_override = mat
+		mi.position = Vector3(side, -0.05, -1.6)
+		mi.hide()
+		add_child(mi)
+		_flashes.append(mi)
 
 func hit() -> void:
 	if _dead:
@@ -83,11 +103,21 @@ func _process(delta: float) -> void:
 		look_at(position + v, Vector3.UP)
 		_vel = v / delta
 
+	# Muzzle flash pulse decay
+	if _flash_left > 0.0:
+		_flash_left -= delta
+		if _flash_left <= 0.0:
+			for f in _flashes:
+				f.hide()
+
 	# Firing window on the way in.
 	if _t > 0.30 and _t < 0.62 and director:
 		_fire_accum += delta
 		if _fire_accum >= 0.38:
 			_fire_accum = 0.0
+			_flash_left = 0.12
+			for f in _flashes:
+				f.show()
 			for i in 3:
 				var muzzle := global_position - global_transform.basis.z * 3.0
 				director.spawn_enemy_tracer(muzzle, i * 0.05)
