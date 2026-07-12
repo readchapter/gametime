@@ -48,10 +48,20 @@ collider (see `fps_controller.gd::_try_interact`).
 
 ## Chapter flow (Ch1)
 
-title → hardstand (Pat dialogue, board) → bomber_tail (raid → bail-out,
-silent document grab) → descent (steering + zone grading + ground-fire
+title → hardstand (Pat dialogue, board) → bomber_tail (raid → bail-out:
+player walks the burning fuselage, passes the document pickup silently,
+jumps at the side hatch) → descent (steering + zone grading + ground-fire
 consequence → landing blackout → field wake beat with the family) →
-farmhouse (table dialogue, bed → end card). No fail state anywhere in Ch1.
+farmhouse (main room table dialogue → walk through the doorway to the
+bedroom → bed → end cards → back to title). No fail state anywhere in Ch1.
+
+## Asset pipeline
+
+- `Kit` (src/systems/procgen/kit.gd): curated CC0 models with cohesion
+  tint; `ModelLib` remains the per-name drop-in override; `Aircraft` holds
+  the hand-built planes. See docs/ART_DIRECTION.md for the tint rule.
+- Audio: every manifest slot ships a synthesized placeholder from
+  `tools/synth_audio.py`; same-name files replace them without code changes.
 
 Headless verification: every interactive gate self-advances under
 `--autoplay` (capture.sh passes it), so the whole chapter runs end-to-end

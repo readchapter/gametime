@@ -43,9 +43,11 @@ save file — Chapter 2 will read them.
 
 ## Audio
 
-The game currently runs silent-by-design: `assets/audio/MANIFEST.md` lists
-every wanted file; drop license-safe audio in and it plays with no code
-changes. Attribution goes in `assets/audio/CREDITS.md`.
+Every audio slot ships with a **synthesized placeholder** (engine drone,
+wind, fire crackle, gunfire, a dark title theme — generated license-free by
+`tools/synth_audio.py`). To upgrade any sound, drop a sourced recording
+with the same name into `assets/audio/` (see `MANIFEST.md`); it plays with
+no code changes. Attribution goes in `assets/audio/CREDITS.md`.
 
 ## Development (remote container)
 

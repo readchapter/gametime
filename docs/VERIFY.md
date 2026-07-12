@@ -20,6 +20,13 @@ interactive gates (see bomber_raid.gd's bailout step).
 For motion (tracers, descent), use Godot's movie writer:
 `engine/godot --path . --write-movie artifacts/seq/f.png <scene>`.
 
+## Audio
+
+`python3 tools/synth_audio.py` regenerates the synthesized placeholder set
+(prints duration/peak/RMS per file). In-engine check: run any scene and
+grep the log for `AudioManager: no asset` — silence means every slot
+resolved. Actual listening happens on the user's machine.
+
 ## Logic
 
 Headless script tests (dialogue parsing, GameState save/load, landing
