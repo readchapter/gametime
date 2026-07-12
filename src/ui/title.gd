@@ -1,18 +1,35 @@
 extends Node
-## Title card. Restrained: black, the name, one key. Continue appears only
-## when a save exists. Built on a CanvasLayer with anchored children (a bare
-## root Control does not auto-size to the viewport).
+## Title card. Restrained: the name, one key, over a slow aerial drift across
+## the dusk field the chapter ends in. Continue appears only when a save
+## exists. Built on a CanvasLayer with anchored children (a bare root Control
+## does not auto-size to the viewport).
+
+const DRIFT_SPEED := 0.7
 
 var _hint: Label
 var _can_continue := false
+var _cam: Camera3D
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+	# Live backdrop: the landing field at dusk, camera drifting toward the
+	# farmhouse and the low sun. field.tscn is self-contained (sky/sun/env).
+	var field: Node3D = load("res://src/chapters/ch1/field.tscn").instantiate()
+	add_child(field)
+	_cam = Camera3D.new()
+	_cam.fov = 70.0
+	add_child(_cam)
+	_cam.position = Vector3(40, 6.0, 45)
+	_cam.look_at(Vector3(-40, 3.0, 70))
+	_cam.make_current()
+
 	var layer := CanvasLayer.new()
 	add_child(layer)
 
+	# Translucent scrim so the text holds against the bright horizon.
 	var bg := ColorRect.new()
-	bg.color = Color(0.01, 0.012, 0.018)
+	bg.color = Color(0.01, 0.012, 0.018, 0.42)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	layer.add_child(bg)
 
@@ -64,6 +81,11 @@ func _ready() -> void:
 	if "--autoplay" in OS.get_cmdline_user_args():
 		await get_tree().create_timer(1.5).timeout
 		_begin()
+
+func _process(delta: float) -> void:
+	# Slow drift toward the farmhouse; orientation stays fixed.
+	if _cam:
+		_cam.position += Vector3(-0.94, 0.0, -0.23) * DRIFT_SPEED * delta
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("advance"):
