@@ -69,6 +69,37 @@ static func b17(name := "B17") -> MeshInstance3D:
 
 	return mb.commit_instance(name)
 
+## Fw 190-style single-engine fighter: blunt radial cowl, bubble canopy,
+## tapered wings, rounded fin. Same visual language as the B-17.
+static func fw190(name := "Fw190") -> MeshInstance3D:
+	var mb := MeshBuilder.new()
+	var lie := Basis(Vector3.RIGHT, PI / 2)
+	var paint := Color(0.16, 0.17, 0.15)
+	var paint_dark := Color(0.12, 0.13, 0.12)
+
+	# Fuselage: cowl -> body -> tail taper
+	_cyl(mb, lie, 0.62, 0.62, 1.4, Vector3(0, 0, -3.2), paint_dark, 10)  # radial cowl
+	mb.sphere(0.3, 0.5, Vector3(0, 0, -3.95), METAL, 8)                  # spinner
+	_prop(mb, Vector3(0, 0, -4.1))
+	_cyl(mb, lie, 0.62, 0.5, 3.6, Vector3(0, 0, -0.7), paint, 10)        # mid body
+	_cyl(mb, lie, 0.5, 0.16, 3.6, Vector3(0, 0.08, 2.9), paint, 10)      # tail taper
+	# Canopy
+	mb.sphere(0.34, 0.5, Vector3(0, 0.5, -0.9), GLASS, 8)
+	mb.box(Vector3(0.5, 0.3, 1.2), Vector3(0, 0.38, -0.5), paint_dark)
+	# Wings: tapered, slight dihedral
+	for s: float in [-1.0, 1.0]:
+		_wing_box(mb, Vector3(3.4, 0.14, 1.7), Vector3(s * 2.0, -0.1, -1.0), 0.06 * s, paint)
+		_wing_box(mb, Vector3(1.9, 0.12, 1.15), Vector3(s * 4.3, 0.05, -0.9), 0.06 * s, paint)
+		mb.sphere(0.22, 0.16, Vector3(s * 5.25, 0.14, -0.9), paint, 6)
+	# Tailplane + rounded fin
+	for s: float in [-1.0, 1.0]:
+		_wing_box(mb, Vector3(1.6, 0.1, 0.85), Vector3(s * 0.95, 0.12, 4.15), 0.0, paint)
+	mb.box(Vector3(0.12, 1.0, 1.0), Vector3(0, 0.62, 4.2), paint)
+	mb.sphere(0.3, 0.55, Vector3(0, 1.1, 4.15), paint, 6)
+	# Belly intake hint
+	mb.box(Vector3(0.4, 0.18, 1.6), Vector3(0, -0.55, -1.2), paint_dark)
+	return mb.commit_instance(name)
+
 ## Simple 3-blade propeller in the XY plane (spinning read comes from motion).
 static func _prop(mb: MeshBuilder, at: Vector3) -> void:
 	for i in 3:

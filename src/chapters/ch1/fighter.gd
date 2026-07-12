@@ -37,26 +37,7 @@ static func make(start: Vector3, attack: Vector3, exit_p: Vector3, dir_node: Nod
 	return f
 
 func _build_mesh() -> void:
-	var mb := MeshBuilder.new()
-	var paint := Color(0.15, 0.16, 0.13)
-	var lie := Basis(Vector3.RIGHT, PI / 2)  # cylinder Y axis -> Z
-	var body := CylinderMesh.new()
-	body.top_radius = 0.42
-	body.bottom_radius = 0.34
-	body.height = 6.4
-	body.radial_segments = 6
-	mb.add(body, Transform3D(lie, Vector3.ZERO), paint)
-	var nose := CylinderMesh.new()
-	nose.top_radius = 0.42
-	nose.bottom_radius = 0.06
-	nose.height = 1.3
-	nose.radial_segments = 6
-	mb.add(nose, Transform3D(lie, Vector3(0, 0, -3.8)), paint.darkened(0.2))
-	mb.box(Vector3(9.8, 0.12, 1.8), Vector3(0, -0.1, -0.6), paint, 0.0)
-	mb.box(Vector3(3.4, 0.10, 1.0), Vector3(0, 0.1, 2.9), paint, 0.0)
-	mb.box(Vector3(0.10, 1.2, 1.0), Vector3(0, 0.6, 3.0), paint.darkened(0.1), 0.0)
-	mb.box(Vector3(0.5, 0.32, 0.9), Vector3(0, 0.45, -1.2), Color(0.08, 0.09, 0.10), 0.0)
-	add_child(mb.commit_instance("Body"))
+	add_child(ModelLib.get_model("fw190", Aircraft.fw190))
 
 func hit() -> void:
 	if _dead:

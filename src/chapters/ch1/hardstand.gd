@@ -112,14 +112,38 @@ func _build_bomber() -> void:
 		add_child(far)
 
 func _build_props() -> void:
+	var drum_tint := Color(0.45, 0.36, 0.28)
+	var crate_tint := Color(0.5, 0.44, 0.34)
+	# Fuel drums (kit barrels, tinted to dawn)
+	var drum_rng := RandomNumberGenerator.new()
+	drum_rng.seed = 4
+	for spot in [Vector3(-9, 0, -6), Vector3(-9.8, 0, -5.2), Vector3(-9.4, 0, -6.9),
+			Vector3(-10.5, 0, -6.1), Vector3(7.2, 0, -8.1)]:
+		var d := Kit.model("barrel", drum_tint, 1.15)
+		if d:
+			d.position = spot
+			d.rotation.y = drum_rng.randf_range(0, TAU)
+			add_child(d)
+	# Crate stacks (kit boxes)
+	for spec in [[Vector3(8, 0, -7), 0.2, 1.6], [Vector3(8.25, 0.62, -6.9), 0.55, 1.3],
+			[Vector3(6.8, 0, -7.4), 0.9, 1.4]]:
+		var c := Kit.model("box", crate_tint, spec[2])
+		if c:
+			c.position = spec[0]
+			c.rotation.y = spec[1]
+			add_child(c)
+	# Bedroll + bucket by the drums (a crew waited here all night)
+	var br := Kit.model("bedroll", Color(0.42, 0.40, 0.36), 1.3)
+	if br:
+		br.position = Vector3(-8.0, 0, -7.6)
+		br.rotation.y = 1.2
+		add_child(br)
+	var bk := Kit.model("bucket", drum_tint, 1.2)
+	if bk:
+		bk.position = Vector3(-8.6, 0, -4.4)
+		add_child(bk)
+	# Bomb trolley silhouette (procedural)
 	var mb := MeshBuilder.new()
-	# Fuel drums
-	for spot in [Vector3(-9, 0, -6), Vector3(-9.8, 0, -5.2), Vector3(-9.4, 0, -6.9)]:
-		mb.cylinder(0.32, 0.32, 0.95, spot + Vector3(0, 0.48, 0), Color(0.30, 0.20, 0.14))
-	# Crates
-	mb.box(Vector3(1.1, 0.7, 0.8), Vector3(8, 0.35, -7), Color(0.32, 0.26, 0.18), 0.2)
-	mb.box(Vector3(0.9, 0.6, 0.7), Vector3(8.2, 1.0, -6.9), Color(0.36, 0.30, 0.21), 0.5)
-	# Bomb trolley silhouette
 	mb.box(Vector3(3.2, 0.3, 1.2), Vector3(-6, 0.45, 12), Color(0.16, 0.17, 0.16))
 	mb.cylinder(0.4, 0.4, 2.6, Vector3(-6, 0.9, 12), Color(0.20, 0.21, 0.19))
 	add_child(mb.commit_instance("Props"))
