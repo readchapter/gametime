@@ -54,6 +54,9 @@ func _start_looping(player: AudioStreamPlayer, kind: String, name_: String) -> v
 		stream.loop = true
 	elif stream is AudioStreamWAV:
 		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		stream.loop_begin = 0
+		# loop_end is in frames; without it the loop region is empty.
+		stream.loop_end = int(stream.get_length() * stream.mix_rate)
 	player.stream = stream
 	player.volume_db = 0.0
 	player.play()
