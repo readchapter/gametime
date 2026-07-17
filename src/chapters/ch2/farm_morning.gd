@@ -117,7 +117,9 @@ func _build_interactables() -> void:
 
 func _spawn_player() -> void:
 	_player = PLAYER_SCENE.instantiate()
-	_player.position = Vector3(3.5, 0.05, 1.0)  # foot of the bed, facing the doorway
+	# Beside the bed — NOT inside its collision blocker (x 3..5, z 0.75..1.85):
+	# physics depenetration will pin an autoplay walker spawned intersecting it.
+	_player.position = Vector3(3.6, 0.05, 2.3)
 	_player.rotation.y = PI / 2  # facing the doorway through to the main room
 	add_child(_player)
 
