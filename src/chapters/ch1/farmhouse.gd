@@ -412,8 +412,9 @@ func _on_bed(player: Node) -> void:
 	player.look_enabled = false
 	Hud.hide_prompt()
 	GameState.set_flag("ch1_complete")
+	GameState.chapter = 2
 	GameState.save_game()
 	AudioManager.stop_ambient(3.0)
 	await CutscenePlayer.play("res://data/cutscenes/ch1/farmhouse_end.json", self)
-	# End of the build — return to the title (which fades itself in on load).
-	get_tree().change_scene_to_file("res://src/ui/title.tscn")
+	# Straight into Chapter 2: the morning after, same rooms.
+	SceneDirector.goto_beat("ch2_morning", 0.1)

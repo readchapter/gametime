@@ -1,10 +1,12 @@
-# THE FALL — Chapter 1
+# THE FALL
 
 A first-person, narrative-driven WWII game. Travis Boyd, a USAAF tail
-gunner, is shot down over occupied France. This repository is **Chapter 1**,
-a complete playable slice: the dawn hardstand, the raid from the tail
-turret, the bail-out, the parachute descent, and the first night in a
-French farmhouse.
+gunner, is shot down over occupied France. This repository holds
+**Chapters 1 and 2**, playable as one continuous flow: the dawn hardstand,
+the raid from the tail turret, the bail-out, the parachute descent, the
+first night in a French farmhouse — and then the morning after: a German
+patrol at the door, a night walk behind a resistance guide, and the
+vetting in a barn where wrong answers end the game.
 
 Textureless, procedural art direction (vertex colors, shader-driven
 lighting, fog, atmosphere — *The Falconeer* is the visual reference).
@@ -33,13 +35,22 @@ renderer and the art direction targets it.
 
 ## Chapter flow
 
-Title → Hardstand (talk to Pat, board) → The raid (tail turret; the
-bail-out order comes when it comes — this sequence cannot be lost) →
-The jump → The descent (steer: where you land matters — the hedgerow
-hides you, the road does not) → The farmhouse (sit to the table; sleep).
+**Chapter 1 — The Fall.** Title → Hardstand (talk to Pat, board) → The raid
+(tail turret; the bail-out order comes when it comes — this sequence cannot
+be lost) → The jump → The descent (steer: where you land matters — the
+hedgerow hides you, the road does not) → The farmhouse (sit to the table;
+sleep).
+
+**Chapter 2 — The Vetting.** The farmhouse morning (when Henri says hide,
+hide) → dusk handoff to Marcel → the night walk (stay close; when he drops,
+you drop) → the barn. The questions are about *your* life — Travis knows
+the answers, so answer as him, and think before you spend your word on a
+stranger. **Wrong answers can end the game here.** A failed vetting restarts
+the barn — and it will not replay word-for-word.
 
 Landing quality and dialogue choices set story flags that persist into the
-save file — Chapter 2 will read them.
+save file — Chapter 2 reads them (a bad landing changes the morning), and
+Chapter 3 will read the trust you earned or burned in the barn.
 
 ## Audio
 

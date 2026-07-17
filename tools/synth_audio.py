@@ -222,6 +222,76 @@ def impact_thud():
     return body + scuff
 
 
+def morning_farm(dur):
+    """Cold, quiet farm morning: light wind, sparse close birds, one far dog."""
+    base = wind(dur, gustiness=0.25, base_cut=420) * 0.6
+    n = int(SR * dur)
+    birds = np.zeros(n)
+    for _ in range(int(dur / 2.5)):
+        i = int(rng.integers(0, n - SR))
+        for k in range(int(rng.integers(2, 5))):   # short chirp phrases
+            j = i + int(k * rng.uniform(0.09, 0.16) * SR)
+            ln = int(rng.integers(1800, 4200))
+            if j + ln >= n:
+                break
+            tt = np.arange(ln) / SR
+            f = rng.uniform(2600, 4200) * (1 + 0.25 * np.sin(2 * np.pi * 30 * tt))
+            birds[j:j + ln] += np.sin(2 * np.pi * f * tt) * np.exp(-tt / 0.05) * 0.07
+    dog = np.zeros(n)
+    for _ in range(max(1, int(dur / 14))):
+        i = int(rng.integers(int(n * 0.2), n - SR))
+        ln = int(0.16 * SR)
+        tt = np.arange(ln) / SR
+        dog[i:i + ln] += np.sin(2 * np.pi * (300 - 120 * tt / 0.16) * tt) * np.exp(-tt / 0.06) * 0.05
+    return base + lp(birds, 5000) + lp(dog, 700)
+
+def knock_door():
+    """Three knuckle strikes on heavy wood, unhurried, official."""
+    dur = 1.5
+    n = int(SR * dur)
+    x = np.zeros(n)
+    for at in (0.1, 0.42, 0.74):
+        i = int(at * SR)
+        ln = int(0.11 * SR)
+        tt = np.arange(ln) / SR
+        thud = np.sin(2 * np.pi * (95 - 30 * tt / 0.11) * tt) * np.exp(-tt / 0.03) * 1.2
+        rap = burst(ln, 0.004) * 0.8
+        x[i:i + ln] += thud + lp(rap, 2200)
+    return x
+
+def truck_pass(dur=11.0):
+    """A heavy engine approaching, passing, receding — level and pitch ride
+    a triangle centered on the pass."""
+    n = int(SR * dur)
+    tt = t(dur)
+    prox = 1.0 - np.abs(tt - dur * 0.45) / (dur * 0.55)   # 0..1..0
+    prox = np.clip(prox, 0.0, 1.0) ** 1.6
+    f0 = 68 * (1.0 + 0.06 * (tt < dur * 0.45) - 0.05 * (tt >= dur * 0.45))  # crude doppler step
+    eng = np.sin(2 * np.pi * np.cumsum(f0) / SR)
+    eng += 0.55 * np.sin(2 * np.pi * np.cumsum(f0 * 2.02) / SR)
+    eng += 0.3 * np.sin(2 * np.pi * np.cumsum(f0 * 2.98) / SR)
+    eng *= 0.5 + 0.5 * wobble(dur, 9.0, 0.25)
+    tires = lp(white(dur), 380) * 0.5
+    x = (lp(eng, 500) + tires) * (0.08 + 0.92 * prox)
+    return x
+
+def rifle_crack():
+    """One rifle shot, outdoors: hard crack, then a flat rolling echo."""
+    dur = 2.4
+    n = int(SR * dur)
+    x = np.zeros(n)
+    ln = int(0.10 * SR)
+    x[:ln] += burst(ln, 0.006) * 2.4
+    body = np.sin(2 * np.pi * 170 * t(dur) * (1 - 0.4 * np.clip(t(dur) / 0.1, 0, 1))) * env_exp(dur, 0.05) * 0.7
+    x += body
+    # echo tail: delayed, darker copies
+    for d, g in ((0.28, 0.30), (0.55, 0.18), (0.9, 0.10)):
+        i = int(d * SR)
+        x[i:i + ln] += lp(burst(ln, 0.02), 900) * g
+    roll = lp(brown(dur), 220) * env_exp(dur, 0.6) * 0.5
+    return hp(x + roll, 55)
+
+
 # ---------- music ----------
 
 def title_theme(dur):
@@ -262,5 +332,9 @@ if __name__ == "__main__":
     write_wav("sfx/chute_open", chute_open(), -11)
     write_wav("sfx/distant_gunfire", distant_gunfire(), -16)
     write_wav("sfx/impact_thud", impact_thud(), -10)
+    write_wav("ambient/morning_farm", loopify(np.stack([morning_farm(30), morning_farm(30)])), -20)
+    write_wav("sfx/knock_door", knock_door(), -12)
+    write_wav("sfx/truck_pass", truck_pass(), -13)
+    write_wav("sfx/rifle_crack", rifle_crack(), -10)
     write_wav("music/title_theme", loopify(np.stack([title_theme(52), title_theme(52)]), 1.0), -16)
     print("done")

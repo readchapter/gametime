@@ -6,7 +6,7 @@
 		{"type": "caption", "text": "He slept without dreams.", "seconds": 3.5},
 		{"type": "wait", "seconds": 0.5},
 		{"type": "caption", "text": "— END OF CHAPTER ONE —", "seconds": 4.0},
-		{"type": "wait", "seconds": 0.4},
-		{"type": "caption", "text": "Travis Boyd's story continues in Chapter Two: The Vetting.", "seconds": 4.5}
+		{"type": "wait", "seconds": 0.6},
+		{"type": "caption", "text": "CHAPTER TWO\n\nTHE VETTING", "seconds": 4.5}
 	]
 }
