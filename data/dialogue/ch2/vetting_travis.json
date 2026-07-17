@@ -1,0 +1,199 @@
+{
+	"id": "ch2_vetting",
+	"start": "open",
+	"nodes": {
+		"open": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Now you. Understand what this is: men fall out of the sky with good English and good faces, and a week later forty people are ash. So — you are Travis Boyd, of Texas. Prove it in the small things.",
+				"Your turn, and we begin plainly: the last man with a good face cost a réseau forty people. You say Travis Boyd, Texas. Then Texas will answer for you — small things only.",
+				"Once more, then. I do not care about your war record; Berlin writes lovely war records. I care about the small true things. Travis Boyd of Texas — show me him."
+			],
+			"next": "q_town"
+		},
+		"q_town": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Home. Not the state — the town. Exactly.",
+				"Begin with the town you were born in. Exactly.",
+				"Your town. The one on the enlistment paper, not the one Germans can find on a map."
+			],
+			"choices": [
+				{"text": "Hempstead, Texas. Outside Houston.", "next": "e_town_ok",
+					"effects": {"home_truth": true}, "autoplay": true},
+				{"text": "Houston. Big enough you'd have heard of it.", "next": "e_town_wrong",
+					"effects": {"+suspicion": 1}},
+				{"text": "Amarillo.", "next": "e_town_wrong",
+					"effects": {"+suspicion": 1}}
+			]
+		},
+		"e_town_ok": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Hempstead. The watermelon capital — you see, even here we read the almanacs. And your father grows...?",
+				"Hempstead, yes. Watermelon country, the almanac says. So the Boyd farm grows what, exactly?"
+			],
+			"next": "q_crop"
+		},
+		"e_town_wrong": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Hm. When London reads your crew list back to us, we will hear what your own file says. Continue.",
+				"We will let London's copy of your file argue with you. Continue."
+			],
+			"next": "q_crop"
+		},
+		"q_crop": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"The farm. What does it grow?",
+				"Answer for the farm — what comes out of that dirt?"
+			],
+			"choices": [
+				{"text": "Cotton and watermelon. Watermelon's what we're known for.", "next": "e_crop_ok",
+					"autoplay": true},
+				{"text": "Wheat, mostly.", "next": "e_crop_wrong", "effects": {"+suspicion": 1}},
+				{"text": "Cattle. It's Texas.", "next": "e_crop_wrong", "effects": {"+suspicion": 1}}
+			]
+		},
+		"e_crop_ok": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"So the almanac and the man agree. Good.",
+				"As the almanac has it. Good."
+			],
+			"next": "q_ball"
+		},
+		"e_crop_wrong": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"A farm boy who cannot name his father's crop. Note it.",
+				"Curious. The crop changes when the son crosses an ocean. Note it."
+			],
+			"next": "q_ball"
+		},
+		"q_ball": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"London sends us questions no German crammer thinks to study. Here is mine: Ebbets Field. Who plays there?",
+				"Now a question from London's list — the kind Berlin's schools skip. Ebbets Field: whose ground is it?"
+			],
+			"choices": [
+				{"text": "The Dodgers. Our waist gunner never talked about anything else.", "next": "e_pat",
+					"effects": {"mentioned_pat": true}, "autoplay": true},
+				{"text": "The Yankees.", "next": "e_ball_wrong", "effects": {"+suspicion": 1}},
+				{"text": "I'm from Texas, not Brooklyn.", "next": "e_ball_dodge", "effects": {"+suspicion": 1}}
+			]
+		},
+		"e_pat": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Then tonight, say something for the waist gunner who talked. It is the ones who talk that we miss first.",
+				"Good. And a word tonight for that waist gunner — the talkers leave the biggest silence."
+			],
+			"next": "search"
+		},
+		"e_ball_wrong": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"The Yankees, in Ebbets Field. The Germans also study only the Yankees.",
+				"A Yankee answer. Berlin's crammers make the same economy."
+			],
+			"next": "search"
+		},
+		"e_ball_dodge": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"You flew eight months with a Brooklyn crew. Crews talk. That answer was cheap.",
+				"Cheap. No man flies with a Brooklyn crew and learns nothing."
+			],
+			"next": "search"
+		},
+		"search": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Now empty the pockets on the crate. Slowly.",
+				"The pockets now. Everything, onto the crate. Slowly."
+			],
+			"next": "search_branch"
+		},
+		"search_branch": {
+			"branch": {"flag": "has_document", "if_true": "doc_reveal", "if_false": "verdict_branch"}
+		},
+		"doc_reveal": {
+			"speaker": "",
+			"lines": [
+				"(The paper. The one your hand took without asking you, a lifetime ago, on a burning deck.)",
+				"(It is still there — the paper your glove closed around while the ship came apart.)"
+			],
+			"next": "e_doc"
+		},
+		"e_doc": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"This. It says BIGOT at the head, and it is no aircrew paper. What is it, and why does a tail gunner carry it?",
+				"And this — BIGOT, it reads. Not a gunner's paper, not any paper I have seen. Explain how it rides in your pocket."
+			],
+			"choices": [
+				{"text": "I grabbed it bailing out. Papers everywhere — I don't know what it is.", "next": "e_doc_keep",
+					"effects": {"told_truth_document": true}, "autoplay": true},
+				{"text": "It's mine to carry. Orders. Give it back.", "next": "e_doc_lie",
+					"effects": {"lied_document": true, "+suspicion": 2}},
+				{"text": "Never saw it before. Someone must have planted it.", "next": "e_doc_shrug",
+					"effects": {"lied_document": true, "+suspicion": 1}}
+			]
+		},
+		"e_doc_keep": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"No. I believe you do not know. Which is why it goes to London by a route that is not you, and you forget the word you saw.",
+				"That I believe. So it travels to London by another road, and the word at the top of it leaves your memory tonight."
+			],
+			"next": "verdict_branch"
+		},
+		"e_doc_lie": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"A tail gunner under orders to carry staff papers. Now I am certain of exactly one thing about you.",
+				"Orders. To a tail gunner. You have told me one certain thing, and it is not the thing you wanted."
+			],
+			"next": "verdict_branch"
+		},
+		"e_doc_shrug": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"It was in your pocket, and it walked there alone. Do not help me doubt you.",
+				"Planted. In the pocket of a falling man. Do not help me doubt you."
+			],
+			"next": "verdict_branch"
+		},
+		"verdict_branch": {
+			"branch": {"flag": "suspicion>=2", "if_true": "fail", "if_false": "pass"}
+		},
+		"fail": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Understand that it is nothing personal. We cannot afford to be wrong twice in one and the same night.",
+				"You answer like a man who studied a file. Files burn. I am sorry for it.",
+				"Too many small things fell wrong. In this work the small things are the man. Take him."
+			],
+			"effects": {"vetting_failed": true}
+		},
+		"pass": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"The small things hold. Sit down — you look like a man who has stood for a year.",
+				"Enough. The small things agree with you, Travis Boyd of Hempstead. Sit."
+			],
+			"effects": {"vetting_passed": true, "trust_etienne": true},
+			"next": "clothes"
+		},
+		"clothes": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Clothes are in the straw — French cloth, French razor. From tonight you are Jean Caillet, and at dawn you move west with Marcel.",
+				"In the straw: French clothes, a French razor. Jean Caillet rises at dawn and goes west with Marcel. You sleep first."
+			]
+		}
+	}
+}

@@ -1,0 +1,100 @@
+{
+	"id": "ch2_vetting_willis",
+	"start": "e_open",
+	"nodes": {
+		"e_open": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Two of you out of one sky in one night. The war is generous. Names and ranks — you first, the talker.",
+				"Again two airmen, again one night. Very well. Names and ranks. Start with the one who cannot keep still."
+			],
+			"next": "willis1"
+		},
+		"willis1": {
+			"speaker": "WILLIS",
+			"lines": [
+				"Flight Sergeant Raymond Willis, RAF. Navigator — 103 Squadron, Lancasters, out of Elsham Wolds. Flak got us past Cambrai, port wing gone, and I've been walking three nights—",
+				"Willis. Flight Sergeant, RAF, navigator. 103 Squadron — Lancasters, Elsham Wolds. We came apart past Cambrai and I have walked every night since—"
+			],
+			"next": "e_probe"
+		},
+		"e_probe": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Cambrai is a long walk, Flight Sergeant. And yet your boots say otherwise.",
+				"From Cambrai, on those boots. A remarkable walk."
+			],
+			"next": "willis2"
+		},
+		"willis2": {
+			"speaker": "WILLIS",
+			"lines": [
+				"I kept to the fields, exactly like the lectures — the button compass, the silk map, all of it. Ask me anything you like. I counted four chutes when the Halifax came apart, four good chutes—",
+				"Fields only, like the escape lectures say — button compass, silk map. Test me on anything. When the Halifax broke up I counted four chutes out—"
+			],
+			"next": "e_catch"
+		},
+		"e_catch": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"The Halifax.",
+				"A moment. The Halifax, you say."
+			],
+			"next": "willis3"
+		},
+		"willis3": {
+			"speaker": "WILLIS",
+			"lines": [
+				"The— the Lanc. I mean the Lanc. Three years flying, you mix the names, it was dark— you understand how it is.",
+				"Lancaster — I said Lancaster. Slip of the tongue, man. It was pitch dark and I have not slept—"
+			],
+			"next": "e_turn"
+		},
+		"e_turn": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"And you, the quiet one. Tail gunner. You flew with a thousand men like him. What do your ears say?",
+				"Now the American. You know bomber crews, tail gunner. Tell me what you heard just now."
+			],
+			"choices": [
+				{"text": "He said Lancaster. Then he said Halifax. Nobody mixes those.", "next": "e_doubt",
+					"effects": {"doubted_willis": true, "trust_etienne": true}, "autoplay": true},
+				{"text": "He's shaken, that's all. We're all shaken. He's real.", "next": "e_vouch",
+					"effects": {"vouched_willis": true, "+suspicion": 1}},
+				{"text": "(Say nothing.)", "next": "e_silent",
+					"effects": {"said_nothing_willis": true}}
+			]
+		},
+		"e_doubt": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"No. Nobody mixes those.",
+				"So your ears work. No — nobody mixes those."
+			],
+			"next": "e_close"
+		},
+		"e_vouch": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"You vouch. On one hour in the dark, you spend your word. I will remember how cheaply it goes.",
+				"One hour in the dark and you give him your word. I note what your word costs you."
+			],
+			"next": "e_close"
+		},
+		"e_silent": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"A careful man. Or an empty one. We will learn which.",
+				"Silence. Careful, or empty. The night will tell us."
+			],
+			"next": "e_close"
+		},
+		"e_close": {
+			"speaker": "ÉTIENNE",
+			"lines": [
+				"Enough. Take the Flight Sergeant to the other barn. We continue with the American.",
+				"That is enough. The other barn for the Flight Sergeant. The American stays."
+			]
+		}
+	}
+}

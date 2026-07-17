@@ -11,7 +11,11 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch1/field_wake.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch2/farm_morning.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch2/marcel_intro.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch2/vetting_willis.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch2/vetting_travis.json")
 	_test_farm_morning_branches()
+	_test_vetting_pass_path()
+	_test_vetting_fail_path()
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()
@@ -51,7 +55,8 @@ func _test_dialogue_data_valid(path: String) -> void:
 				_check(nodes.has(str(b.get(key, ""))),
 					"%s: branch target %s of '%s' exists" % [path, b.get(key), id])
 			continue
-		_check(str(n.get("speaker", "")) != "", "%s: node '%s' has speaker" % [path, id])
+		# Narration nodes may use an empty speaker, but the key must be explicit.
+		_check(n.has("speaker"), "%s: node '%s' has speaker" % [path, id])
 		var lines: Array = n.get("lines", [])
 		_check(lines.size() > 0, "%s: node '%s' has lines" % [path, id])
 		if n.has("next"):
@@ -61,9 +66,34 @@ func _test_dialogue_data_valid(path: String) -> void:
 				_check(nodes.has(str(c["next"])),
 					"%s: choice target %s of '%s' exists" % [path, c["next"], id])
 
-## Drives a dialogue to completion, always picking the first choice.
-## Returns the visited node ids.
-func _run_dialogue(path: String) -> Array[String]:
+func _test_vetting_pass_path() -> void:
+	GameState.flags.clear()
+	GameState.set_flag("has_document", true)
+	var visited := _run_dialogue("res://data/dialogue/ch2/vetting_willis.json")
+	_check("e_doubt" in visited, "doubting Willis routes through e_doubt")
+	_check(bool(GameState.get_flag("doubted_willis")), "doubted_willis set")
+	visited = _run_dialogue("res://data/dialogue/ch2/vetting_travis.json")
+	_check("doc_reveal" in visited, "document search fires with has_document")
+	_check("pass" in visited, "honest answers pass the vetting")
+	_check(bool(GameState.get_flag("vetting_passed")), "vetting_passed set")
+	_check(not bool(GameState.get_flag("vetting_failed")), "vetting_failed unset on pass")
+	_check(int(GameState.get_flag("suspicion", 0)) == 0, "clean run accrues no suspicion")
+	_check(bool(GameState.get_flag("told_truth_document")), "document truth flag set")
+
+func _test_vetting_fail_path() -> void:
+	GameState.flags.clear()
+	GameState.set_flag("has_document", true)
+	_run_dialogue("res://data/dialogue/ch2/vetting_willis.json", true)
+	var visited := _run_dialogue("res://data/dialogue/ch2/vetting_travis.json", true)
+	_check(int(GameState.get_flag("suspicion", 0)) >= 2, "wrong answers accrue suspicion (got %d)"
+		% int(GameState.get_flag("suspicion", 0)))
+	_check("fail" in visited, "suspicion routes to the fail verdict")
+	_check(bool(GameState.get_flag("vetting_failed")), "vetting_failed set")
+	_check(not bool(GameState.get_flag("vetting_passed")), "vetting_passed unset on fail")
+
+## Drives a dialogue to completion, always picking the first choice (or the
+## last, to walk the wrong-answer paths). Returns the visited node ids.
+func _run_dialogue(path: String, pick_last := false) -> Array[String]:
 	var visited: Array[String] = []
 	# Lambdas capture locals by value in GDScript, so use a mutable dict.
 	var state := {"ended": 0}
@@ -78,7 +108,8 @@ func _run_dialogue(path: String) -> Array[String]:
 	while DialogueManager.active and steps < 100:
 		var choices := DialogueManager.available_choices()
 		if choices.size() > 0:
-			DialogueManager.choose(int(choices[0]["index"]))
+			var pick: Dictionary = choices[choices.size() - 1] if pick_last else choices[0]
+			DialogueManager.choose(int(pick["index"]))
 		else:
 			DialogueManager.advance()
 		steps += 1

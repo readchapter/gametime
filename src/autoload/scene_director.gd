@@ -66,7 +66,12 @@ func game_over(text: String, retry_key := "") -> void:
 		var k := "attempt_" + retry_key
 		GameState.set_flag(k, int(GameState.get_flag(k, 0)) + 1)
 	await CutscenePlayer.caption(text, 4.0)
-	get_tree().change_scene_to_file(beat_scene(GameState.beat))
+	var scene := beat_scene(GameState.beat)
+	if scene.is_empty():
+		# Direct scene loads (dev captures) have no beat recorded.
+		get_tree().reload_current_scene()
+	else:
+		get_tree().change_scene_to_file(scene)
 
 func fade_out(duration := 1.0) -> void:
 	var tw := create_tween()

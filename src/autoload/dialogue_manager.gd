@@ -152,10 +152,14 @@ func autoplay(interval := 0.6) -> void:
 		var cs := available_choices()
 		if cs.size() > 0:
 			var pick: Dictionary = cs[0]
-			for c: Dictionary in cs:
-				if c["autoplay"]:
-					pick = c
-					break
+			if "--autoplay-fail" in OS.get_cmdline_user_args():
+				# Dev: deliberately answer badly to exercise fail paths.
+				pick = cs[cs.size() - 1]
+			else:
+				for c: Dictionary in cs:
+					if c["autoplay"]:
+						pick = c
+						break
 			choose(int(pick["index"]))
 		else:
 			advance()
