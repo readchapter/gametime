@@ -1,0 +1,75 @@
+{
+	"id": "ch2_farm_morning",
+	"start": "window",
+	"nodes": {
+		"window": {
+			"speaker": "HENRI",
+			"lines": ["Away from the window. The road has eyes this morning."],
+			"next": "found"
+		},
+		"found": {
+			"speaker": "HENRI",
+			"lines": ["They found your parachute before dawn. In Bertrand's beet field, half a kilometre from where you came down."],
+			"next": "route_seen"
+		},
+		"route_seen": {
+			"branch": {"flag": "landing_bad", "if_true": "seen", "if_false": "not_seen"}
+		},
+		"seen": {
+			"speaker": "MARGUERITE",
+			"lines": ["They are asking at the doors. Someone told them a man walked away from it."],
+			"next": "seen2"
+		},
+		"seen2": {
+			"speaker": "HENRI",
+			"lines": ["So they will come here too. Today, perhaps. You will be a wall away from them, and you will be nothing — no sound, no breath."],
+			"next": "plan"
+		},
+		"not_seen": {
+			"speaker": "HENRI",
+			"lines": ["The wreck burned all night. For now they think the crew burned with it. Let them think it."],
+			"next": "plan"
+		},
+		"plan": {
+			"speaker": "HENRI",
+			"lines": ["Tonight a man comes for you. You go with him and you do not ask his name. What he does has a price higher than ours."],
+			"choices": [
+				{"text": "Thank you. For all of it.", "next": "thanks",
+					"effects": {"trust_henri": true}, "autoplay": true},
+				{"text": "Why risk this? If they catch you—", "next": "why",
+					"effects": {"trust_henri": true, "asked_why": true}},
+				{"text": "I should go now. Alone. Before they come.", "next": "alone",
+					"effects": {"offered_leave": true}}
+			]
+		},
+		"thanks": {
+			"speaker": "MARGUERITE",
+			"lines": ["Thank the saints when you are home, not us. Sit. There is bread."],
+			"next": "luc"
+		},
+		"why": {
+			"speaker": "HENRI",
+			"lines": ["I know what they do to us either way. That is why. Sit. There is bread."],
+			"next": "luc"
+		},
+		"alone": {
+			"speaker": "HENRI",
+			"lines": ["You would be dead before the church. A tall man in flying boots, walking the Route Nationale. Sit down."],
+			"next": "luc"
+		},
+		"luc": {
+			"speaker": "LUC",
+			"lines": ["Is it true the fortress carries thirteen guns? Michel says only ten—"],
+			"next": "luc2"
+		},
+		"luc2": {
+			"speaker": "HENRI",
+			"lines": ["Luc. The plates."],
+			"next": "wait"
+		},
+		"wait": {
+			"speaker": "HENRI",
+			"lines": ["Eat. Then you wait, away from the window, and you listen for me."]
+		}
+	}
+}

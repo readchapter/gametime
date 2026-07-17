@@ -33,17 +33,24 @@ var _seat_marker: Marker3D
 var _fire_light: OmniLight3D
 var _fire_base_energy := 1.1
 var _t := 0.0
+# Window glass panes, kept so subclasses can retint for time-of-day shifts.
+var _glass: Array[MeshInstance3D] = []
 
 func _ready() -> void:
 	_build_environment()
 	_build_shell()
 	_build_fixtures()
+	_build_glow()
 	_build_furniture()
 	_build_family()
 	_build_lights()
 	_build_colliders()
 	_build_interactables()
 	_spawn_player()
+	_flow()
+
+## Scene flow after the set is built. Ch2 reuses the set with its own flow.
+func _flow() -> void:
 	AudioManager.play_ambient("night_interior")
 	_intro()
 
@@ -166,14 +173,16 @@ func _build_fixtures() -> void:
 		loaf.position = Vector3(0.35, 0.9, -2.55)
 		loaf.rotation.y = 0.5
 		add_child(loaf)
-	# Glowing surfaces
-	_emissive_box(Vector3(1.1, 0.9, 0.04), Vector3(-1.0, 1.55, -2.86), NIGHT_GLASS, 1.4)
-	_emissive_box(Vector3(0.04, 0.9, 0.9), Vector3(4.9, 1.5, 1.2), NIGHT_GLASS, 1.2)
+
+## Glowing surfaces (window glass, embers) — time-of-day, so Ch2 overrides.
+func _build_glow() -> void:
+	_glass.append(_emissive_box(Vector3(1.1, 0.9, 0.04), Vector3(-1.0, 1.55, -2.86), NIGHT_GLASS, 1.4))
+	_glass.append(_emissive_box(Vector3(0.04, 0.9, 0.9), Vector3(4.9, 1.5, 1.2), NIGHT_GLASS, 1.2))
 	_emissive_box(Vector3(0.25, 0.12, 0.7), Vector3(-3.5, 0.12, 0.4), Color(0.9, 0.32, 0.08), 2.2)
 
 ## Small glowing surfaces (window glass, embers, lamp flame): separate meshes
 ## because emission is a material property, not a vertex color.
-func _emissive_box(size: Vector3, at: Vector3, color: Color, energy: float) -> void:
+func _emissive_box(size: Vector3, at: Vector3, color: Color, energy: float) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
 	var b := BoxMesh.new()
 	b.size = size
@@ -186,6 +195,7 @@ func _emissive_box(size: Vector3, at: Vector3, color: Color, energy: float) -> v
 	mi.material_override = mat
 	mi.position = at
 	add_child(mi)
+	return mi
 
 func _place(model_name: String, tint: Color, scale: float, at: Vector3,
 		yaw: float, fallback: Callable) -> Node3D:

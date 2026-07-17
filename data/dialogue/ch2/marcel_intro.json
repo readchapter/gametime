@@ -1,0 +1,38 @@
+{
+	"id": "ch2_marcel_intro",
+	"start": "look",
+	"nodes": {
+		"look": {
+			"speaker": "MARCEL",
+			"lines": ["This is him? Since last night?"],
+			"next": "henri_vouch"
+		},
+		"henri_vouch": {
+			"speaker": "HENRI",
+			"lines": ["Since last night. He does what he is told."],
+			"next": "rules"
+		},
+		"rules": {
+			"speaker": "MARCEL",
+			"lines": ["Look at me, American. If we are stopped, you are Jean Caillet, my cousin, deaf and mute since a fever. You look at your shoes and you keep walking. Nothing in your pockets speaks English. Understood?"],
+			"choices": [
+				{"text": "Understood.", "next": "route", "autoplay": true},
+				{"text": "Where are we taking— where are we going?", "next": "nosy"}
+			]
+		},
+		"nosy": {
+			"speaker": "MARCEL",
+			"lines": ["Where I take you. That is the whole of it. The less you carry in your head, the less they can take out of it."],
+			"next": "route"
+		},
+		"route": {
+			"speaker": "MARCEL",
+			"lines": ["We keep to the hedgerows. We cross the road twice. If I stop, you stop. If I drop, you drop into the ditch and you become the ditch."],
+			"next": "farewell"
+		},
+		"farewell": {
+			"speaker": "HENRI",
+			"lines": ["Bonne chance, l'Américain. Perhaps you will remember there was bread here."]
+		}
+	}
+}

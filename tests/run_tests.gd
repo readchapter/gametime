@@ -9,6 +9,9 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch1/farm_table.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch1/hardstand.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch1/field_wake.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch2/farm_morning.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch2/marcel_intro.json")
+	_test_farm_morning_branches()
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()
@@ -116,6 +119,17 @@ func _test_choice_conditions() -> void:
 	_check(after.size() == 2, "negated condition hides after flag set (got %d)" % after.size())
 	_check(str(after[0]["text"]) == "gated", "gated choice appears once flag set")
 	DialogueManager.active = false
+
+func _test_farm_morning_branches() -> void:
+	GameState.flags.clear()
+	var visited := _run_dialogue("res://data/dialogue/ch2/farm_morning.json")
+	_check("not_seen" in visited, "clean landing routes through 'not_seen'")
+	_check("wait" in visited, "morning talk reaches its final node")
+	_check(bool(GameState.get_flag("trust_henri")), "first choice sets trust_henri")
+	GameState.flags.clear()
+	GameState.set_flag("landing_bad", true)
+	visited = _run_dialogue("res://data/dialogue/ch2/farm_morning.json")
+	_check("seen" in visited and "seen2" in visited, "bad landing routes through 'seen'")
 
 func _test_numeric_conditions_and_increments() -> void:
 	GameState.flags.clear()
