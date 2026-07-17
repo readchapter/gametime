@@ -103,7 +103,34 @@ func _build_dressing() -> void:
 	mb.box(Vector3(2.2, 0.4, 1.6), Vector3(W / 2 - 1.4, 0.2, -D / 2 + 1.0), STRAW.darkened(0.05))
 	# The crate Étienne works from, and the lantern crate
 	mb.box(Vector3(1.1, 0.62, 0.7), Vector3(0, 0.31, -1.15), WOOD.lightened(0.08))
+	# Loose straw strewn over the dirt: thin flat slivers at scattered yaws
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 17
+	for i in 34:
+		mb.box(Vector3(rng.randf_range(0.25, 0.6), 0.015, rng.randf_range(0.05, 0.12)),
+			Vector3(rng.randf_range(-4.2, 4.2), 0.008, rng.randf_range(-3.1, 3.1)),
+			STRAW.lightened(rng.randf_range(-0.1, 0.2)), rng.randf_range(0.0, TAU))
 	add_child(mb.commit_instance("Dressing"))
+
+	# The night through the ajar door leaf: a cold sliver behind the player.
+	var slit := MeshInstance3D.new()
+	var sb := BoxMesh.new()
+	sb.size = Vector3(0.32, 2.9, 0.05)
+	slit.mesh = sb
+	var smat := StandardMaterial3D.new()
+	smat.albedo_color = Color(0.16, 0.20, 0.30)
+	smat.emission_enabled = true
+	smat.emission = Color(0.16, 0.20, 0.30)
+	smat.emission_energy_multiplier = 1.1
+	slit.material_override = smat
+	slit.position = Vector3(0.15, 1.45, D / 2 - 0.16)
+	add_child(slit)
+	var spill := OmniLight3D.new()
+	spill.position = Vector3(0.15, 1.6, D / 2 - 0.7)
+	spill.light_color = Color(0.45, 0.55, 0.80)
+	spill.light_energy = 0.5
+	spill.omni_range = 3.0
+	add_child(spill)
 
 	for spec: Array in [["barrel", Vector3(-3.6, 0, 1.8), 0.0], ["barrel", Vector3(-3.9, 0, 0.7), 0.4],
 			["box", Vector3(3.7, 0, 1.4), 0.2], ["box", Vector3(3.3, 0, 2.3), -0.3],
