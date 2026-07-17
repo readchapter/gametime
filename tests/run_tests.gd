@@ -12,6 +12,9 @@ func _ready() -> void:
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()
+	_test_numeric_conditions_and_increments()
+	_test_line_variation_by_attempt()
+	_test_beat_scene_lookup()
 	_test_game_state_persistence()
 	_test_landing_grades()
 
@@ -113,6 +116,44 @@ func _test_choice_conditions() -> void:
 	_check(after.size() == 2, "negated condition hides after flag set (got %d)" % after.size())
 	_check(str(after[0]["text"]) == "gated", "gated choice appears once flag set")
 	DialogueManager.active = false
+
+func _test_numeric_conditions_and_increments() -> void:
+	GameState.flags.clear()
+	DialogueManager._apply_effects({"+suspicion": 1})
+	DialogueManager._apply_effects({"+suspicion": 1})
+	_check(int(GameState.get_flag("suspicion", 0)) == 2, "+flag effects accumulate")
+	_check(DialogueManager._condition_met("suspicion>=2"), "numeric >= condition true at threshold")
+	_check(not DialogueManager._condition_met("suspicion>=3"), "numeric >= condition false below")
+	_check(DialogueManager._condition_met("!suspicion>=3"), "negated numeric condition")
+	_check(not DialogueManager._condition_met("missing>=1"), "unset numeric flag reads 0")
+
+func _test_line_variation_by_attempt() -> void:
+	GameState.flags.clear()
+	DialogueManager._nodes = {"n": {"speaker": "X", "lines": ["first", "second", "third"]}}
+	DialogueManager._dialogue_id = "vet_test"
+	var heard := {"text": ""}
+	var on_line := func(_s: String, t: String) -> void: heard["text"] = t
+	DialogueManager.line_changed.connect(on_line)
+	DialogueManager.active = true
+	DialogueManager._enter("n")
+	_check(str(heard["text"]) == "first", "attempt 0 picks line 0")
+	GameState.set_flag("attempt_vet_test", 1)
+	DialogueManager.active = true
+	DialogueManager._enter("n")
+	_check(str(heard["text"]) == "second", "attempt 1 picks line 1")
+	GameState.set_flag("attempt_vet_test", 4)
+	DialogueManager.active = true
+	DialogueManager._enter("n")
+	_check(str(heard["text"]) == "second", "attempt wraps around the pool")
+	DialogueManager.line_changed.disconnect(on_line)
+	DialogueManager.active = false
+
+func _test_beat_scene_lookup() -> void:
+	_check(SceneDirector.beat_scene("farmhouse").ends_with("farmhouse.tscn"),
+		"ch1 beat resolves")
+	_check(SceneDirector.beat_scene("ch2_vetting").ends_with("barn_vetting.tscn"),
+		"ch2 beat resolves")
+	_check(SceneDirector.beat_scene("nope") == "", "unknown beat resolves empty")
 
 func _test_landing_grades() -> void:
 	const Descent := preload("res://src/chapters/ch1/descent.gd")

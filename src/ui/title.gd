@@ -106,5 +106,5 @@ func _continue_game() -> void:
 	set_process_input(false)
 	GameState.load_game()
 	AudioManager.stop_music(1.5)
-	var beat := GameState.beat if SceneDirector.CH1_BEATS.has(GameState.beat) else "hardstand"
+	var beat := GameState.beat if SceneDirector.beat_scene(GameState.beat) != "" else "hardstand"
 	SceneDirector.goto_beat(beat, 1.2)

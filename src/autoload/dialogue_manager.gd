@@ -10,23 +10,27 @@ extends Node
 ##     "nodes": {
 ##       "node_id": {
 ##         "speaker": "Henri",
-##         "lines": ["..."],              # variation pool: one line is picked
-##                                        # per attempt (Ch1 uses index 0)
-##         "effects": {"flag": true},     # optional; applied on node enter
+##         "lines": ["..."],              # variation pool: the line is picked
+##                                        # by attempt_<dialogue_id> % size
+##                                        # (0 when never retried — Ch1 shape)
+##         "effects": {"flag": true,      # optional; applied on node enter
+##                     "+suspicion": 1},  # "+key" increments a numeric flag
 ##         "choices": [                   # optional; absent = linear
 ##           {"text": "...", "next": "id",
-##            "condition": "flag",        # optional; "!flag" negates
+##            "condition": "flag",        # optional; "!flag" negates,
+##                                        # "flag>=n" compares numerically
+##            "autoplay": true,           # optional; headless runs prefer it
 ##            "effects": {"flag": true}}  # optional; applied on select
 ##         ],
 ##         "next": "id",                  # linear advance; absent = end
 ##         "branch": {"flag": "f",        # pure branch node (no lines):
-##            "if_true": "a",             # jumps immediately by flag value
-##            "if_false": "b"}
+##            "if_true": "a",             # jumps immediately by condition
+##            "if_false": "b"}            # ("f" may use ! or >= forms)
 ##       }
 ##     }
 ##   }
-## Reserved for Ch2+: trust effects are ordinary flags by convention
-## ("trust_<person>"), consulted through choice conditions.
+## Trust is ordinary flags by convention ("trust_<person>", "doubted_<x>"),
+## consulted through conditions — never a visible meter.
 
 signal dialogue_started(id: String)
 signal line_changed(speaker: String, text: String)
@@ -93,7 +97,8 @@ func available_choices() -> Array:
 	for i in cs.size():
 		var c: Dictionary = cs[i]
 		if _condition_met(str(c.get("condition", ""))):
-			out.append({"text": str(c.get("text", "")), "index": i})
+			out.append({"text": str(c.get("text", "")), "index": i,
+				"autoplay": bool(c.get("autoplay", false))})
 	return out
 
 func _enter(node_id: String) -> void:
@@ -105,26 +110,40 @@ func _enter(node_id: String) -> void:
 	_apply_effects(_current.get("effects", {}))
 	if _current.has("branch"):
 		var b: Dictionary = _current["branch"]
-		var v := bool(GameState.get_flag(str(b.get("flag", ""))))
+		var v := _condition_met(str(b.get("flag", "")))
 		_enter(str(b["if_true"] if v else b["if_false"]))
 		return
 	var lines: Array = _current.get("lines", [])
-	var text := str(lines[0]) if lines.size() > 0 else ""
+	var text := ""
+	if lines.size() > 0:
+		# Replay variation: retries of this dialogue rotate through the pool.
+		var attempt := int(GameState.get_flag("attempt_" + _dialogue_id, 0))
+		text = str(lines[attempt % lines.size()])
 	line_changed.emit(str(_current.get("speaker", "")), text)
 
 func _condition_met(cond: String) -> bool:
 	if cond.is_empty():
 		return true
 	if cond.begins_with("!"):
-		return not bool(GameState.get_flag(cond.substr(1)))
+		return not _condition_met(cond.substr(1))
+	if ">=" in cond:
+		var parts := cond.split(">=")
+		return int(GameState.get_flag(parts[0].strip_edges(), 0)) \
+			>= int(parts[1].strip_edges())
 	return bool(GameState.get_flag(cond))
 
 func _apply_effects(effects: Dictionary) -> void:
 	for k in effects:
-		GameState.set_flag(str(k), effects[k])
+		var key := str(k)
+		if key.begins_with("+"):
+			var flag := key.substr(1)
+			GameState.set_flag(flag, int(GameState.get_flag(flag, 0)) + int(effects[k]))
+		else:
+			GameState.set_flag(key, effects[k])
 
-## Dev-only: drives the active dialogue to completion (first choice each
-## time) so headless verification runs can pass interactive gates.
+## Dev-only: drives the active dialogue to completion so headless verification
+## runs can pass interactive gates. Prefers choices marked "autoplay": true
+## (e.g. the correct vetting answers), else takes the first.
 func autoplay(interval := 0.6) -> void:
 	while active:
 		await get_tree().create_timer(interval, false).timeout
@@ -132,7 +151,12 @@ func autoplay(interval := 0.6) -> void:
 			return
 		var cs := available_choices()
 		if cs.size() > 0:
-			choose(int(cs[0]["index"]))
+			var pick: Dictionary = cs[0]
+			for c: Dictionary in cs:
+				if c["autoplay"]:
+					pick = c
+					break
+			choose(int(pick["index"]))
 		else:
 			advance()
 
