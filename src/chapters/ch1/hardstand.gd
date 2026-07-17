@@ -18,6 +18,7 @@ func _ready() -> void:
 	_build_ground()
 	_build_bomber()
 	_build_props()
+	_build_mist()
 	_build_pat()
 	_spawn_player()
 	AudioManager.play_ambient("hardstand_dawn")
@@ -275,7 +276,36 @@ func _on_board(player: Node) -> void:
 	Hud.hide_prompt()
 	SceneDirector.goto_beat("raid", 1.5)
 
+## Low ground mist: broad translucent sheets drifting slowly through the
+## dispersal, layered under the fog for depth the flat density can't give.
+var _mist: Array[MeshInstance3D] = []
+
+func _build_mist() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 31
+	for i in 9:
+		var mi := MeshInstance3D.new()
+		var quad := PlaneMesh.new()
+		quad.size = Vector2(rng.randf_range(12.0, 24.0), rng.randf_range(8.0, 16.0))
+		mi.mesh = quad
+		var mat := StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.albedo_color = Color(0.62, 0.63, 0.64, rng.randf_range(0.05, 0.11))
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		mi.material_override = mat
+		mi.position = Vector3(rng.randf_range(-30, 30), rng.randf_range(0.3, 0.9),
+			rng.randf_range(-30, 30))
+		mi.rotation.y = rng.randf_range(0.0, TAU)
+		add_child(mi)
+		_mist.append(mi)
+
 func _process(_delta: float) -> void:
+	for i in _mist.size():
+		var m := _mist[i]
+		m.position.x += _delta * (0.22 + 0.06 * float(i % 3))
+		if m.position.x > 38.0:
+			m.position.x = -38.0
 	if "--autoplay" in OS.get_cmdline_user_args() and _player and _player.move_enabled:
 		# Headless verification: walk the beats without input.
 		if not GameState.get_flag("pat_talked"):

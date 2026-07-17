@@ -118,6 +118,7 @@ func _process(delta: float) -> void:
 			_flash_left = 0.12
 			for f in _flashes:
 				f.show()
+			AudioManager.play_sfx("fighter_guns", -4.0)
 			for i in 3:
 				var muzzle := global_position - global_transform.basis.z * 3.0
 				director.spawn_enemy_tracer(muzzle, i * 0.05)

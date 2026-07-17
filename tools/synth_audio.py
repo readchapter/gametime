@@ -292,6 +292,57 @@ def rifle_crack():
     return hp(x + roll, 55)
 
 
+def fighter_guns():
+    """An Fw 190's cannon burst from off your beam: faster, harder, more
+    metallic than the distant rifle volley."""
+    dur = 1.1
+    n = int(SR * dur)
+    x = np.zeros(n)
+    pos = 0.02
+    while pos < dur - 0.15:
+        i = int(pos * SR)
+        ln = int(0.045 * SR)
+        x[i:i + ln] += burst(ln, 0.008) * rng.uniform(0.8, 1.1)
+        pos += 0.075   # ~13 rounds/sec
+    body = bp(x, 500, 2600)
+    thump = lp(x, 300) * 1.6
+    return body + thump
+
+def engine_dying(dur=9.0):
+    """A stricken bomber's engines falling away: detuned drone sliding down
+    in pitch and level, with a rough flutter growing as it goes."""
+    n = int(SR * dur)
+    tt = t(dur)
+    slide = np.linspace(1.0, 0.62, n) ** 1.2
+    f0 = 62 * slide
+    x = np.sin(2 * np.pi * np.cumsum(f0) / SR)
+    x += 0.6 * np.sin(2 * np.pi * np.cumsum(f0 * 1.98) / SR)
+    x += 0.35 * np.sin(2 * np.pi * np.cumsum(f0 * 3.03) / SR)
+    flutter = 1.0 - 0.45 * np.clip(tt / dur, 0, 1) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 11 * tt)))
+    x *= flutter
+    x = lp(x, 700)
+    fade = np.linspace(1.0, 0.15, n)
+    return x * fade * 0.8
+
+def alarm_bell():
+    """The bail-out bell: three hard rings of a small steel bell."""
+    dur = 2.6
+    n = int(SR * dur)
+    x = np.zeros(n)
+    for at in (0.05, 0.85, 1.65):
+        i = int(at * SR)
+        ln = int(0.75 * SR)
+        tt = np.arange(ln) / SR
+        ring = np.zeros(ln)
+        for f, g in ((1180, 1.0), (1760, 0.55), (2420, 0.3), (760, 0.4)):
+            ring += np.sin(2 * np.pi * f * tt) * g
+        ring *= np.exp(-tt / 0.22)
+        strike = burst(int(0.01 * SR), 0.002) * 1.5
+        ring[:len(strike)] += strike
+        x[i:i + ln] += ring
+    return hp(x, 300) * 0.7
+
+
 # ---------- music ----------
 
 def title_theme(dur):
@@ -336,5 +387,8 @@ if __name__ == "__main__":
     write_wav("sfx/knock_door", knock_door(), -12)
     write_wav("sfx/truck_pass", truck_pass(), -13)
     write_wav("sfx/rifle_crack", rifle_crack(), -10)
+    write_wav("sfx/fighter_guns", fighter_guns(), -13)
+    write_wav("sfx/engine_dying", engine_dying(), -16)
+    write_wav("sfx/alarm_bell", alarm_bell(), -12)
     write_wav("music/title_theme", loopify(np.stack([title_theme(52), title_theme(52)]), 1.0), -16)
     print("done")

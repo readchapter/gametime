@@ -406,6 +406,7 @@ func spawn_smoke(at: Vector3, size := 1.0, drift := Vector3.ZERO) -> void:
 func _ship_down() -> void:
 	if _formation.size() < 2:
 		return
+	AudioManager.play_sfx("engine_dying", -6.0)
 	_falling_ship = _formation[1]
 	var start := _falling_ship.position
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
@@ -441,6 +442,7 @@ func _update_fire(delta: float) -> void:
 ## player crawls forward through the fuselage to the side hatch, passing over
 ## the loose document (grabbed on instinct, no callout), and jumps.
 func _begin_bailout() -> void:
+	AudioManager.play_sfx("alarm_bell", -3.0)  # the bail-out bell
 	Hud.hide_prompt()
 	Hud.show_crosshair(false)
 	_turret.enabled = false

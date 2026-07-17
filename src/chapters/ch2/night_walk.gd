@@ -74,6 +74,14 @@ func _night() -> void:
 	sky_mat.set_shader_parameter("sun_color", Color(0.0, 0.0, 0.0))
 	sky_mat.set_shader_parameter("cloud_coverage", 0.15)
 	sky_mat.set_shader_parameter("star_amount", 0.8)
+	# A low moon ahead of the route (the walk heads east).
+	sky_mat.set_shader_parameter("moon_amount", 1.0)
+	sky_mat.set_shader_parameter("moon_dir", Vector3(0.65, 0.42, 0.18))
+	# Kit trees carry a bright color atlas that glows against the night —
+	# crush just the hedgerow trees down to true silhouettes.
+	for child in _field.get_children():
+		if child.name.begins_with("Hedgerow"):
+			Kit.tint_node(child, Color(0.16, 0.18, 0.20))
 
 func _figure(at: Vector3) -> Node3D:
 	var node := ModelLib.get_model("villager_standing", func() -> Node3D:

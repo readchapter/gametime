@@ -34,6 +34,9 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `knock_door` | Three unhurried knuckle strikes on heavy wood. (Ch2) |
 | `truck_pass` | Heavy engine approaching, passing, receding — ~11s. (Ch2) |
 | `rifle_crack` | One rifle shot outdoors, hard crack and flat echo. (Ch2) |
+| `fighter_guns` | Fw 190 cannon burst from off your beam, fast and metallic. |
+| `engine_dying` | A stricken bomber's engines sliding down in pitch, ~9s. |
+| `alarm_bell` | The B-17 bail-out bell: three hard rings. |
 
 Search-term suggestions: "b17 interior", "bomber engine loop", "50 cal single",
 "flak", "parachute deploy", "wind howl loop", "fireplace crackle room tone",

@@ -189,6 +189,7 @@ func _patrol_beat(player: Node) -> void:
 		Hud.subtitle("", "(Questions. Henri's shrug travels through the wall.)", 4.5)
 		await get_tree().create_timer(5.0, false).timeout
 		Hud.subtitle("", "(Footsteps recede. An engine starts, moves off.)", 4.0)
+		AudioManager.play_sfx("truck_pass", -16.0)  # their kübelwagen, from indoors
 		await get_tree().create_timer(3.5, false).timeout
 	GameState.set_flag("ch2_patrol_done")
 	Hud.subtitle("HENRI", "They are gone. You did not breathe, I think.", 4.0)

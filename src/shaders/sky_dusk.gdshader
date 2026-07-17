@@ -14,6 +14,10 @@ uniform float cloud_speed = 0.004;
 uniform vec3 cloud_lit_color : source_color = vec3(0.95, 0.55, 0.35);
 uniform vec3 cloud_shadow_color : source_color = vec3(0.16, 0.15, 0.22);
 uniform float star_amount : hint_range(0.0, 1.0) = 0.0;
+// Night scenes raise moon_amount and aim moon_dir; a cold disc + soft halo.
+uniform float moon_amount : hint_range(0.0, 1.0) = 0.0;
+uniform vec3 moon_dir = vec3(0.5, 0.6, 0.3);
+uniform vec3 moon_color : source_color = vec3(0.72, 0.78, 0.90);
 
 float hash12(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -80,6 +84,13 @@ void sky() {
 		// slow twinkle
 		star *= 0.75 + 0.25 * sin(TIME * (1.5 + 3.0 * hash12(cell + 13.0)) + h * 40.0);
 		col += vec3(0.9, 0.93, 1.0) * star * star_amount * horizon_fade;
+	}
+
+	if (moon_amount > 0.0) {
+		float mc = dot(EYEDIR, normalize(moon_dir));
+		float mdisc = smoothstep(0.99955, 0.99985, mc);
+		float mglow = pow(max(mc, 0.0), 48.0) * 0.22 + pow(max(mc, 0.0), 8.0) * 0.05;
+		col += moon_color * (mdisc * 1.5 + mglow) * moon_amount;
 	}
 
 	// Dither to hide gradient banding in the smooth dusk sky.
