@@ -1,0 +1,174 @@
+{
+	"id": "ch3_checkpoint",
+	"start": "bark",
+	"nodes": {
+		"bark": {
+			"speaker": "FELDWEBEL",
+			"lines": [
+				"Los, komm schon! Papiere her!",
+				"Na los, du da! Papiere — sofort!"
+			],
+			"choices": [
+				{"text": "(Eyes on your shoes. A deaf man waits for a touch, not a voice.)", "next": "tap",
+					"autoplay": true},
+				{"text": "(Look up and hand the papers over.)", "next": "heard_bark",
+					"effects": {"+suspicion": 1}},
+				{"text": "(Step forward quickly, to show willing.)", "next": "eager",
+					"effects": {"+suspicion": 1}}
+			]
+		},
+		"tap": {
+			"speaker": "",
+			"lines": [
+				"(A pencil taps the table twice, in the corner of your eye. That, Jean can see. You hand the papers across.)",
+				"(Two taps of a pencil against the wood, at the edge of sight. Now you move. The papers cross the table.)"
+			],
+			"next": "crack"
+		},
+		"heard_bark": {
+			"speaker": "",
+			"lines": [
+				"(You looked up at a voice. Deaf men look up at shadows and taps — never at voices. The Feldwebel's pen pauses over the page.)",
+				"(A voice moved you. Somewhere it is being written down that the deaf cousin answers German.)"
+			],
+			"next": "crack"
+		},
+		"eager": {
+			"speaker": "",
+			"lines": [
+				"(Eager, at a German bark. The wrong instinct, at the wrong speed. The pen pauses.)",
+				"(You obeyed a sound. The man by the pillar does not move, which is its own kind of note-taking.)"
+			],
+			"next": "crack"
+		},
+		"crack": {
+			"speaker": "",
+			"lines": [
+				"(Behind you a rifle-butt — or a case — cracks flat on the stones, loud as a shot.)",
+				"(Something heavy hits the cobbles behind you with a crack that makes the whole queue jump.)"
+			],
+			"choices": [
+				{"text": "(Nothing. The street is silent to Jean. Let your eyes drift with the pigeons.)", "next": "still",
+					"autoplay": true},
+				{"text": "(Flinch — anyone would.)", "next": "flinched",
+					"effects": {"+suspicion": 1}},
+				{"text": "(Turn to look.)", "next": "turned",
+					"effects": {"+suspicion": 1}}
+			]
+		},
+		"still": {
+			"speaker": "",
+			"lines": [
+				"(Nothing. A pigeon lifts; your eyes follow it, mildly. The Feldwebel glances past you at whoever dropped it, annoyed.)",
+				"(The queue flinches as one animal — except you. You are watching a pigeon. The Feldwebel's annoyance goes over your head to the clumsy soldier behind.)"
+			],
+			"next": "exam"
+		},
+		"flinched": {
+			"speaker": "",
+			"lines": [
+				"(A small flinch. Anyone would — anyone with ears.)",
+				"(Your shoulders answered the sound before you could stop them. Shoulders have ears.)"
+			],
+			"next": "exam"
+		},
+		"turned": {
+			"speaker": "",
+			"lines": [
+				"(You turned. Toward a sound. The pen writes something short.)",
+				"(A full turn, toward a noise that does not exist for Jean. Short of a signed confession, it is the loudest thing you own.)"
+			],
+			"next": "exam"
+		},
+		"exam": {
+			"speaker": "FELDWEBEL",
+			"lines": [
+				"Jean Caillet. Sourd-muet, hm. — Ihre Mutter ist gestorben.",
+				"Caillet, Jean. Taubstumm, so so. — Deine Mutter ist tot, weißt du das?"
+			],
+			"choices": [
+				{"text": "(The words are wind. Watch his pencil, bored, the way a man watches weather.)", "next": "exam_ok",
+					"autoplay": true},
+				{"text": "(Hold still — but your jaw sets, one notch.)", "next": "exam_jaw",
+					"effects": {"+suspicion": 1}},
+				{"text": "(Glance at Sylvie, beyond the barrier.)", "next": "exam_glance",
+					"effects": {"+suspicion": 1}}
+			]
+		},
+		"exam_ok": {
+			"speaker": "",
+			"lines": [
+				"(Your mother is dead, he says, to a face that goes on being bored. The pencil taps, disappointed.)",
+				"(The oldest trap on the list, and it breaks on a bored face. He looks almost cheated.)"
+			],
+			"next": "extra_branch"
+		},
+		"exam_jaw": {
+			"speaker": "",
+			"lines": [
+				"(Still — almost. A jaw is a small muscle with a loud voice. By the pillar, the long coat shifts its weight.)",
+				"(Your face held. Your jaw voted alone. The man by the pillar noticed the election.)"
+			],
+			"next": "extra_branch"
+		},
+		"exam_glance": {
+			"speaker": "",
+			"lines": [
+				"(One glance, to the far side of the barrier. Deaf men have nobody to check with. The pencil writes again.)",
+				"(You looked for her. One look. Jean Caillet, who has no one, looked for someone.)"
+			],
+			"next": "extra_branch"
+		},
+		"extra_branch": {
+			"branch": {"flag": "lied_document", "if_true": "stamp_q", "if_false": "verdict"}
+		},
+		"stamp_q": {
+			"speaker": "FELDWEBEL",
+			"lines": [
+				"Moment. Da fehlt ein Stempel. Wo ist der Stempel von der Präfektur, hm? Wo?",
+				"Halt — hier. Der Präfektur-Stempel fehlt. Wo ist der, hm? Antworte!"
+			],
+			"choices": [
+				{"text": "(A missing stamp means nothing to a man who cannot hear the question. Wait, bored.)", "next": "stamp_ok",
+					"autoplay": true},
+				{"text": "(Point helpfully at the other page.)", "next": "stamp_point",
+					"effects": {"+suspicion": 2}}
+			]
+		},
+		"stamp_ok": {
+			"speaker": "",
+			"lines": [
+				"(He waves the card at your face. You look at it the way a horse looks at a newspaper. He mutters, finds the stamp on the other page himself.)",
+				"(The question hangs there, in a language you officially cannot lose. He finds the stamp himself and hates the page for it.)"
+			],
+			"next": "verdict"
+		},
+		"stamp_point": {
+			"speaker": "",
+			"lines": [
+				"(You pointed. At the answer. To a question asked in German. The forecourt goes very quiet around your finger.)",
+				"(One helpful finger, answering German it cannot hear. The pencil stops writing, which is worse than writing.)"
+			],
+			"next": "verdict"
+		},
+		"verdict": {
+			"branch": {"flag": "suspicion>=2", "if_true": "fail", "if_false": "pass"}
+		},
+		"fail": {
+			"speaker": "FELDWEBEL",
+			"lines": [
+				"Der kommt mit. — HALT! Festhalten!",
+				"Den nehmen wir mit. HALT!"
+			],
+			"effects": {"checkpoint_failed": true}
+		},
+		"pass": {
+			"speaker": "",
+			"lines": [
+				"(The stamp comes down twice, bored as everything else here. The barrier lifts its arm like a tired man.)",
+				"(Two thumps of the stamp. The barrier swings up with a creak that means nothing at all — and everything.)"
+			],
+			"effects": {"kept_cover": true}
+		}
+	}
+}

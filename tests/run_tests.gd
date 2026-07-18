@@ -18,7 +18,9 @@ func _ready() -> void:
 	_test_vetting_fail_path()
 	_test_dialogue_data_valid("res://data/dialogue/ch3/road_handoff.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch3/safehouse_plan.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch3/checkpoint.json")
 	_test_road_handoff_branches()
+	_test_checkpoint_paths()
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()
@@ -80,6 +82,26 @@ func _test_road_handoff_branches() -> void:
 	_check("s_sharp" in visited, "doubting Willis earns the sharp greeting")
 	_check("s_rules" in visited, "handoff reaches the rules")
 	_check(bool(GameState.get_flag("trust_sylvie")), "first choice sets trust_sylvie")
+
+func _test_checkpoint_paths() -> void:
+	# Clean cover, no document lie: correct (first) choices pass.
+	GameState.flags.clear()
+	var visited := _run_dialogue("res://data/dialogue/ch3/checkpoint.json")
+	_check(not ("stamp_q" in visited), "no document lie skips the stamp trap")
+	_check("pass" in visited, "held cover passes the checkpoint")
+	_check(bool(GameState.get_flag("kept_cover")), "kept_cover set on pass")
+	# A document liar gets the extra question and can still pass it.
+	GameState.flags.clear()
+	GameState.set_flag("lied_document", true)
+	visited = _run_dialogue("res://data/dialogue/ch3/checkpoint.json")
+	_check("stamp_q" in visited, "document lie adds the stamp trap")
+	_check("pass" in visited, "stamp trap survivable with held cover")
+	# Reacting like a hearing man is fatal.
+	GameState.flags.clear()
+	visited = _run_dialogue("res://data/dialogue/ch3/checkpoint.json", true)
+	_check(int(GameState.get_flag("suspicion", 0)) >= 2, "reactions accrue suspicion")
+	_check("fail" in visited, "blown cover routes to arrest")
+	_check(bool(GameState.get_flag("checkpoint_failed")), "checkpoint_failed set")
 
 func _test_vetting_pass_path() -> void:
 	GameState.flags.clear()
