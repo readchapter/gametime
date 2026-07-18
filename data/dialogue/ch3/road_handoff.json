@@ -1,0 +1,88 @@
+{
+	"id": "ch3_road_handoff",
+	"start": "m_hand",
+	"nodes": {
+		"m_hand": {
+			"speaker": "MARCEL",
+			"lines": [
+				"This is where I stop existing. Her name is not Sylvie, and Sylvie is her name. From the calvary on, you are hers.",
+				"Here I end. She is called Sylvie, which is not her name and is her name completely. You belong to her now."
+			],
+			"next": "s_read"
+		},
+		"s_read": {
+			"branch": {"flag": "lied_document", "if_true": "s_cold", "if_false": "s_read2"}
+		},
+		"s_read2": {
+			"branch": {"flag": "doubted_willis", "if_true": "s_sharp", "if_false": "s_plain"}
+		},
+		"s_cold": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Étienne wrote of you. Your answers held — and one of them needed help to stand. Understand me: on my stretch of the line, nothing of yours will need help.",
+				"Word came up the line. You passed, and you lied once on the way through. That once is spent. There is no second one with me."
+			],
+			"next": "q_player"
+		},
+		"s_sharp": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Étienne says your ears work — that you heard the false note in the other one. Good. Where we walk, ears are worth more than papers.",
+				"The word from Étienne: this one listens. Keep listening. It is the only weapon they let you carry now."
+			],
+			"next": "q_player"
+		},
+		"s_plain": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Étienne vouches for you. He does not spend that often. Try to be worth the price.",
+				"You come vouched for, which costs Étienne something. Spend it slowly."
+			],
+			"next": "q_player"
+		},
+		"q_player": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Anything to say before you become my dull cousin Jean for two days?",
+				"Speak now if you must. Jean Caillet has nothing to say, ever, and you become him in one minute."
+			],
+			"choices": [
+				{"text": "Thank you. Both of you. I won't forget what Marcel did.", "next": "m_bye",
+					"effects": {"trust_sylvie": true, "marcel_thanked": true}, "autoplay": true},
+				{"text": "How far to the city?", "next": "s_biz"},
+				{"text": "(Just nod.)", "next": "s_nod", "effects": {"trust_sylvie": true}}
+			]
+		},
+		"m_bye": {
+			"speaker": "MARCEL",
+			"lines": [
+				"Forget me completely. That is the thanks. Bonne route, l'Américain.",
+				"The best thanks is to forget my face by the next field. Allez."
+			],
+			"next": "s_rules"
+		},
+		"s_biz": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Two days, if you are boring. Be boring.",
+				"Close, if you are dull enough. Be dull."
+			],
+			"next": "s_rules"
+		},
+		"s_nod": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"He does not talk. Étienne undersold you.",
+				"A nod. Good — Jean is already arriving."
+			],
+			"next": "s_rules"
+		},
+		"s_rules": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"From here: ten steps behind me, eyes down. If I stop to fix my shoe, you find something fascinating in a hedge. We sleep over my shop tonight; tomorrow, the train.",
+				"The rules: ten steps back, eyes on the road. I stop, you stop somewhere else. Tonight the room over the shop; tomorrow we buy you a train ticket with your own dull face."
+			]
+		}
+	}
+}

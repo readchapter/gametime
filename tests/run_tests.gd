@@ -16,6 +16,8 @@ func _ready() -> void:
 	_test_farm_morning_branches()
 	_test_vetting_pass_path()
 	_test_vetting_fail_path()
+	_test_dialogue_data_valid("res://data/dialogue/ch3/road_handoff.json")
+	_test_road_handoff_branches()
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()
 	_test_choice_conditions()
@@ -65,6 +67,18 @@ func _test_dialogue_data_valid(path: String) -> void:
 			if c.has("next"):
 				_check(nodes.has(str(c["next"])),
 					"%s: choice target %s of '%s' exists" % [path, c["next"], id])
+
+func _test_road_handoff_branches() -> void:
+	GameState.flags.clear()
+	GameState.set_flag("lied_document", true)
+	var visited := _run_dialogue("res://data/dialogue/ch3/road_handoff.json")
+	_check("s_cold" in visited, "a document lie earns the cold greeting")
+	GameState.flags.clear()
+	GameState.set_flag("doubted_willis", true)
+	visited = _run_dialogue("res://data/dialogue/ch3/road_handoff.json")
+	_check("s_sharp" in visited, "doubting Willis earns the sharp greeting")
+	_check("s_rules" in visited, "handoff reaches the rules")
+	_check(bool(GameState.get_flag("trust_sylvie")), "first choice sets trust_sylvie")
 
 func _test_vetting_pass_path() -> void:
 	GameState.flags.clear()
