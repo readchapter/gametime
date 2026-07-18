@@ -255,10 +255,23 @@ func _advance_queue(processed: int) -> void:
 	pt.tween_property(_player, "position",
 		Vector3(QUEUE[4 - processed].x, 0.05, QUEUE[4 - processed].z), 2.6)
 
+## The world dims a shade while a choice hangs open.
+func _on_choices_shown(_choices: Array) -> void:
+	Hud.focus(true)
+
+func _on_line_changed(_speaker: String, _text: String) -> void:
+	Hud.focus(false)
+
+func _on_dialogue_ended(_id: String) -> void:
+	Hud.focus(false)
+
 func _your_turn() -> void:
 	if _turn_started:
 		return
 	_turn_started = true
+	DialogueManager.choices_shown.connect(_on_choices_shown)
+	DialogueManager.line_changed.connect(_on_line_changed)
+	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
 	var tw := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tw.tween_property(_player, "position", Vector3(TABLE_AT.x, 0.05, TABLE_AT.z + 1.1), 2.4)
 	await tw.finished

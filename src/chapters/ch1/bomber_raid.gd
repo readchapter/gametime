@@ -289,7 +289,9 @@ func on_fighter_killed(f: Fighter) -> void:
 
 func _on_player_fired(muzzle: Vector3, dir: Vector3) -> void:
 	AudioManager.play_sfx("m2_shot", -6.0)
-	_add_tracer(muzzle, dir * 340.0, Color(1.0, 0.72, 0.32), true)
+	# Spawn a few metres out: a 1.6m tracer AT the muzzle fills the view
+	# as a giant beam; from 2.5m it reads as a round leaving the gun.
+	_add_tracer(muzzle + dir * 2.5, dir * 340.0, Color(1.0, 0.72, 0.32), true)
 
 func spawn_enemy_tracer(muzzle: Vector3, delay: float) -> void:
 	if delay > 0.0:

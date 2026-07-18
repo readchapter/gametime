@@ -207,7 +207,20 @@ func _process(delta: float) -> void:
 		_vetting()
 	_autoplay_step(delta)
 
+## The world dims a shade while a question hangs open.
+func _on_choices_shown(_choices: Array) -> void:
+	Hud.focus(true)
+
+func _on_line_changed(_speaker: String, _text: String) -> void:
+	Hud.focus(false)
+
+func _on_dialogue_ended(_id: String) -> void:
+	Hud.focus(false)
+
 func _vetting() -> void:
+	DialogueManager.choices_shown.connect(_on_choices_shown)
+	DialogueManager.line_changed.connect(_on_line_changed)
+	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
 	_player.move_enabled = false
 	Hud.subtitle("", "(\"Far enough.\" A hand you did not see puts you on the mark.)", 4.0)
 	var tw := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)

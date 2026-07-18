@@ -13,7 +13,14 @@ var _prompt: Label
 var _subtitle: RichTextLabel
 var _crosshair: Crosshair
 var _vignette: ColorRect
+var _focus: ColorRect
 var _subtitle_version := 0
+
+## A quiet darkening while a choice hangs open — the world holding its
+## breath. Scenes toggle it around interrogation decisions.
+func focus(on: bool) -> void:
+	var tw := create_tween()
+	tw.tween_property(_focus, "color:a", 0.16 if on else 0.0, 0.5)
 
 func _ready() -> void:
 	var layer := CanvasLayer.new()
@@ -25,6 +32,12 @@ func _ready() -> void:
 	_vignette.color = Color(0.55, 0.04, 0.02, 0.0)
 	_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_vignette)
+
+	_focus = ColorRect.new()
+	_focus.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_focus.color = Color(0.0, 0.0, 0.0, 0.0)
+	_focus.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_focus)
 
 	_crosshair = Crosshair.new()
 	_crosshair.set_anchors_preset(Control.PRESET_FULL_RECT)
