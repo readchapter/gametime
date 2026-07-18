@@ -260,12 +260,15 @@ func _process(delta: float) -> void:
 	if _wind_a:
 		_wind_a.position.x = fmod(_t * speed, 40.0) - 20.0
 		_wind_b.position.x = fmod(_t * speed * 1.35 + 13.0, 40.0) - 20.0
+	if _player and _pat and is_instance_valid(_pat) and _phase in [Phase.CLIMB, Phase.WALK_ON]:
+		# Ahead-left, in view: you climb watching his back, like the night walk
+		var slot := _player.position + Vector3(-1.3, 0, 1.8)
+		slot.y = 0
+		if _phase == Phase.CLIMB:
+			slot.z = minf(slot.z, CAIRN_Z - 4.0)  # he stops short of Voss with you
+		_pat.position = _pat.position.move_toward(slot, delta * 3.8)
+		_pat.rotation.y = PI
 	if _phase == Phase.CLIMB and _player:
-		if _pat and is_instance_valid(_pat):
-			var slot := _player.position + Vector3(-1.0, 0, -0.9)
-			slot.y = 0
-			_pat.position = _pat.position.move_toward(slot, delta * 3.4)
-			_pat.rotation.y = PI
 		if not _ridge_snapped and _player.position.z > 14.0:
 			_ridge_snapped = true
 			CaptureHarness.snap("ch6_ridge")
