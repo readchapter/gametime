@@ -33,6 +33,8 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch5/pat_reunion.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch5/barge_talk.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch6/shepherd_talk.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch6/voss_cairn.json")
+	_test_voss_cairn_paths()
 	_test_ch4_probes_and_choice()
 	_test_voss_knows_what_you_told_lucien()
 	_test_road_handoff_branches()
@@ -98,6 +100,35 @@ func _test_road_handoff_branches() -> void:
 	_check("s_sharp" in visited, "doubting Willis earns the sharp greeting")
 	_check("s_rules" in visited, "handoff reaches the rules")
 	_check(bool(GameState.get_flag("trust_sylvie")), "first choice sets trust_sylvie")
+
+func _test_voss_cairn_paths() -> void:
+	# The captured line, together, holding the truth: telling it concludes him.
+	GameState.flags.clear()
+	GameState.set_flag("met_voss", true)
+	GameState.set_flag("with_pat", true)
+	GameState.set_flag("told_truth_document", true)
+	var visited := _run_dialogue("res://data/dialogue/ch6/voss_cairn.json")
+	_check("v_again" in visited, "cairn: a second meeting reads the margins")
+	_check("p_cairn" in visited, "cairn: Pat speaks at the col")
+	_check("v_concluded" in visited, "cairn: the truth concludes him")
+	_check(bool(GameState.get_flag("told_voss_truth")), "told_voss_truth set")
+	_check(bool(GameState.get_flag("spared_voss")), "spared_voss set (concluded)")
+	_check(not bool(GameState.get_flag("killed_voss")), "no kill on the truth path")
+	# The careful line, alone, ignorant of the paper: walking past spares him.
+	GameState.flags.clear()
+	visited = _run_dialogue("res://data/dialogue/ch6/voss_cairn.json")
+	_check("v_first" in visited, "cairn: strangers introduced at last")
+	_check("v_alone" in visited, "cairn: the fee of the careful ones")
+	_check("v_run" in visited, "cairn: the walk-past ends in one shot wide")
+	_check(bool(GameState.get_flag("spared_voss")), "spared_voss set (walk past)")
+	_check(bool(GameState.get_flag("voss_fired")), "voss_fired set (walk past)")
+	# The last choice in every list is the cairn's stones.
+	GameState.flags.clear()
+	visited = _run_dialogue("res://data/dialogue/ch6/voss_cairn.json", true)
+	_check("v_kill" in visited, "cairn: the stones are an answer")
+	_check(bool(GameState.get_flag("killed_voss")), "killed_voss set")
+	_check(not bool(GameState.get_flag("spared_voss")), "kill path spares nothing")
+	GameState.flags.clear()
 
 func _test_ch4_probes_and_choice() -> void:
 	# Careful path: deflect everything — zero exposure, stays with Béranger.

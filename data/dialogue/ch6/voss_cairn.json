@@ -1,0 +1,129 @@
+{
+	"id": "ch6_voss_cairn",
+	"start": "v_there",
+	"nodes": {
+		"v_there": {
+			"speaker": "VOSS",
+			"lines": [
+				"Sergeant. Forgive me for not standing straighter; the mountain has opinions about my coat. I have been here since yesterday noon. You are the last appointment of my career, and you are late.",
+				"There you are. Do you know, of the ninety-one parcels that shepherd has walked over this col, I am told not one was ever met at the top. You are historic, Sergeant Boyd. Stand where I can see the historic man."
+			],
+			"next": "v_met_branch"
+		},
+		"v_met_branch": {
+			"branch": {"flag": "met_voss", "if_true": "v_again", "if_false": "v_first"}
+		},
+		"v_again": {
+			"speaker": "VOSS",
+			"lines": [
+				"I told you in the cell I had finished with your margins. I lied. I read them the whole way back to Paris — you argue with Mr Paine in pencil, did you know? Page after page. A man who argues with his own scripture. That was when I knew a camp would not hold you, and I began requesting weather reports for the Pyrenees.",
+				"You jumped from my train. I want you to know I was not surprised — I had read your margins by then. 'The summer soldier,' underlined twice, and beside it, in your hand: 'which am I?' A man still asking that question does not sit out a war behind wire. So: I filed my report, and I bought boots."
+			],
+			"next": "v_pat_branch"
+		},
+		"v_first": {
+			"speaker": "VOSS",
+			"lines": [
+				"We have not met, but do not be modest — we are old correspondents. I have your crew manifest, your almanac town, your file of small true things. Voss, Kriminalkommissar. The man who has been reading you since a beet field in Picardy.",
+				"Introductions, at last. You know me, I think — the polite one, the reading man. I know you rather better: Hempstead, the watermelons, the book you carried, the paper you carried without knowing. I have climbed a mountain to close a file. Indulge me."
+			],
+			"next": "v_pat_branch"
+		},
+		"v_pat_branch": {
+			"branch": {"flag": "with_pat", "if_true": "v_pat", "if_false": "v_alone"}
+		},
+		"v_pat": {
+			"speaker": "VOSS",
+			"lines": [
+				"And the waist gunner. Of course. Three weeks of silence in my building and now here, above the weather, with his saint. The saint is batting — as you say — a thousand. Good morning, Costa. Your file is closed; you were never the file.",
+				"Costa as well. Naturally. You know, Costa, of every man I questioned this year, you were the only one who defeated me by TALKING. Three weeks of nothing, delivered at full volume. My compliments to the nun."
+			],
+			"next": "p_cairn"
+		},
+		"p_cairn": {
+			"speaker": "PAT",
+			"lines": [
+				"Tex. That's him. That's the polite cop. — Hey, mister. You climbed all this way in those shoes for us? Sister Immaculata woulda called that devotion. She also woulda called it something else.",
+				"(quietly, beside you) That's him, Tex. The reading man. ...Look at his shoes. Madonna. He really came up here in POLICE SHOES."
+			],
+			"next": "v_file"
+		},
+		"v_alone": {
+			"speaker": "VOSS",
+			"lines": [
+				"Alone. So the ledger read all the way down: the widow in her building, the lieutenant in mine, and you here, with nobody left to spend. The careful ones always arrive alone, Sergeant. It is the fee.",
+				"No companion. Yes — the slow soup path. You kept your freedom the way a miser keeps a coin: intact, and alone. I almost preferred the other version of you, the one who trusted badly. He had better company."
+			],
+			"next": "v_file"
+		},
+		"v_file": {
+			"speaker": "VOSS",
+			"lines": [
+				"To business, then. (The folder, under his arm, in the wind.) One photograph, one manifest, eleven statements, and a page-shaped hole where a BIGOT document should be. This folder is my war, Sergeant. Berlin has asked twice why it is still open. There is no third asking.",
+				"You see the folder. It has grown thin, Sergeant. Everything in it led here: the field, the barn, the barrier, the fifth floor. All of it converges on a man at a cairn and a page I never recovered. My whole war, reduced to your pocket. So I will ask once, on the record, into the wind: where is the page?"
+			],
+			"next": "v_paper_branch"
+		},
+		"v_paper_branch": {
+			"branch": {"flag": "told_truth_document", "if_true": "c_truth", "if_false": "c_no_truth"}
+		},
+		"c_truth": {
+			"speaker": "",
+			"lines": [
+				"(You could tell him. It is the one weapon the mountain issued you: the truth, eleven days cold.)",
+				"(The wind holds its breath. You have three answers on you: your feet, the cairn's stones — and a fact that will do more damage than either.)"
+			],
+			"choices": [
+				{"text": "It reached London eleven days ago, Voss. You lost before you bought the boots. Go home.", "next": "v_concluded",
+					"effects": {"told_voss_truth": true, "spared_voss": true}, "autoplay": true},
+				{"text": "(Walk past him. The wind can have his speech.)", "next": "v_run",
+					"effects": {"spared_voss": true, "voss_fired": true}},
+				{"text": "(The cairn is made of stones.)", "next": "v_kill",
+					"effects": {"killed_voss": true}}
+			]
+		},
+		"c_no_truth": {
+			"speaker": "",
+			"lines": [
+				"(You never learned where the paper went. For once, ignorance is a clean coat: there is nothing on you for him to read.)",
+				"(You do not know. After everything, you genuinely do not know — and looking at his hungry, frozen face, not knowing feels like the last laugh of the whole line.)"
+			],
+			"choices": [
+				{"text": "(Walk past him. The wind can have his speech.)", "next": "v_run",
+					"effects": {"spared_voss": true, "voss_fired": true}, "autoplay": true},
+				{"text": "I never knew, Voss. Six countries of people moved it past both of us. You were beaten by everyone.", "next": "v_everyone",
+					"effects": {"spared_voss": true}},
+				{"text": "(The cairn is made of stones.)", "next": "v_kill",
+					"effects": {"killed_voss": true}}
+			]
+		},
+		"v_concluded": {
+			"speaker": "VOSS",
+			"lines": [
+				"(He does not move for a long time. Then he sits down on the cairn, among every stone left by every leaving hand, and puts the folder flat on his knees like a man at a graveside.) Eleven days. ...Then I climbed a mountain to deliver a folder to the wind. (He does not look up again. Some men are killed. His kind are concluded.)",
+				"(Something goes out of him — not suddenly, like a shot, but the way a lamp runs dry.) Eleven days. (He sits on the cairn. The folder stays shut. There is nothing in it now but paper.) Go, Sergeant. Spain is thirty steps. My jurisdiction ended eleven days ago."
+			]
+		},
+		"v_everyone": {
+			"speaker": "VOSS",
+			"lines": [
+				"Everyone. (The wind takes the word and files it.) Yes. That is the correct finding. Not a hero, not a network — a country of small true things, each one the size of a loaf of bread. My folder has no page for that. (He steps back from the path. It is not mercy. It is procedure, concluding.)",
+				"Beaten by everyone. (A long pause, full of wind.) Do you know, Sergeant — that is the first answer in two years I believe entirely. (He looks at the folder. He does not open it.) Proceed. I will write 'file closed: jurisdiction.' It will be the only lie in it."
+			]
+		},
+		"v_run": {
+			"speaker": "",
+			"lines": [
+				"(You walk. Behind you the pistol comes up — you hear the coat, the mechanism, the wind around both. One shot into the snow, wide, flat, final: a full stop fired at the end of his own sentence. Not at you. He was never, in the end, that kind of policeman.)",
+				"(Thirty steps past sentiment. The pistol arrives in the corner of your eye and stays there, shaking with cold or with something else. The shot, when it comes, goes into the snow beside the cairn — an execution, of the file, by the only man authorised.)"
+			]
+		},
+		"v_kill": {
+			"speaker": "",
+			"lines": [
+				"(The mountain does not testify. What happens at the cairn takes eleven seconds, which is one for every statement in his folder, and when it is finished the cairn is one stone heavier and the wind owns the paperwork. You do not look at your hands. You will, later. For years.)",
+				"(He sees it in your face one second before — and the last expression Anton Voss makes is a policeman's: not fear. Recognition. The cairn was built by leaving hands. Yours leave one more stone, and the folder goes over the far side, into Spain, page by page, like snow.)"
+			]
+		}
+	}
+}

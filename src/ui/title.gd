@@ -50,7 +50,7 @@ func _ready() -> void:
 	box.add_child(title)
 
 	var sub := Label.new()
-	sub.text = "CHAPTERS ONE — THREE"
+	sub.text = "A STORY IN SIX CHAPTERS"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.add_theme_font_size_override("font_size", 20)
 	sub.add_theme_color_override("font_color", Color(0.55, 0.50, 0.42))

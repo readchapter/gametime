@@ -2,8 +2,22 @@
 
 ## State
 
-**Chapters 1–5 are complete; the campaign forks at Ch4 and both forks
-play.** Chapter 5 (The Long Way Home): ch5_train (5A, from ch4_captured —
+**THE CAMPAIGN IS COMPLETE: Chapters 1–6, both forks, endings and all.**
+
+**Chapter 6 (The White Teeth of the Sky):** ch6_foothills (the shepherd's
+hut — the last roof in France; with_pat seats Pat; the shepherd's warning:
+a man in a city coat went up the valley AHEAD of you) → ch6_crossing (the
+snow shoulder, wind bands scaling with altitude, the cairn, and the Voss
+confrontation: `voss_cairn.json` branches on met_voss / with_pat /
+told_truth_document and resolves to spared_voss (+voss_fired if he fires
+into the snow), told_voss_truth ("concluded" — he sits on the cairn), or
+killed_voss (whiteout; the mountain does not testify). Then Spain: the
+light warms over 14s, the border beat, and the ledger-read ending cards —
+companion, Voss, the paper, Béranger/Lucien/Freeman, the Paine book —
+before THE END and the title (chapter=7, beat cleared). --autoplay walks
+the whole scene and picks the walk-past; --autoplay-fail picks the kill.
+
+**Chapter 5:** ch5_train (5A, from ch4_captured —
 the boxcar, the PAT REUNION paying off Ch1: medal/Sister Immaculata/Sal
 at Salerno/Voss's questions; the grade, the loosened bolt, the jump;
 flags pat_alive, with_pat, escaped_train, touched_medal) and ch5_barge
@@ -74,12 +88,12 @@ in Ch2 (consult in Ch3+): `trust_henri`, `trust_etienne`, `doubted_willis`,
    (same names, no code changes). Engine drone and gunfire benefit most.
 4. **Scene polish** — raid tracer feel, farmhouse exterior approach shot,
    night-walk hedgerow density near the route, barn straw/texture read.
-5. **Chapter 6 (the mountains / the confrontation)** — brief §7's close:
-   the Pyrenees crossing or coastal extraction, Voss's final direct
-   confrontation (the player chooses: run from him or kill him), and an
-   ending varied by the whole trust ledger. Inputs: with_pat/alone_south,
-   met_voss, lucien_marked, paine_kept, touched_medal, exposure, and
-   every trust_* flag since the beet field.
+5. ~~**Chapter 6 (the mountains / the confrontation)**~~ — DONE. The
+   foothills hut, the crossing, the cairn confrontation (spare / truth /
+   kill), and the flag-read ending cards all ship. Remaining Ch6 polish
+   ideas: a mid-slope weather beat (brief visibility drop), sheep on the
+   lower shoulder during the climb, and a coda shot (Gibraltar wire or
+   the Hempstead porch) if the budget ever allows.
 
 ## Gotchas (hard-won — read before editing)
 

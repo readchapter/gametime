@@ -614,6 +614,10 @@ if __name__ == "__main__":
     print("synthesizing to", os.path.abspath(ROOT))
     write_wav("ambient/bomber_interior", loopify(np.stack([engine_drone(26), engine_drone(26)])), -14)
     write_wav("ambient/wind_descent", loopify(np.stack([wind(24), wind(24)])), -16)
+    # High-col wind: gustier, thinner, with a keening edge over the rocks
+    write_wav("ambient/mountain_wind",
+              loopify(np.stack([wind(28, 0.85, 900) + bp(white(28), 1600, 2600) * 0.10,
+                                wind(28, 0.85, 900) + bp(white(28), 1600, 2600) * 0.10])), -15)
     write_wav("ambient/night_interior", loopify(np.stack([night_interior(32), night_interior(32)])), -20)
     write_wav("ambient/hardstand_dawn", loopify(np.stack([hardstand_dawn(28), hardstand_dawn(28)])), -19)
     write_wav("sfx/m2_shot", m2_shot(), -10)

@@ -28,6 +28,7 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `apartment_day` | A fifth floor: muffled street, pipes, a clock. (Ch4) |
 | `train_boxcar` | Rolling boxcar: rail-joint clack, drone, creaks, slat wind. (Ch5) |
 | `canal_water` | Barge waterline: hull lap, wake, a rope working, far birds. (Ch5) |
+| `mountain_wind` | High-col wind: gusty, thin, a keening edge over rock. (Ch6) |
 
 ## sfx/
 | file | description |

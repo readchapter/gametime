@@ -75,10 +75,22 @@ before the border and the second jump of Travis Boyd's war. Escaped: a
 barge south through the locks, the survivor's ledger of everyone you left
 behind, and landfall on the crow roads toward the mountains.
 
+**Chapter 6 — The White Teeth of the Sky.** The finale. Both roads home
+converge on a shepherd's hut at the snow line — the last roof in France —
+where the bad stone in the bread is delivered plainly: a man in a city
+coat went up the valley yesterday, asking for a parcel by name. He is
+ahead of you, not behind. The crossing climbs past where the sheep turn
+back to the cairn where France runs out of stones, and the game's last
+conversation: Voss, at the end of his jurisdiction, holding the folder
+that is his whole war. How it resolves — and what the ending cards read
+back — depends on who you are by then: who stands beside you, what you
+know about the paper, and everything you ever told the helpful ones.
+
 Landing quality and dialogue choices set story flags that persist into the
 save file — Chapter 2 reads them, Chapter 3 reads the barn, Chapter 4
-turns trust into the campaign's fork, and Chapter 5 pays it all: who is
-beside you when you turn south depends on every kindness you weighed.
+turns trust into the campaign's fork, Chapter 5 pays it forward, and
+Chapter 6 reads the whole ledger back over the final fade: who crossed
+with you, what became of Voss, where the paper went, and who paid.
 
 ## Audio
 
