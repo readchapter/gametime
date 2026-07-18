@@ -26,6 +26,8 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `station_dusk` | Station forecourt: crowd murmur, steam hisses, a far whistle. (Ch3) |
 | `city_night` | Blackout Paris: canyon wind, one far car, a cat, shutters. (Ch4) |
 | `apartment_day` | A fifth floor: muffled street, pipes, a clock. (Ch4) |
+| `train_boxcar` | Rolling boxcar: rail-joint clack, drone, creaks, slat wind. (Ch5) |
+| `canal_water` | Barge waterline: hull lap, wake, a rope working, far birds. (Ch5) |
 
 ## sfx/
 | file | description |

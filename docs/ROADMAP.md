@@ -2,8 +2,19 @@
 
 ## State
 
-**Chapters 1–4 are complete and play as one flow, and the campaign now
-forks.** Chapter 4 (The Helpful Ones): ch4_arrival (CityGen blackout
+**Chapters 1–5 are complete; the campaign forks at Ch4 and both forks
+play.** Chapter 5 (The Long Way Home): ch5_train (5A, from ch4_captured —
+the boxcar, the PAT REUNION paying off Ch1: medal/Sister Immaculata/Sal
+at Salerno/Voss's questions; the grade, the loosened bolt, the jump;
+flags pat_alive, with_pat, escaped_train, touched_medal) and ch5_barge
+(5B, from ch4_escaped — scrolling banks + 95s dawn lerp, the bargeman's
+survivor ledger incl. the farm callback if told_lucien_farm, lock beat
+under the tarp, landfall; flags alone_south, lucien_marked). Both end
+chapter=6. CHAPTER 6 is the endgame per brief §7: the Pyrenees/coastal
+split, and the Voss confrontation (run/kill) — with_pat vs alone_south
+should change its texture throughout.
+
+**Chapter 4:** Chapter 4 (The Helpful Ones): ch4_arrival (CityGen blackout
 canyon, patrol sweep, door 17) → ch4_apartment (Lucien's three probes
 feed +exposure and told_lucien_* flags; Paine book to the flour tin;
 the fast-route/stay branch) → ch4_break (one scene, two canon endings:
@@ -63,12 +74,12 @@ in Ch2 (consult in Ch3+): `trust_henri`, `trust_etienne`, `doubted_willis`,
    (same names, no code changes). Engine drone and gunfire benefit most.
 4. **Scene polish** — raid tracer feel, farmhouse exterior approach shot,
    night-walk hedgerow density near the route, barn straw/texture read.
-5. **Chapter 5 (twin openings)** — per brief §7 the endgame routes begin:
-   5A from ch4_captured (the transfer east: escape from the train or the
-   POW thread; Voss's Pat claim resolves here — the mid-campaign reunion
-   the brief architects for), 5B from ch4_escaped (the canal barge south
-   toward the Pyrenees/coastal split). Branch scene selection needs a
-   conditional beat: goto_beat consulting ch4_captured at chapter start.
+5. **Chapter 6 (the mountains / the confrontation)** — brief §7's close:
+   the Pyrenees crossing or coastal extraction, Voss's final direct
+   confrontation (the player chooses: run from him or kill him), and an
+   ending varied by the whole trust ledger. Inputs: with_pat/alone_south,
+   met_voss, lucien_marked, paine_kept, touched_medal, exposure, and
+   every trust_* flag since the beet field.
 
 ## Gotchas (hard-won — read before editing)
 

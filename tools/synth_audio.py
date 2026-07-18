@@ -529,6 +529,58 @@ def cell_door(dur=2.8):
     return x
 
 
+def train_boxcar(dur):
+    """Inside a rolling boxcar: track clack in twos, wheel drone, board
+    creaks, wind through the slats."""
+    n = int(SR * dur)
+    x = np.zeros(n)
+    # the da-dum ... da-dum of rail joints
+    pos = 0.0
+    while pos < dur - 0.5:
+        for off in (0.0, 0.34):
+            i = int((pos + off) * SR)
+            ln = int(0.09 * SR)
+            if i + ln < n:
+                x[i:i + ln] += (np.sin(2 * np.pi * 65 * np.arange(ln) / SR)
+                    * np.exp(-np.arange(ln) / SR / 0.03) * 0.8
+                    + burst(ln, 0.008) * 0.35)
+        pos += rng.uniform(1.7, 1.9)
+    drone = lp(brown(dur), 160) * 0.7 * wobble(dur, 0.5, 0.2)
+    slats = bp(white(dur), 400, 1100) * 0.12 * wobble(dur, 0.8, 0.4)
+    creak = np.zeros(n)
+    for _ in range(int(dur / 4)):
+        i = int(rng.integers(0, n - SR))
+        ln = int(rng.uniform(0.2, 0.5) * SR)
+        tt = np.arange(ln) / SR
+        creak[i:i + ln] += np.sin(2 * np.pi * (280 + 60 * np.sin(2 * np.pi * 3 * tt)) * tt)             * np.sin(np.pi * tt / (ln / SR)) * 0.05
+    return lp(x, 900) + drone + slats + lp(creak, 1200)
+
+def canal_water(dur):
+    """A barge's waterline: hull lap, slow wake, a rope working, dawn birds
+    far off."""
+    lap = np.zeros(int(SR * dur))
+    n = len(lap)
+    for _ in range(int(dur * 2.2)):
+        i = int(rng.integers(0, n - SR // 2))
+        ln = int(rng.uniform(0.15, 0.4) * SR)
+        tt = np.arange(ln) / SR
+        lap[i:i + ln] += bp(rng.standard_normal(ln), 300, 900)             * np.sin(np.pi * tt / (ln / SR)) * 0.22
+    wake = lp(brown(dur), 200) * 0.55 * wobble(dur, 0.3, 0.2)
+    rope = np.zeros(n)
+    for _ in range(int(dur / 7)):
+        i = int(rng.integers(0, n - SR // 2))
+        ln = int(0.25 * SR)
+        tt = np.arange(ln) / SR
+        rope[i:i + ln] += np.sin(2 * np.pi * 190 * tt) * np.exp(-tt / 0.08) * 0.05
+    birds = np.zeros(n)
+    for _ in range(int(dur / 8)):
+        i = int(rng.integers(0, n - SR))
+        ln = int(rng.integers(1800, 3600))
+        tt = np.arange(ln) / SR
+        birds[i:i + ln] += np.sin(2 * np.pi * rng.uniform(2200, 3200) * tt)             * np.exp(-tt / 0.05) * 0.03
+    return lap + wake + lp(rope, 900) + lp(birds, 4200)
+
+
 # ---------- music ----------
 
 def title_theme(dur):
@@ -586,5 +638,7 @@ if __name__ == "__main__":
     write_wav("sfx/boots_stairs", boots_stairs(), -14)
     write_wav("sfx/car_trap", car_trap(), -12)
     write_wav("sfx/cell_door", cell_door(), -11)
+    write_wav("ambient/train_boxcar", loopify(np.stack([train_boxcar(26), train_boxcar(26)])), -17)
+    write_wav("ambient/canal_water", loopify(np.stack([canal_water(30), canal_water(30)])), -20)
     write_wav("music/title_theme", loopify(np.stack([title_theme(52), title_theme(52)]), 1.0), -16)
     print("done")

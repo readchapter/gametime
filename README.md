@@ -2,7 +2,7 @@
 
 A first-person, narrative-driven WWII game. Travis Boyd, a USAAF tail
 gunner, is shot down over occupied France. This repository holds
-**Chapters 1–4**, playable as one continuous flow: the dawn hardstand, the
+**Chapters 1–5**, playable as one continuous flow: the dawn hardstand, the
 raid from the tail turret, the bail-out, the descent, the first night in a
 French farmhouse; the morning patrol, the night walk, and the barn vetting
 where wrong answers end the game; then the escape line itself — the road
@@ -68,11 +68,17 @@ the rooftops to a canal barge; the other leads to a courtyard, a hood,
 and a quiet conversation with Kriminalkommissar Voss — who knows exactly
 as much as you told Lucien, and proves it.
 
+**Chapter 5 — The Long Way Home.** Two openings, one per Chapter 4 ending.
+Captured: a boxcar east, slat-light, and the quietest corner in the car —
+the reunion the game has been holding since the hardstand — then the grade
+before the border and the second jump of Travis Boyd's war. Escaped: a
+barge south through the locks, the survivor's ledger of everyone you left
+behind, and landfall on the crow roads toward the mountains.
+
 Landing quality and dialogue choices set story flags that persist into the
-save file — Chapter 2 reads them (a bad landing changes the morning),
-Chapter 3 reads the trust you earned or burned in the barn, and Chapter 4
-turns trust into the fork of the whole campaign: capture or escape, both
-canon, both feeding Chapter 5.
+save file — Chapter 2 reads them, Chapter 3 reads the barn, Chapter 4
+turns trust into the campaign's fork, and Chapter 5 pays it all: who is
+beside you when you turn south depends on every kindness you weighed.
 
 ## Audio
 
