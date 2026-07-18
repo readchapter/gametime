@@ -20,6 +20,7 @@ var _player: CharacterBody3D
 var _shepherd: Node3D
 var _pat: Node3D
 var _fire_light: OmniLight3D
+var _flames: Array[MeshInstance3D] = []
 var _door: Interactable
 var _talk_done := false
 var _t := 0.0
@@ -159,8 +160,23 @@ func _build_hut() -> void:
 	embers.material_override = emat
 	embers.position = Vector3(-2.62, 0.12, -0.6)
 	add_child(embers)
+	# Live flames: three emissive tongues that breathe in _process
+	for i in 3:
+		var flame := MeshInstance3D.new()
+		var fp := PrismMesh.new()
+		fp.size = Vector3(0.10 + i * 0.03, 0.22 - i * 0.04, 0.08)
+		flame.mesh = fp
+		var fmat := StandardMaterial3D.new()
+		fmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		fmat.albedo_color = [Color(1.0, 0.72, 0.25), Color(1.0, 0.5, 0.12), Color(0.95, 0.35, 0.08)][i]
+		flame.material_override = fmat
+		flame.position = Vector3(-2.62 + (i - 1) * 0.09, 0.22, -0.6 + (i - 1) * 0.12)
+		_flames.append(flame)
+		add_child(flame)
 	_fire_light = OmniLight3D.new()
-	_fire_light.position = Vector3(-2.3, 0.7, -0.6)
+	# Clear of the hanging pot: an occluder beside a shadowed omni eats the
+	# whole room's warmth (learned the hard way).
+	_fire_light.position = Vector3(-1.85, 0.9, -0.6)
 	_fire_light.light_color = Color(1.0, 0.5, 0.2)
 	_fire_light.light_energy = 1.6
 	_fire_light.omni_range = 6.5
@@ -224,6 +240,11 @@ func _process(delta: float) -> void:
 	_t += delta
 	if _fire_light:
 		_fire_light.light_energy = 1.6 + sin(_t * 9.0) * 0.08 + sin(_t * 4.3 + 0.7) * 0.07
+	for i in _flames.size():
+		var f := _flames[i]
+		f.scale.y = 1.0 + sin(_t * (7.0 + i * 2.3) + i * 1.7) * 0.28
+		f.scale.x = 1.0 + sin(_t * (5.0 + i * 1.9) + i) * 0.12
+		f.rotation.z = sin(_t * (3.1 + i) + i * 2.0) * 0.08
 	_autoplay_step(delta)
 
 func _autoplay_step(delta: float) -> void:

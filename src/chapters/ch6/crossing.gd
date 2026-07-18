@@ -32,6 +32,8 @@ var _env: Environment
 var _sky_mat: ShaderMaterial
 var _wind_a: Node3D
 var _wind_b: Node3D
+var _snow_a: Node3D
+var _snow_b: Node3D
 var _white: ColorRect
 var _t := 0.0
 var _ridge_snapped := false
@@ -269,6 +271,35 @@ func _build_wind() -> void:
 	_wind_b = _wind_band(0.07, 57)
 	add_child(_wind_a)
 	add_child(_wind_b)
+	_snow_a = _snowfall(21)
+	_snow_b = _snowfall(83)
+	_snow_b.position.y = 3.0
+	add_child(_snow_a)
+	add_child(_snow_b)
+
+## A field of small flakes, moved as a body and wrapped in _process — two
+## offset copies at different speeds read as continuous snowfall.
+func _snowfall(seed_v: int) -> Node3D:
+	var node := Node3D.new()
+	var im := ImmediateMesh.new()
+	var mi := MeshInstance3D.new()
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = Color(0.96, 0.97, 1.0, 0.7)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_v
+	im.surface_begin(Mesh.PRIMITIVE_TRIANGLES, mat)
+	for i in 110:
+		var p := Vector3(rng.randf_range(-14.0, 14.0), rng.randf_range(0.0, 6.0),
+			rng.randf_range(-8.0, 58.0))
+		var s := rng.randf_range(0.02, 0.045)
+		for v: Vector3 in [p, p + Vector3(s, 0, 0), p + Vector3(0, s, 0)]:
+			im.surface_add_vertex(v)
+	im.surface_end()
+	mi.mesh = im
+	node.add_child(mi)
+	return node
 
 func _wind_band(alpha: float, seed_v: int) -> Node3D:
 	var band := Node3D.new()
@@ -328,6 +359,12 @@ func _process(delta: float) -> void:
 	if _wind_a:
 		_wind_a.position.x = fmod(_t * speed, 40.0) - 20.0
 		_wind_b.position.x = fmod(_t * speed * 1.35 + 13.0, 40.0) - 20.0
+	if _snow_a:
+		# Fall plus sidelong drift, harder with altitude; wrap over 6m of sky
+		_snow_a.position.y = 6.0 - fmod(_t * (0.9 + prog * 0.5), 6.0)
+		_snow_a.position.x = fmod(_t * (1.2 + prog * 2.0), 28.0) - 14.0
+		_snow_b.position.y = 6.0 - fmod(_t * (1.25 + prog * 0.5) + 3.0, 6.0)
+		_snow_b.position.x = fmod(_t * (1.7 + prog * 2.2) + 9.0, 28.0) - 14.0
 	if _player and _pat and is_instance_valid(_pat) and _phase in [Phase.CLIMB, Phase.WALK_ON]:
 		# Ahead-left, in view: you climb watching his back, like the night walk
 		var slot := _player.position + Vector3(-1.7, 0, 3.0)

@@ -24,6 +24,30 @@ func _ready() -> void:
 	_cam.look_at(Vector3(-40, 3.0, 70))
 	_cam.make_current()
 
+	# Two distant searchlights working the sky — the war, already looking
+	# for somebody. Thin emissive quads pivoting slowly from the horizon.
+	for spec: Array in [[Vector3(-70, 0, 95), 0.22, 0.10], [Vector3(-20, 0, 130), -0.16, 0.14]]:
+		var pivot := Node3D.new()
+		pivot.position = spec[0]
+		var beam := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = Vector3(0.55, 90.0, 0.05)
+		beam.mesh = bm
+		var bmat := StandardMaterial3D.new()
+		bmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		bmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		bmat.albedo_color = Color(0.75, 0.80, 0.92, 0.16)
+		beam.material_override = bmat
+		beam.position = Vector3(0, 45.0, 0)
+		pivot.add_child(beam)
+		pivot.rotation.z = spec[1]
+		add_child(pivot)
+		var sweep := create_tween().set_loops()
+		sweep.tween_property(pivot, "rotation:z", spec[1] + spec[2], 11.0) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		sweep.tween_property(pivot, "rotation:z", spec[1] - spec[2], 11.0) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
 	var layer := CanvasLayer.new()
 	add_child(layer)
 
