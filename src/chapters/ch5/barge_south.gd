@@ -205,7 +205,8 @@ func _landfall() -> void:
 	GameState.set_flag("ch5_complete", true)
 	GameState.chapter = 6
 	GameState.save_game()
-	get_tree().change_scene_to_file("res://src/ui/title.tscn")
+	await CutscenePlayer.caption("CHAPTER SIX\n\nTHE WHITE TEETH OF THE SKY", 4.5)
+	SceneDirector.goto_beat("ch6_foothills", 0.1)
 
 func _process(delta: float) -> void:
 	_t += delta

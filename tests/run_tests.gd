@@ -298,6 +298,8 @@ func _test_beat_scene_lookup() -> void:
 		"ch4 beat resolves")
 	_check(SceneDirector.beat_scene("ch5_barge").ends_with("barge_south.tscn"),
 		"ch5 beat resolves")
+	_check(SceneDirector.beat_scene("ch6_crossing").ends_with("crossing.tscn"),
+		"ch6 beat resolves")
 	_check(SceneDirector.beat_scene("nope") == "", "unknown beat resolves empty")
 
 func _test_landing_grades() -> void:

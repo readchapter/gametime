@@ -36,9 +36,14 @@ const CH5_BEATS := {
 	"ch5_barge": "res://src/chapters/ch5/barge_south.tscn",
 }
 
+const CH6_BEATS := {
+	"ch6_foothills": "res://src/chapters/ch6/foothills.tscn",
+	"ch6_crossing": "res://src/chapters/ch6/crossing.tscn",
+}
+
 ## Scene path for any beat across all chapters ("" if unknown).
 static func beat_scene(beat: String) -> String:
-	for beats: Dictionary in [CH1_BEATS, CH2_BEATS, CH3_BEATS, CH4_BEATS, CH5_BEATS]:
+	for beats: Dictionary in [CH1_BEATS, CH2_BEATS, CH3_BEATS, CH4_BEATS, CH5_BEATS, CH6_BEATS]:
 		if beats.has(beat):
 			return beats[beat]
 	return ""
