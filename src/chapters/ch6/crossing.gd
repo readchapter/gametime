@@ -29,6 +29,7 @@ var _pat: Node3D
 var _shepherd: Node3D
 var _sun: DirectionalLight3D
 var _env: Environment
+var _sky_mat: ShaderMaterial
 var _wind_a: Node3D
 var _wind_b: Node3D
 var _white: ColorRect
@@ -60,8 +61,18 @@ func _ready() -> void:
 
 func _build_environment() -> void:
 	_env = Environment.new()
-	_env.background_mode = Environment.BG_COLOR
-	_env.background_color = Color(0.46, 0.51, 0.60)
+	_sky_mat = SkyLib.apply(_env, {
+		"top_color": Color(0.20, 0.28, 0.44),
+		"horizon_color": Color(0.60, 0.64, 0.72),
+		"ground_color": Color(0.42, 0.45, 0.52),
+		"sun_color": Color(0.55, 0.58, 0.66),
+		"horizon_sharpness": 2.4,
+		"cloud_coverage": 0.34,
+		"cloud_scale": 2.4,
+		"cloud_lit_color": Color(0.82, 0.84, 0.90),
+		"cloud_shadow_color": Color(0.44, 0.48, 0.58),
+	})
+	_env.fog_sky_affect = 0.35
 	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	_env.ambient_light_color = Color(0.55, 0.58, 0.66)
 	_env.ambient_light_energy = 1.0
@@ -98,7 +109,8 @@ func _build_terrain() -> void:
 		else:
 			mb.box(Vector3(rng.randf_range(0.6, 1.8), rng.randf_range(0.3, 0.8), rng.randf_range(0.5, 1.4)),
 				Vector3(x, 0.15, z), ROCK if rng.randf() < 0.5 else ROCK_DARK, rng.randf_range(0, TAU))
-	# Flanking crags: rock at the base, snow teeth above
+	# Flanking crags: rock at the base, strata bands, snow teeth above with
+	# a wind-built cornice lip on the lee side
 	for spec: Array in [
 		[Vector2(-12.0, 14.0), 9.0, 16.0], [Vector2(-16.0, 30.0), 12.0, 22.0],
 		[Vector2(-13.0, 48.0), 10.0, 18.0], [Vector2(11.0, 8.0), 8.0, 15.0],
@@ -109,7 +121,12 @@ func _build_terrain() -> void:
 		var h: float = spec[1]
 		var w: float = spec[2]
 		mb.prism(Vector3(w, h * 0.55, w * 0.8), Vector3(at.x, h * 0.2, at.y), ROCK_DARK)
+		mb.box(Vector3(w * 0.72, 0.5, w * 0.60), Vector3(at.x, h * 0.16, at.y), ROCK.darkened(0.12))
+		mb.box(Vector3(w * 0.52, 0.35, w * 0.46), Vector3(at.x, h * 0.30, at.y), ROCK.lightened(0.06))
 		mb.prism(Vector3(w * 0.62, h, w * 0.5), Vector3(at.x, h * 0.42, at.y), SNOW_SHADE)
+		var lee := 1.0 if at.x > 0 else -1.0
+		mb.box(Vector3(w * 0.22, 0.30, w * 0.20),
+			Vector3(at.x - lee * w * 0.16, h * 0.80, at.y), SNOW.lightened(0.12), 0.3)
 	# The far teeth: the range itself, pale against the sky
 	for spec: Array in [
 		[-30.0, 95.0, 26.0, 40.0], [-8.0, 105.0, 32.0, 48.0], [14.0, 98.0, 24.0, 38.0],
@@ -117,10 +134,61 @@ func _build_terrain() -> void:
 	]:
 		mb.prism(Vector3(spec[3], spec[2], spec[3] * 0.7), Vector3(spec[0], spec[2] * 0.34, spec[1]),
 			SNOW.lightened(0.06))
+	# The smugglers' route markers: weathered stakes leaning out of the snow,
+	# spaced up the shoulder — ninety-one parcels' worth of wayfinding
+	var srng := RandomNumberGenerator.new()
+	srng.seed = 92
+	for z: float in [3.0, 10.0, 17.0, 24.0, 31.0, 37.5]:
+		var sx := 2.0 if int(z) % 2 == 0 else -1.9
+		mb.box(Vector3(0.07, 1.15, 0.07), Vector3(sx, 0.5, z + srng.randf_range(-1.0, 1.0)),
+			Color(0.20, 0.15, 0.09), srng.randf_range(-0.25, 0.25))
+	# Kicked snow along the trampled line, and glints where the light catches
+	for i in 40:
+		var lx := srng.randf_range(-1.6, 1.9)
+		var lz := srng.randf_range(0.0, 50.0)
+		if srng.randf() < 0.5:
+			mb.box(Vector3(srng.randf_range(0.15, 0.4), 0.07, srng.randf_range(0.12, 0.3)),
+				Vector3(lx, 0.16, lz), SNOW.lightened(0.08), srng.randf_range(0, TAU))
+		else:
+			mb.box(Vector3(0.05, 0.03, 0.05), Vector3(lx, 0.17, lz),
+				SNOW.lightened(0.22), srng.randf_range(0, TAU))
 	# Behind: the France the player is leaving, dropping away dark
 	mb.prism(Vector3(60, 10, 30), Vector3(-10, 2.0, -34), Color(0.20, 0.23, 0.28))
 	mb.prism(Vector3(44, 7, 24), Vector3(18, 1.2, -30), Color(0.17, 0.20, 0.25))
 	add_child(mb.commit_instance("Ridge"))
+
+	# A cloud band hanging below the far teeth, and one drifting wisp
+	for spec: Array in [
+		[Vector3(-6, 11.5, 86.0), Vector3(70, 2.6, 10), 0.34],
+		[Vector3(22, 9.0, 80.0), Vector3(46, 1.8, 8), 0.26],
+		[Vector3(-26, 14.5, 92.0), Vector3(34, 1.5, 7), 0.22],
+	]:
+		var cloud := MeshInstance3D.new()
+		var cm := BoxMesh.new()
+		cm.size = spec[1]
+		cloud.mesh = cm
+		var cmat := StandardMaterial3D.new()
+		cmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		cmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		cmat.albedo_color = Color(0.88, 0.90, 0.95, spec[2])
+		cloud.material_override = cmat
+		cloud.position = spec[0]
+		add_child(cloud)
+
+	# Far below and behind: the last lamps of a French valley, pre-dawn
+	var lamps := MeshInstance3D.new()
+	var lmesh := ImmediateMesh.new()
+	var lmat := StandardMaterial3D.new()
+	lmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	lmat.albedo_color = Color(1.0, 0.82, 0.55)
+	lmesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, lmat)
+	for spec: Vector3 in [Vector3(-14, 1.1, -26), Vector3(-11.5, 0.8, -29),
+			Vector3(6.0, 1.4, -27), Vector3(20, 0.6, -24)]:
+		for v: Vector3 in [spec, spec + Vector3(0.16, 0, 0), spec + Vector3(0, 0.16, 0)]:
+			lmesh.surface_add_vertex(v)
+	lmesh.surface_end()
+	lamps.mesh = lmesh
+	add_child(lamps)
 
 	var body := StaticBody3D.new()
 	for spec: Array in [
@@ -368,8 +436,10 @@ func _walk_on() -> void:
 	tw.set_parallel(true)
 	tw.tween_property(_sun, "light_color", Color(1.0, 0.87, 0.66), 14.0)
 	tw.tween_property(_sun, "light_energy", 1.25, 14.0)
-	tw.tween_property(_env, "background_color", Color(0.66, 0.62, 0.57), 14.0)
 	tw.tween_property(_env, "fog_light_color", Color(0.75, 0.68, 0.60), 14.0)
+	tw.tween_property(_sky_mat, "shader_parameter/horizon_color", Color(0.90, 0.76, 0.58), 14.0)
+	tw.tween_property(_sky_mat, "shader_parameter/sun_color", Color(1.0, 0.86, 0.62), 14.0)
+	tw.tween_property(_sky_mat, "shader_parameter/cloud_lit_color", Color(0.96, 0.84, 0.70), 14.0)
 	Hud.subtitle("", "(Thirty steps. You count them without meaning to.)", 4.0)
 	_watch_border()
 

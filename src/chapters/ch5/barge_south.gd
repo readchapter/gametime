@@ -17,6 +17,7 @@ var _player: CharacterBody3D
 var _bargeman: Node3D
 var _banks: Array[Node3D] = []
 var _env: Environment
+var _sky_mat: ShaderMaterial
 var _sun: DirectionalLight3D
 var _tarp: Node3D
 var _scroll := 4.0     # bank scroll speed (the barge's way through the water)
@@ -48,8 +49,18 @@ func _ready() -> void:
 
 func _build_environment() -> void:
 	_env = Environment.new()
-	_env.background_mode = Environment.BG_COLOR
-	_env.background_color = Color(0.05, 0.06, 0.10)
+	_sky_mat = SkyLib.apply(_env, {
+		"top_color": Color(0.030, 0.040, 0.080),
+		"horizon_color": Color(0.075, 0.080, 0.115),
+		"ground_color": Color(0.02, 0.025, 0.04),
+		"sun_color": Color(0.02, 0.02, 0.03),
+		"horizon_sharpness": 2.6,
+		"cloud_coverage": 0.35,
+		"cloud_lit_color": Color(0.09, 0.10, 0.14),
+		"cloud_shadow_color": Color(0.04, 0.045, 0.07),
+		"star_amount": 0.5,
+	})
+	_env.fog_sky_affect = 0.3
 	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	_env.ambient_light_color = Color(0.16, 0.17, 0.22)
 	_env.ambient_light_energy = 1.0
@@ -217,7 +228,18 @@ func _process(delta: float) -> void:
 	if _dawn < 1.0:
 		_dawn = minf(_dawn + delta / 95.0, 1.0)
 		var d := _dawn
-		_env.background_color = Color(0.05, 0.06, 0.10).lerp(Color(0.55, 0.52, 0.48), d)
 		_env.ambient_light_color = Color(0.16, 0.17, 0.22).lerp(Color(0.42, 0.40, 0.38), d)
 		_env.fog_light_color = Color(0.10, 0.11, 0.14).lerp(Color(0.45, 0.42, 0.38), d)
 		_sun.light_energy = d * 1.1
+		# The sky itself does the rising: stars drain, the east catches
+		_sky_mat.set_shader_parameter("top_color",
+			Color(0.030, 0.040, 0.080).lerp(Color(0.36, 0.44, 0.58), d))
+		_sky_mat.set_shader_parameter("horizon_color",
+			Color(0.075, 0.080, 0.115).lerp(Color(0.92, 0.68, 0.46), d))
+		_sky_mat.set_shader_parameter("sun_color",
+			Color(0.02, 0.02, 0.03).lerp(Color(1.0, 0.78, 0.50), d))
+		_sky_mat.set_shader_parameter("star_amount", 0.5 * (1.0 - d))
+		_sky_mat.set_shader_parameter("cloud_lit_color",
+			Color(0.09, 0.10, 0.14).lerp(Color(0.95, 0.76, 0.58), d))
+		_sky_mat.set_shader_parameter("cloud_shadow_color",
+			Color(0.04, 0.045, 0.07).lerp(Color(0.42, 0.42, 0.50), d))

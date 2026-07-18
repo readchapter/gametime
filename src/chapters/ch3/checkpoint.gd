@@ -51,8 +51,19 @@ func _ready() -> void:
 
 func _build_environment() -> void:
 	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.035, 0.045, 0.075)
+	SkyLib.apply(env, {
+		"top_color": Color(0.020, 0.028, 0.055),
+		"horizon_color": Color(0.10, 0.10, 0.14),
+		"ground_color": Color(0.02, 0.025, 0.04),
+		"sun_color": Color(0.02, 0.02, 0.03),
+		"horizon_sharpness": 3.0,
+		"cloud_coverage": 0.30,
+		"cloud_lit_color": Color(0.10, 0.11, 0.15),
+		"cloud_shadow_color": Color(0.04, 0.045, 0.07),
+		"star_amount": 0.55,
+		"moon_amount": 0.6,
+		"moon_dir": Vector3(-0.45, 0.5, -0.6),
+	})
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.16, 0.17, 0.23)
 	env.ambient_light_energy = 1.0
@@ -60,6 +71,7 @@ func _build_environment() -> void:
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.05, 0.06, 0.09)
 	env.fog_density = 0.0045
+	env.fog_sky_affect = 0.25
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)

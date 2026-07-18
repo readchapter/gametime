@@ -57,8 +57,22 @@ func _ready() -> void:
 
 func _build_environment() -> void:
 	_env = Environment.new()
-	_env.background_mode = Environment.BG_COLOR
-	_env.background_color = Color(0.018, 0.022, 0.036) if not _took_fast else Color(0.055, 0.065, 0.095)
+	# Escape night: hard stars and a working moon over the roofs. Capture
+	# pre-dawn (took_fast): a lighter, starless grey-blue instead.
+	SkyLib.apply(_env, {
+		"top_color": Color(0.010, 0.014, 0.028) if not _took_fast else Color(0.045, 0.055, 0.085),
+		"horizon_color": Color(0.040, 0.046, 0.070) if not _took_fast else Color(0.10, 0.11, 0.15),
+		"ground_color": Color(0.012, 0.015, 0.026),
+		"sun_color": Color(0.02, 0.02, 0.03),
+		"horizon_sharpness": 3.2,
+		"cloud_coverage": 0.24,
+		"cloud_lit_color": Color(0.08, 0.09, 0.13),
+		"cloud_shadow_color": Color(0.03, 0.035, 0.055),
+		"star_amount": 0.8 if not _took_fast else 0.15,
+		"moon_amount": 0.7 if not _took_fast else 0.3,
+		"moon_dir": Vector3(0.25, 0.62, 0.70),
+	})
+	_env.fog_sky_affect = 0.2
 	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	_env.ambient_light_color = Color(0.14, 0.15, 0.20)
 	_env.ambient_light_energy = 1.2 if not _took_fast else 1.35

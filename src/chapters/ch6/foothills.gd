@@ -42,8 +42,18 @@ func _ready() -> void:
 
 func _build_environment() -> void:
 	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.015, 0.02, 0.035)
+	SkyLib.apply(env, {
+		"top_color": Color(0.010, 0.014, 0.030),
+		"horizon_color": Color(0.035, 0.045, 0.075),
+		"ground_color": Color(0.012, 0.015, 0.025),
+		"sun_color": Color(0.02, 0.02, 0.03),
+		"star_amount": 0.75,
+		"moon_amount": 0.5,
+		"moon_dir": Vector3(0.4, 0.5, 0.65),
+		"cloud_coverage": 0.15,
+		"cloud_lit_color": Color(0.06, 0.07, 0.10),
+		"cloud_shadow_color": Color(0.02, 0.025, 0.045),
+	})
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.14, 0.13, 0.13)
 	env.ambient_light_energy = 0.8
@@ -80,6 +90,36 @@ func _build_hut() -> void:
 		mb.box(Vector3(0.02, 0.35, 0.02), Vector3(cx, H - 0.18, cz), Color(0.1, 0.09, 0.08))
 	for sx: float in [2.5, 2.62]:
 		mb.box(Vector3(0.05, 2.1, 0.05), Vector3(sx, 1.05, -1.9), Color(0.30, 0.22, 0.12), 0.1)
+	# The iron pot over the fire, on its chain from a swing arm
+	mb.box(Vector3(0.9, 0.06, 0.06), Vector3(-2.45, 1.55, -0.6), Color(0.10, 0.10, 0.11))
+	mb.box(Vector3(0.025, 0.5, 0.025), Vector3(-2.2, 1.28, -0.6), Color(0.12, 0.12, 0.13))
+	mb.cylinder(0.22, 0.17, 0.26, Vector3(-2.2, 0.95, -0.6), Color(0.08, 0.08, 0.09))
+	# Firewood stacked in the hearth corner, an axe leaned on it
+	var wrng := RandomNumberGenerator.new()
+	wrng.seed = 7
+	for i in 7:
+		mb.cylinder(0.06, 0.06, 0.55,
+			Vector3(-2.55 + wrng.randf_range(-0.1, 0.1), 0.08 + (i / 3) * 0.12,
+				-1.75 + (i % 3) * 0.16), Color(0.30, 0.22, 0.13), 6)
+	# The table set for the argument: bread, knife, two bowls, a jug
+	mb.box(Vector3(0.42, 0.14, 0.2), Vector3(1.55, 0.77, 0.25), Color(0.62, 0.48, 0.28), 0.3)
+	mb.box(Vector3(0.26, 0.02, 0.05), Vector3(1.85, 0.72, 0.45), Color(0.65, 0.66, 0.68), -0.5)
+	for bx: Vector3 in [Vector3(1.35, 0.74, 0.55), Vector3(2.0, 0.74, 0.1)]:
+		mb.cylinder(0.11, 0.07, 0.07, bx, Color(0.35, 0.28, 0.20))
+	mb.cylinder(0.09, 0.12, 0.30, Vector3(1.25, 0.85, 0.05), Color(0.42, 0.34, 0.24))
+	# A stool by the fire and coats on wall pegs
+	mb.cylinder(0.16, 0.14, 0.09, Vector3(-1.0, 0.42, 0.35), WOOD_DARK.lightened(0.1))
+	for leg in 3:
+		var a := TAU * leg / 3.0
+		mb.box(Vector3(0.05, 0.4, 0.05), Vector3(-1.0 + cos(a) * 0.11, 0.19, 0.35 + sin(a) * 0.11),
+			WOOD_DARK)
+	for px: float in [-0.6, 0.1]:
+		mb.box(Vector3(0.05, 0.05, 0.14), Vector3(px, 1.85, -D / 2 + 0.18), Color(0.30, 0.22, 0.12))
+		mb.box(Vector3(0.34, 0.62, 0.12), Vector3(px, 1.5, -D / 2 + 0.24),
+			Color(0.22, 0.20, 0.16) if px < 0 else Color(0.26, 0.22, 0.15))
+	# Snow blown over the threshold, melting in a dark arc
+	mb.box(Vector3(0.9, 0.03, 0.35), Vector3(0.2, 0.02, D / 2 - 0.25), Color(0.70, 0.72, 0.76))
+	mb.box(Vector3(0.6, 0.02, 0.22), Vector3(0.2, 0.025, D / 2 - 0.5), Color(0.16, 0.13, 0.10))
 	add_child(mb.commit_instance("Hut"))
 
 	# The night outside the door: far ridge silhouettes
