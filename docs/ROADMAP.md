@@ -2,7 +2,19 @@
 
 ## State
 
-**Chapters 1 and 2 are complete and play as one flow:** title → hardstand →
+**Chapters 1–3 are complete and play as one flow.** Chapter 3 (The Line):
+ch3_road (dawn detour past a Feldgendarmerie post, Marcel→Sylvie handoff
+reading Ch2 flags) → ch3_safehouse (plan dialogue, BBC radio beat, the
+street sweep watched from the curtain gap) → ch3_checkpoint (behavioural
+deaf-mute vetting; a Ch2 document lie adds the missing-stamp trap;
+suspicion ≥ 2 = arrest with attempt-varied retry; Voss appears silently
+and is named off-screen; chapter=4 saved). New Ch3 flags:
+`trust_sylvie`, `kept_cover`, `saw_voss`, `heard_radio`, `ch3_complete`,
+`ch3_failed_once`, `marcel_thanked`, `asked_sylvie_why`.
+
+Chapter 2 summary below still applies:
+
+**Chapters 1 and 2 play as one flow:** title → hardstand →
 raid → player-walked bail-out → descent → wake → two-room farmhouse →
 Ch1 end cards → **Ch2**: farmhouse morning (German patrol at the door, hide
 beat) → dusk handoff to Marcel → night walk (truck headlight beat) → barn
@@ -37,11 +49,24 @@ in Ch2 (consult in Ch3+): `trust_henri`, `trust_etienne`, `doubted_willis`,
    (same names, no code changes). Engine drone and gunfire benefit most.
 4. **Scene polish** — raid tracer feel, farmhouse exterior approach shot,
    night-walk hedgerow density near the route, barn straw/texture read.
-5. **Chapter 3 (safehouse chain toward the hub city)** — per brief §7:
-   movement through safehouses, a city checkpoint sequence, Voss felt
-   closer. The Ch2 trust flags above are the branch inputs.
+5. **Chapter 4 (the city / the train)** — per brief §7: the hub city, the
+   betrayal-or-capture branch point (with the POW-camp alternate path)
+   ahead. Opens on or after the train Jean Caillet just earned. Inputs:
+   `saw_voss` (always true), `kept_cover`, `lied_document`, the trust
+   ledger. Voss escalates from a name to a presence.
 
 ## Gotchas (hard-won — read before editing)
+
+- **Never `await tween.finished` after other awaits**: a tween that
+  finished meanwhile is freed and the await hangs forever. Time long
+  moves with pause-aware timers instead.
+- **Every walkable scene needs a floor collider** — a tween-driven player
+  is still a CharacterBody3D with gravity (checkpoint forecourt bug).
+- **Euler readback**: after a tween lands on yaw=PI, `rotation` re-reads
+  as (-PI, 0, -PI); tweening `rotation:y` from there flips the camera.
+  Pan cameras with tween_method setting the full rotation Vector3.
+- **Never spawn a walker intersecting a collider** (bed blocker bug) —
+  physics depenetration pins autoplay walkers that set position directly.
 
 - **.tscn `Transform3D(...)` numbers are basis ROWS then origin.** Author
   rotations via script (`rotation_degrees`) or transpose your column math.

@@ -22,6 +22,8 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `wind_descent` | High wind, canopy flutter, distant nothing. |
 | `night_interior` | Quiet room: fire crackle, occasional creak, distant dog far off. |
 | `morning_farm` | Cold farm morning: light wind, sparse birds, one far dog. (Ch2) |
+| `town_day` | Small-town day from upstairs: muffled street, a cart, one bell. (Ch3) |
+| `station_dusk` | Station forecourt: crowd murmur, steam hisses, a far whistle. (Ch3) |
 
 ## sfx/
 | file | description |
@@ -37,6 +39,8 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `fighter_guns` | Fw 190 cannon burst from off your beam, fast and metallic. |
 | `engine_dying` | A stricken bomber's engines sliding down in pitch, ~9s. |
 | `alarm_bell` | The B-17 bail-out bell: three hard rings. |
+| `radio_static` | BBC under a blanket: static, heterodyne drift, time pips. (Ch3) |
+| `stamp_thunk` | A rubber stamp brought down twice on papers over wood. (Ch3) |
 
 Search-term suggestions: "b17 interior", "bomber engine loop", "50 cal single",
 "flak", "parachute deploy", "wind howl loop", "fireplace crackle room tone",

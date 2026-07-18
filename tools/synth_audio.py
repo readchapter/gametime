@@ -343,6 +343,80 @@ def alarm_bell():
     return hp(x, 300) * 0.7
 
 
+def town_day(dur):
+    """Small-town daytime from an upstairs room: muffled street, a cart on
+    cobbles now and then, one church bell strike."""
+    base = lp(brown(dur), 240) * 0.55
+    n = int(SR * dur)
+    cart = np.zeros(n)
+    for _ in range(int(dur / 9)):
+        i = int(rng.integers(0, n - 3 * SR))
+        for k in range(int(rng.integers(6, 12))):
+            j = i + int(k * rng.uniform(0.16, 0.24) * SR)
+            ln = int(0.05 * SR)
+            if j + ln >= n:
+                break
+            cart[j:j + ln] += burst(ln, 0.01) * 0.12
+    bell = np.zeros(n)
+    i = int(n * 0.55)
+    ln = int(2.2 * SR)
+    tt = np.arange(ln) / SR
+    for f, g in ((392, 1.0), (587, 0.4), (784, 0.25)):
+        bell[i:i + ln] += np.sin(2 * np.pi * f * tt) * g
+    bell[i:i + ln] *= np.exp(-tt / 0.8) * 0.10
+    return base + lp(cart, 600) + lp(bell, 2000)
+
+def station_dusk(dur):
+    """Station forecourt: low crowd murmur, periodic steam hiss, one far
+    whistle."""
+    murmur = lp(brown(dur), 300) * 0.6 + bp(white(dur), 150, 500) * 0.10
+    n = int(SR * dur)
+    steam = np.zeros(n)
+    for _ in range(int(dur / 8)):
+        i = int(rng.integers(0, n - 4 * SR))
+        ln = int(rng.uniform(1.8, 3.2) * SR)
+        tt = np.arange(ln) / SR
+        env = np.minimum(tt / 0.4, 1.0) * np.exp(-tt / 1.4)
+        steam[i:i + ln] += bp(rng.standard_normal(ln), 900, 2600) * env * 0.16
+    whistle = np.zeros(n)
+    i = int(n * 0.7)
+    ln = int(1.4 * SR)
+    tt = np.arange(ln) / SR
+    whistle[i:i + ln] = (np.sin(2 * np.pi * 620 * tt) + 0.5 * np.sin(2 * np.pi * 930 * tt)) \
+        * np.exp(-tt / 0.9) * 0.05
+    return murmur + steam + lp(whistle, 3000)
+
+def radio_static(dur=22.0):
+    """BBC under a blanket: band-limited static, a drifting heterodyne
+    whine, and the Greenwich time pips."""
+    n = int(SR * dur)
+    static = bp(white(dur), 300, 3000) * 0.5
+    drift = 800 + 300 * np.sin(2 * np.pi * t(dur) / 7.0)
+    whine = np.sin(2 * np.pi * np.cumsum(drift) / SR) * 0.05 * wobble(dur, 0.4, 0.5)
+    pips = np.zeros(n)
+    for k in range(6):
+        i = int((2.0 + k) * SR)
+        ln = int((0.1 if k < 5 else 0.5) * SR)
+        if i + ln < n:
+            pips[i:i + ln] = np.sin(2 * np.pi * 1000 * np.arange(ln) / SR) * 0.12
+    voice = lp(brown(dur), 400) * 0.25 * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * t(dur) / 3.7)))
+    return static + whine + pips + voice
+
+def stamp_thunk():
+    """A rubber stamp brought down hard on papers over wood, twice."""
+    dur = 1.1
+    n = int(SR * dur)
+    x = np.zeros(n)
+    for at in (0.08, 0.55):
+        i = int(at * SR)
+        ln = int(0.12 * SR)
+        tt = np.arange(ln) / SR
+        thud = np.sin(2 * np.pi * (120 - 40 * tt / 0.12) * tt) * np.exp(-tt / 0.025) * 1.3
+        slap = burst(ln, 0.003) * 0.9
+        x[i:i + ln] += thud + lp(slap, 3200)
+    return x
+
+
 # ---------- music ----------
 
 def title_theme(dur):
@@ -390,5 +464,9 @@ if __name__ == "__main__":
     write_wav("sfx/fighter_guns", fighter_guns(), -13)
     write_wav("sfx/engine_dying", engine_dying(), -16)
     write_wav("sfx/alarm_bell", alarm_bell(), -12)
+    write_wav("ambient/town_day", loopify(np.stack([town_day(30), town_day(30)])), -21)
+    write_wav("ambient/station_dusk", loopify(np.stack([station_dusk(30), station_dusk(30)])), -19)
+    write_wav("sfx/radio_static", radio_static(), -16)
+    write_wav("sfx/stamp_thunk", stamp_thunk(), -11)
     write_wav("music/title_theme", loopify(np.stack([title_theme(52), title_theme(52)]), 1.0), -16)
     print("done")

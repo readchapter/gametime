@@ -2,11 +2,13 @@
 
 A first-person, narrative-driven WWII game. Travis Boyd, a USAAF tail
 gunner, is shot down over occupied France. This repository holds
-**Chapters 1 and 2**, playable as one continuous flow: the dawn hardstand,
-the raid from the tail turret, the bail-out, the parachute descent, the
-first night in a French farmhouse — and then the morning after: a German
-patrol at the door, a night walk behind a resistance guide, and the
-vetting in a barn where wrong answers end the game.
+**Chapters 1–3**, playable as one continuous flow: the dawn hardstand, the
+raid from the tail turret, the bail-out, the descent, the first night in a
+French farmhouse; the morning patrol, the night walk, and the barn vetting
+where wrong answers end the game; then the escape line itself — the road
+west past a Feldgendarmerie post, a safehouse over a shop, and a station
+checkpoint at dusk where you must pass as a deaf-mute Frenchman while the
+man hunting you specifically stands close enough to see.
 
 Textureless, procedural art direction (vertex colors, shader-driven
 lighting, fog, atmosphere — *The Falconeer* is the visual reference).
@@ -48,9 +50,19 @@ the answers, so answer as him, and think before you spend your word on a
 stranger. **Wrong answers can end the game here.** A failed vetting restarts
 the barn — and it will not replay word-for-word.
 
+**Chapter 3 — The Line.** The road west with Marcel (when he says down,
+slowly) → the calvary handoff to Sylvie → her safehouse (the radio, and
+the street you should not watch — but will) → the station checkpoint. You
+are Jean Caillet, deaf and mute: at the barrier, the winning move is
+almost always to do **nothing**. React to a German voice like a hearing
+man and the chapter ends in an arrest — and replays with the questions
+rephrased.
+
 Landing quality and dialogue choices set story flags that persist into the
-save file — Chapter 2 reads them (a bad landing changes the morning), and
-Chapter 3 will read the trust you earned or burned in the barn.
+save file — Chapter 2 reads them (a bad landing changes the morning),
+Chapter 3 reads the trust you earned or burned in the barn (a lie about
+the paper follows you all the way to the barrier), and Chapter 4 will
+know that Voss has seen your face.
 
 ## Audio
 
