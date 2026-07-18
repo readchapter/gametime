@@ -1,0 +1,69 @@
+{
+	"id": "ch5_barge_talk",
+	"start": "b_open",
+	"nodes": {
+		"b_open": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"You slept eleven hours between the onions. Good. Sleeping cargo is honest cargo. There is coffee that is chicory and bread that is bread — the widow said feed you, and the widow collects.",
+				"Eleven hours you slept. The onions approve of you; they are poor judges of character but excellent judges of nerves. Eat — the bread is real. Madame's orders travel further than Germans."
+			],
+			"next": "b_news"
+		},
+		"b_news": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"News came down the water with the mist. Her street had visitors that night. She opened the door herself, in her good collar, and she is still in her building — which on that street is its own kind of sentence. The helpful one pours his charm elsewhere now. Men like that outlive wars... unless somebody spends a night on it. Somebody is saving up.",
+				"The water talks, quietly. Your widow met her visitors at the door like tenants late with rent. They left her the building — cheaper to watch a known door than burn it, you see. And the charming one? Working. Always working. The river has a list, and he has moved up it."
+			],
+			"choices": [
+				{"text": "If anyone spends that night on Lucien — tell them Boyd said to spend two.", "next": "b_lucien",
+					"effects": {"lucien_marked": true}, "autoplay": true},
+				{"text": "She kept the book. Tell the water she's owed a coffee after the war.", "next": "b_owed"},
+				{"text": "(Eat the bread. Some ledgers don't want words.)", "next": "b_quiet"}
+			]
+		},
+		"b_lucien": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"Two nights. The water will carry it exactly as said. It is a good message; short, and it keeps.",
+				"Noted. Two. Messages like that travel this river faster than the coal does."
+			],
+			"next": "b_farm_branch"
+		},
+		"b_owed": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"A coffee after the war. The river has carried heavier debts. It will arrive.",
+				"So the widow holds your book and you hold her debt. Good — held debts keep people alive. Both ends of them."
+			],
+			"next": "b_farm_branch"
+		},
+		"b_quiet": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"(He nods at the bread, at the water, at nothing.) Exactly. Chew. The river does the talking on this stretch.",
+				"(A nod. He turns back to the tiller.) The onions taught you well."
+			],
+			"next": "b_farm_branch"
+		},
+		"b_farm_branch": {
+			"branch": {"flag": "told_lucien_farm", "if_true": "b_farm", "if_false": "b_south"}
+		},
+		"b_farm": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"...One more piece, and you will want it plain, not gentle. A farm in the north had visitors too. A beet farm, with a boy. The water does not know more than that. I am sorry to be the water today.",
+				"There is a harder piece. North, near where you fell: a farm was visited. The one with the boy who counts guns. That is all the river knows, and the river is sorry."
+			],
+			"next": "b_south"
+		},
+		"b_south": {
+			"speaker": "BARGEMAN",
+			"lines": [
+				"Tonight the water turns north and you do not. South, on foot, by the crow roads — the crows commute to Spain this time of year, follow their opinion. At the third bell tower there is a shepherd who argues with God in Basque. He expects a parcel.",
+				"Here is your map: the river goes north tonight, so you leave it. Walk south. Crows first, then sheep, then mountains. A Basque shepherd at the third bell tower — deaf in one ear, chooses which — takes the widow's parcels over the top."
+			]
+		}
+	}
+}
