@@ -265,7 +265,11 @@ func _capture_flow() -> void:
 		if GameState.get_flag("told_lucien_paper") else
 		"He keeps the book. The margins are the only home left him.", 5.0)
 	await CutscenePlayer.caption("END OF CHAPTER FOUR", 4.0)
-	_finish()
+	GameState.chapter = 5
+	GameState.set_flag("ch4_complete", true)
+	GameState.save_game()
+	await CutscenePlayer.caption("CHAPTER FIVE\n\nTHE LONG WAY HOME", 4.5)
+	SceneDirector.goto_beat("ch5_train", 0.1)
 
 # --- ESCAPE PATH ------------------------------------------------------------
 
@@ -458,13 +462,11 @@ func _canal_beat() -> void:
 	await CutscenePlayer.caption("The barge smells of onions and rust.\nIt moves at the speed of slow soup.", 5.0)
 	await CutscenePlayer.caption("Five floors up, a door is opened for some visitors\nby a woman with eleven years of practice being no one.", 5.5)
 	await CutscenePlayer.caption("END OF CHAPTER FOUR", 4.0)
-	_finish()
-
-func _finish() -> void:
 	GameState.chapter = 5
 	GameState.set_flag("ch4_complete", true)
 	GameState.save_game()
-	get_tree().change_scene_to_file("res://src/ui/title.tscn")
+	await CutscenePlayer.caption("CHAPTER FIVE\n\nTHE LONG WAY HOME", 4.5)
+	SceneDirector.goto_beat("ch5_barge", 0.1)
 
 func _process(delta: float) -> void:
 	_t += delta
