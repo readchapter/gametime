@@ -1,14 +1,15 @@
 # THE FALL
 
 A first-person, narrative-driven WWII game. Travis Boyd, a USAAF tail
-gunner, is shot down over occupied France. This repository holds
-**Chapters 1–5**, playable as one continuous flow: the dawn hardstand, the
-raid from the tail turret, the bail-out, the descent, the first night in a
-French farmhouse; the morning patrol, the night walk, and the barn vetting
-where wrong answers end the game; then the escape line itself — the road
-west past a Feldgendarmerie post, a safehouse over a shop, and a station
-checkpoint at dusk where you must pass as a deaf-mute Frenchman while the
-man hunting you specifically stands close enough to see.
+gunner, is shot down over occupied France. This repository holds the
+**complete campaign — Chapters 1–6** — playable as one continuous flow
+from the dawn hardstand to the Pyrenees: the raid from the tail turret,
+the bail-out and descent, the farmhouse, the barn vetting, the escape
+line west, the Paris apartment where the danger wears a smile, the
+campaign's fork (the courtyard trap or the rooftops), the boxcar east or
+the barge south, and the crossing — where the man who has been reading
+you since a beet field in Picardy is waiting at the border cairn. The
+story ends; the ending depends on everything you did.
 
 Textureless, procedural art direction (vertex colors, shader-driven
 lighting, fog, atmosphere — *The Falconeer* is the visual reference).

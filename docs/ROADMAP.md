@@ -4,6 +4,15 @@
 
 **THE CAMPAIGN IS COMPLETE: Chapters 1–6, both forks, endings and all.**
 
+**Visual pass (final Fable session):** Figures v2 (boots, hands, layered
+jackets, collars, hair — one builder, every scene); SkyLib + procedural
+skies on every outdoor scene (checkpoint stars+moon, Paris blackout and
+rooftop starfields, barge dawn rising in the sky itself, cold alpine sky
+over the crossing that warms into Spain); Ch6 detail layer (crag strata,
+cornices, route stakes, kicked snow, cloud bands, valley lamps; hut pot/
+firewood/table dressing/coat pegs/threshold snow). All captured and
+inspected; full-game autoplay chain re-verified.
+
 **Chapter 6 (The White Teeth of the Sky):** ch6_foothills (the shepherd's
 hut — the last roof in France; with_pat seats Pat; the shepherd's warning:
 a man in a city coat went up the valley AHEAD of you) → ch6_crossing (the
