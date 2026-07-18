@@ -24,6 +24,8 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `morning_farm` | Cold farm morning: light wind, sparse birds, one far dog. (Ch2) |
 | `town_day` | Small-town day from upstairs: muffled street, a cart, one bell. (Ch3) |
 | `station_dusk` | Station forecourt: crowd murmur, steam hisses, a far whistle. (Ch3) |
+| `city_night` | Blackout Paris: canyon wind, one far car, a cat, shutters. (Ch4) |
+| `apartment_day` | A fifth floor: muffled street, pipes, a clock. (Ch4) |
 
 ## sfx/
 | file | description |
@@ -42,6 +44,9 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `radio_static` | BBC under a blanket: static, heterodyne drift, time pips. (Ch3) |
 | `stamp_thunk` | A rubber stamp brought down twice on papers over wood. (Ch3) |
 | `chapter_sting` | End-of-chapter sting: one dark A-minor swell, ~9s. |
+| `boots_stairs` | Several pairs of boots climbing wooden stairs, nearing. (Ch4) |
+| `car_trap` | A big engine arrives and idles; two unhurried doors. (Ch4) |
+| `cell_door` | Iron on stone: bolt, groan, slam, echo. (Ch4) |
 
 Search-term suggestions: "b17 interior", "bomber engine loop", "50 cal single",
 "flak", "parachute deploy", "wind howl loop", "fireplace crackle room tone",

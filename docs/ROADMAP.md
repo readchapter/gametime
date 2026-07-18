@@ -2,7 +2,21 @@
 
 ## State
 
-**Chapters 1–3 are complete and play as one flow.** Chapter 3 (The Line):
+**Chapters 1–4 are complete and play as one flow, and the campaign now
+forks.** Chapter 4 (The Helpful Ones): ch4_arrival (CityGen blackout
+canyon, patrol sweep, door 17) → ch4_apartment (Lucien's three probes
+feed +exposure and told_lucien_* flags; Paine book to the flour tin;
+the fast-route/stay branch) → ch4_break (one scene, two canon endings:
+courtyard trap → cell → the Voss interview, whose certain knowledge is
+exactly the told_lucien_* set; or the rooftop escape: plank, chimneys,
+coal chute, canal barge). Flags out: ch4_captured / ch4_escaped,
+freeman_lost, beranger_taken, met_voss, voss_named_pat, paine_kept,
+exposure 0–4, warned_freeman, defied/silent_voss, defended_beranger.
+--autoplay drives the escape branch; --autoplay-fail drives capture.
+CHAPTER 5 MUST OPEN FROM BOTH: the transfer east (POW thread) and the
+canal barge. Ch3 summary below still applies.
+
+**Chapters 1–3:** Chapter 3 (The Line):
 ch3_road (dawn detour past a Feldgendarmerie post, Marcel→Sylvie handoff
 reading Ch2 flags) → ch3_safehouse (plan dialogue, BBC radio beat, the
 street sweep watched from the curtain gap) → ch3_checkpoint (behavioural
@@ -49,11 +63,12 @@ in Ch2 (consult in Ch3+): `trust_henri`, `trust_etienne`, `doubted_willis`,
    (same names, no code changes). Engine drone and gunfire benefit most.
 4. **Scene polish** — raid tracer feel, farmhouse exterior approach shot,
    night-walk hedgerow density near the route, barn straw/texture read.
-5. **Chapter 4 (the city / the train)** — per brief §7: the hub city, the
-   betrayal-or-capture branch point (with the POW-camp alternate path)
-   ahead. Opens on or after the train Jean Caillet just earned. Inputs:
-   `saw_voss` (always true), `kept_cover`, `lied_document`, the trust
-   ledger. Voss escalates from a name to a presence.
+5. **Chapter 5 (twin openings)** — per brief §7 the endgame routes begin:
+   5A from ch4_captured (the transfer east: escape from the train or the
+   POW thread; Voss's Pat claim resolves here — the mid-campaign reunion
+   the brief architects for), 5B from ch4_escaped (the canal barge south
+   toward the Pyrenees/coastal split). Branch scene selection needs a
+   conditional beat: goto_beat consulting ch4_captured at chapter start.
 
 ## Gotchas (hard-won — read before editing)
 

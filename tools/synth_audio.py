@@ -431,6 +431,104 @@ def stamp_thunk():
     return x
 
 
+def city_night(dur):
+    """Blackout Paris after curfew: wind channelled down a stone canyon,
+    one far car, one cat, shutters ticking."""
+    base = wind(dur, gustiness=0.45, base_cut=350) * 0.55
+    n = int(SR * dur)
+    far_car = np.zeros(n)
+    i = int(n * 0.35)
+    ln = int(6.0 * SR)
+    tt = np.arange(ln) / SR
+    prox = np.sin(np.pi * tt / 6.0) ** 2
+    eng = np.sin(2 * np.pi * 55 * tt) + 0.4 * np.sin(2 * np.pi * 111 * tt)
+    far_car[i:i + ln] += eng * prox * 0.04
+    cat = np.zeros(n)
+    i = int(n * 0.72)
+    ln = int(0.7 * SR)
+    tt = np.arange(ln) / SR
+    cat[i:i + ln] = np.sin(2 * np.pi * (620 + 180 * np.sin(np.pi * tt / 0.7)) * tt) \
+        * np.sin(np.pi * tt / 0.7) * 0.03
+    ticks = np.zeros(n)
+    for _ in range(int(dur / 5)):
+        j = int(rng.integers(0, n - 2000))
+        ticks[j:j + 900] += burst(900, 0.004) * 0.05
+    return base + lp(far_car, 300) + lp(cat, 2000) + lp(ticks, 1800)
+
+def apartment_day(dur):
+    """A fifth floor with the city far below: muffled street murmur, pipes
+    knocking, a clock, a chair scrape somewhere under the floor."""
+    murmur = lp(brown(dur), 200) * 0.5
+    n = int(SR * dur)
+    clock = np.zeros(n)
+    for k in range(int(dur)):
+        i = int(k * SR)
+        if i + 1500 < n:
+            clock[i:i + 1500] += burst(1500, 0.003) * (0.05 if k % 2 == 0 else 0.038)
+    pipes = np.zeros(n)
+    for _ in range(int(dur / 11)):
+        i = int(rng.integers(0, n - SR))
+        for k in range(int(rng.integers(2, 5))):
+            j = i + int(k * 0.3 * SR)
+            if j + 3000 < n:
+                pipes[j:j + 3000] += np.sin(2 * np.pi * 210 * np.arange(3000) / SR) \
+                    * np.exp(-np.arange(3000) / SR / 0.05) * 0.06
+    return murmur + lp(clock, 3500) + lp(pipes, 900)
+
+def boots_stairs(dur=10.0):
+    """Boots on a wooden stair, several pairs, rising floor by floor —
+    unhurried and getting nearer the whole time."""
+    n = int(SR * dur)
+    x = np.zeros(n)
+    step_t = 0.2
+    pos = 0.0
+    k = 0
+    while pos < dur - 0.3:
+        i = int(pos * SR)
+        near = k / (dur / step_t)   # 0 → 1: they climb toward you
+        ln = int(0.09 * SR)
+        thud = np.sin(2 * np.pi * (70 + 25 * near) * np.arange(ln) / SR) \
+            * np.exp(-np.arange(ln) / SR / 0.02) * (0.25 + 0.75 * near)
+        crk = burst(ln, 0.006) * 0.3 * (0.3 + 0.7 * near)
+        x[i:i + ln] += thud + lp(crk, 1400 + 1200 * near)
+        pos += step_t * rng.uniform(0.92, 1.08)
+        k += 1
+    return lp(x, 2600)
+
+def car_trap(dur=8.0):
+    """A big engine arriving and idling; two doors, unhurried."""
+    n = int(SR * dur)
+    tt = t(dur)
+    approach = np.clip(tt / 2.5, 0, 1)
+    f0 = 48 * (1.0 + 0.05 * np.sin(2 * np.pi * 0.8 * tt))
+    eng = np.sin(2 * np.pi * np.cumsum(f0) / SR) + 0.5 * np.sin(2 * np.pi * np.cumsum(f0 * 2.01) / SR)
+    eng *= (0.12 + 0.55 * approach) * (1.0 - 0.35 * np.clip((tt - 5.5) / 2.0, 0, 1))
+    x = lp(eng, 350)
+    for at in (5.6, 6.4):
+        i = int(at * SR)
+        ln = int(0.12 * SR)
+        thunk = np.sin(2 * np.pi * 130 * np.arange(ln) / SR) * np.exp(-np.arange(ln) / SR / 0.02) * 0.9
+        x[i:i + ln] += thunk + lp(burst(ln, 0.004), 2400) * 0.5
+    return x
+
+def cell_door(dur=2.8):
+    """Iron on stone: a bolt, a swing with a low groan, the slam's echo."""
+    n = int(SR * dur)
+    x = np.zeros(n)
+    ln = int(0.1 * SR)
+    x[:ln] += bp(burst(ln, 0.008), 1200, 4200) * 1.2   # the bolt
+    gi = int(0.5 * SR)
+    gl = int(1.0 * SR)
+    tt = np.arange(gl) / SR
+    x[gi:gi + gl] += np.sin(2 * np.pi * (90 - 25 * tt) * tt) * np.exp(-tt / 0.8) * 0.35  # the groan
+    si = int(1.7 * SR)
+    sl = int(0.5 * SR)
+    tt = np.arange(sl) / SR
+    x[si:si + sl] += (np.sin(2 * np.pi * 60 * tt) * np.exp(-tt / 0.06) * 1.4
+        + lp(burst(sl, 0.01), 900) * 0.8)   # the slam + rolling echo
+    return x
+
+
 # ---------- music ----------
 
 def title_theme(dur):
@@ -483,5 +581,10 @@ if __name__ == "__main__":
     write_wav("sfx/radio_static", radio_static(), -16)
     write_wav("sfx/stamp_thunk", stamp_thunk(), -11)
     write_wav("sfx/chapter_sting", chapter_sting(), -15)
+    write_wav("ambient/city_night", loopify(np.stack([city_night(28), city_night(28)])), -20)
+    write_wav("ambient/apartment_day", loopify(np.stack([apartment_day(30), apartment_day(30)])), -22)
+    write_wav("sfx/boots_stairs", boots_stairs(), -14)
+    write_wav("sfx/car_trap", car_trap(), -12)
+    write_wav("sfx/cell_door", cell_door(), -11)
     write_wav("music/title_theme", loopify(np.stack([title_theme(52), title_theme(52)]), 1.0), -16)
     print("done")

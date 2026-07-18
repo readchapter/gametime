@@ -2,7 +2,7 @@
 
 A first-person, narrative-driven WWII game. Travis Boyd, a USAAF tail
 gunner, is shot down over occupied France. This repository holds
-**Chapters 1–3**, playable as one continuous flow: the dawn hardstand, the
+**Chapters 1–4**, playable as one continuous flow: the dawn hardstand, the
 raid from the tail turret, the bail-out, the descent, the first night in a
 French farmhouse; the morning patrol, the night walk, and the barn vetting
 where wrong answers end the game; then the escape line itself — the road
@@ -58,11 +58,21 @@ almost always to do **nothing**. React to a German voice like a hearing
 man and the chapter ends in an arrest — and replays with the questions
 rephrased.
 
+**Chapter 4 — The Helpful Ones.** Paris. A blackout walk to door 17, and
+an apartment where the danger wears a smile and carries real bread.
+Lucien's three questions all sound like favours — every true answer you
+give him prices your future. At dusk Freeman brings the fast route, and
+the game's biggest choice: go with the charming man, or stay with the
+slow soup. **Neither answer is a fail state.** One leads over a plank and
+the rooftops to a canal barge; the other leads to a courtyard, a hood,
+and a quiet conversation with Kriminalkommissar Voss — who knows exactly
+as much as you told Lucien, and proves it.
+
 Landing quality and dialogue choices set story flags that persist into the
 save file — Chapter 2 reads them (a bad landing changes the morning),
-Chapter 3 reads the trust you earned or burned in the barn (a lie about
-the paper follows you all the way to the barrier), and Chapter 4 will
-know that Voss has seen your face.
+Chapter 3 reads the trust you earned or burned in the barn, and Chapter 4
+turns trust into the fork of the whole campaign: capture or escape, both
+canon, both feeding Chapter 5.
 
 ## Audio
 
