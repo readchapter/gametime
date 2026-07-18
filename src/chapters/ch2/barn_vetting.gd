@@ -286,7 +286,8 @@ func _pass() -> void:
 	GameState.chapter = 3
 	GameState.set_flag("ch2_complete")
 	GameState.save_game()
-	get_tree().change_scene_to_file("res://src/ui/title.tscn")
+	await CutscenePlayer.caption("CHAPTER THREE\n\nTHE LINE", 4.5)
+	SceneDirector.goto_beat("ch3_road", 0.1)
 
 ## Headless drive: walk to the mark; dialogue autoplay answers correctly.
 func _autoplay_step(delta: float) -> void:
