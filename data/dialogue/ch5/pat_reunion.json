@@ -1,0 +1,114 @@
+{
+	"id": "ch5_pat_reunion",
+	"start": "n_corner",
+	"nodes": {
+		"n_corner": {
+			"speaker": "",
+			"lines": [
+				"(A man in the corner, flipping something small that catches the slat-light. Catch, flip, catch. A coin, you think — until it swings on its chain.)",
+				"(The corner man plays with something bright and small. It spins, stops, spins. Not a coin. A coin doesn't have a saint on it.)"
+			],
+			"next": "p_tex"
+		},
+		"p_tex": {
+			"speaker": "PAT",
+			"lines": [
+				"...I know that shadow. Fellas, be polite — that shadow flew tail on the best worst airplane in England. ...Tex? Tex, tell me the Krauts didn't get watermelon country too.",
+				"...No. No, they don't make shadows that tall in France. Tex? Madonna santa — TEX?"
+			],
+			"next": "n_grip"
+		},
+		"n_grip": {
+			"speaker": "",
+			"lines": [
+				"(A grip like a dock worker's, both hands, a forehead against your shoulder for exactly one second. The count of one is all the boxcar allows.)",
+				"(He is up and on you before the car sways twice. One second of forehead on shoulder. Then he steps back, because the war is watching even here.)"
+			],
+			"next": "p_quiet"
+		},
+		"p_quiet": {
+			"speaker": "PAT",
+			"lines": [
+				"You're waiting for the talking. I know. Sit down, Tex — I ration it now. Turns out talking's how they get in. Three weeks with a polite cop taught me quiet. You'd be proud. Sister Immaculata woulda fainted.",
+				"Look at you waiting for me to run my mouth. I quit, Tex. Cold. The polite one — the cop — he'd just WAIT, you know? Let me fill the room. So I learned what you always knew. Quiet. It only cost me everything."
+			],
+			"choices": [
+				{"text": "The polite cop. Voss. He told me they had you — I didn't believe him.", "next": "p_voss",
+					"autoplay": true},
+				{"text": "Talk all you want, Pat. I missed the noise like an engine.", "next": "p_noise"}
+			]
+		},
+		"p_voss": {
+			"speaker": "PAT",
+			"lines": [
+				"Voss. Yeah. Never raised his voice, never touched me. Knew my parish. Knew about Sal. And Tex — he asked about YOU by name. Hometown. The watermelons. Asked was you a believer. I told him you believed in Texas and Thomas Paine and nothin' else with a capital letter.",
+				"So you met him. The reading man. He asked about you like a cousin at a wedding, Tex — the watermelons, the book. I gave him nothin'. Well. I gave him three weeks of nothin', which from me is a miracle they should write to Rome about."
+			],
+			"next": "p_sal"
+		},
+		"p_noise": {
+			"speaker": "PAT",
+			"lines": [
+				"Yeah? Then get comfortable, 'cause seeing your ugly Texas face just bought the whole car an earful. But first — first you gotta hear the one piece of news I been saving like sugar.",
+				"Missed the noise. Tex, that's the nicest lie anybody told me since France. Okay. One headline first — I been keeping it warm."
+			],
+			"next": "p_sal"
+		},
+		"p_sal": {
+			"speaker": "PAT",
+			"lines": [
+				"Sal. My brother Sal, Tex. A Polish gunner two camps back — he seen a Costa on a ship's manifest at Salerno. 34th Division. That's SAL, it's gotta be. First war both Costa boys are in, and I find out from a Pole in a boxcar. When this thing's over I got an address to look for. First time since the orphanage I got an address, Tex.",
+				"They got Sal on a list at Salerno. My Sal. Some Polish fella seen the name — Costa, S. — 34th Division. Alive and complainin' somewhere in Italy. You know what that is, Tex? That's a THREAD. Sister Immaculata always said God sews with short ones, but he sews."
+			],
+			"choices": [
+				{"text": "Then let's get you to that address. Look at the door, Pat.", "next": "p_door",
+					"autoplay": true},
+				{"text": "She's still batting a thousand, that nun.", "next": "p_nun"}
+			]
+		},
+		"p_nun": {
+			"speaker": "PAT",
+			"lines": [
+				"She don't miss. Medal's still working, Tex — I'm still here, ain't I? Beat-up merchandise, but breathing. ...Now say the thing you're circling. You got your jump face on.",
+				"Never missed once. You know she gave out exactly one medal the day I shipped? One. Like she knew which of us was gonna need the full-time saint. ...All right, out with it. I know that face. That's the face from before the hatch."
+			],
+			"next": "p_door"
+		},
+		"p_door": {
+			"speaker": "PAT",
+			"lines": [
+				"The door. Yeah. The bolt's been worked half-loose since Compiègne — the Poles did the work, then got moved up the train. Before the border there's a grade; the whole rig slows to a walk. That's the door, that's the hour. I just... Tex, I never jumped out of nothin' that wasn't on fire.",
+				"I seen you look at it. The bolt's a tooth ready to come out — two cars of Poles loosened it and got marched off for their trouble. There's a grade before the border, she slows to a crawl. It's the only door outta this war that don't open on Germany. And my legs know it and they still won't vote yes."
+			],
+			"next": "n_medal"
+		},
+		"n_medal": {
+			"speaker": "",
+			"lines": [
+				"(He holds the medal out flat on his palm. The old ritual wants touching before the fall — but this time he waits for you.)",
+				"(The medal sits on his open hand between you, swinging slat-light across the saint. Before every takeoff he touched it alone. He is not asking to do this one alone.)"
+			],
+			"choices": [
+				{"text": "(Both hands on the saint. 'For both of us this time.')", "next": "p_both",
+					"effects": {"touched_medal": true}, "autoplay": true},
+				{"text": "You never needed the saint, Pat. You needed a door. There it is.", "next": "p_door_creed"}
+			]
+		},
+		"p_both": {
+			"speaker": "PAT",
+			"lines": [
+				"For both of us. — Okay. Okay, Tex. Now it's a mission. You count the grade, I pull the bolt, and the first Costa in history leaves a train on purpose.",
+				"Both hands. Sister, you seein' this? A Baptist and everything. — All right. All RIGHT. You count, I pull. And Tex — after the jump, I go back to talking. Full time. Deal's a deal."
+			],
+			"effects": {"pat_ready": true}
+		},
+		"p_door_creed": {
+			"speaker": "PAT",
+			"lines": [
+				"...Heh. You sound like your book. 'The times that try men's souls,' right? Fine. The saint stays in the shirt and we do it your way — but Tex, if that grade comes up short, I'm blaming Thomas Paine personally.",
+				"Madonna, you and that paperback. Okay. Doors over saints, sez the tail gunner. But I'm touchin' it anyway when you ain't looking, and the saint and me will carry the both of us."
+			],
+			"effects": {"pat_ready": true}
+		}
+	}
+}

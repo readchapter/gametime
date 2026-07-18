@@ -30,6 +30,7 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch4/the_choice.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch4/voss_interview.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch4/escape_contingency.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch5/pat_reunion.json")
 	_test_ch4_probes_and_choice()
 	_test_voss_knows_what_you_told_lucien()
 	_test_road_handoff_branches()
