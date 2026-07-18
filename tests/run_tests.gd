@@ -19,6 +19,7 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch3/road_handoff.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch3/safehouse_plan.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch3/checkpoint.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/door17.json")
 	_test_road_handoff_branches()
 	_test_checkpoint_paths()
 	_test_farm_table_walkthrough_good_landing()

@@ -1,0 +1,48 @@
+{
+	"id": "ch4_door17",
+	"start": "s_last",
+	"nodes": {
+		"s_last": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Door seventeen. Two knocks, a breath, one knock — you saw it. From here the city is not mine; Madame Béranger owns the air you breathe now, and she counts every litre of it.",
+				"Here. Seventeen. You saw the knock. Past this door I am nobody again — the woman inside owns the air in her rooms, and she is owed for all of it."
+			],
+			"next": "s_advice"
+		},
+		"s_advice": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"One thing for nothing, American. In the country, danger looks like a uniform. In the city it looks like a favour. Weigh every kindness.",
+				"Free advice, the last thing free in Paris: out here the dangerous men wear uniforms. In there, they bring bread and ask after your mother. Weigh every kindness."
+			],
+			"choices": [
+				{"text": "Thank you. For every field between here and the barn.", "next": "s_bye",
+					"effects": {"thanked_sylvie": true}, "autoplay": true},
+				{"text": "Will I see you again?", "next": "s_no"},
+				{"text": "(Just the nod. Jean's whole vocabulary.)", "next": "s_nod"}
+			]
+		},
+		"s_bye": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Thank the fields. They did the hiding; I only walked in front of you. Go — the breath between the knocks is not a poem, it is a clock.",
+				"Keep the thanks for after the war; they spend better then. Go on. Knock the way you saw."
+			]
+		},
+		"s_no": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"If you see me again and we are lucky, we will not know each other. That is the trade. Go — knock the way you saw.",
+				"If our luck holds, never. If you do see me, walk past me. Now knock."
+			]
+		},
+		"s_nod": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"There he is. Jean Caillet, who says nothing and survives everything. Knock.",
+				"A nod. Keep that man; he is the one they cannot catch talking. Go."
+			]
+		}
+	}
+}
