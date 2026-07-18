@@ -1,0 +1,58 @@
+{
+	"id": "ch4_apartment_meet",
+	"start": "b_door",
+	"nodes": {
+		"b_door": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"In. Shoes off — the widow Fouchet below has ears like a priest. You are the fourth American to stand on that mat this year; two of the others are home, so the mat is lucky. Sit.",
+				"Inside, quickly. Shoes in the hand, not on the floor — Fouchet below reports creaks the way other women report crimes. Sit. The mat you stood on is lucky; do not ask about the odds."
+			],
+			"next": "b_rules"
+		},
+		"b_rules": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"The rules are three. You do not touch the shutters. You do not answer the door, not even to God. And whatever you hear on the stairs, you are a coat in that wardrobe until I say otherwise. Repeat none of this; remember all of it.",
+				"Three rules keep this floor alive. Shutters stay shut. The door answers to my hand only. And when the stairs speak, you become a coat in the wardrobe and coats do not breathe loudly. That is the whole law."
+			],
+			"next": "f_intro"
+		},
+		"f_intro": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"Lt. Dale Freeman, 92nd. B-17s, ball turret — don't laugh, I fit. Three weeks on this floor, buddy. Three. My ankle's done healing and the wallpaper and I are out of conversation.",
+				"Freeman. Dale. 92nd Bomb Group — ball turret, and yes, I folded in there fine. Week three in this room, pal. The ankle's healed. The wallpaper has no news. I'd trade a toe for a sidewalk."
+			],
+			"choices": [
+				{"text": "Boyd. Tail gunner. How's the line treating you?", "next": "f_line",
+					"autoplay": true},
+				{"text": "Three weeks safe is three weeks alive, Lieutenant.", "next": "f_safe",
+					"effects": {"counseled_patience": true}}
+			]
+		},
+		"f_line": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"Slow. Papers, papers, wait, papers. But there's a fella — Lucien — you'll meet him, he's the only one in this town who moves. Got two Poles to Spain in nine days flat, they say.",
+				"The line? A queue with prayers. Except Lucien — he'll turn up, he brings the bread. That guy MOVES. Nine days to Spain for two Polish boys, I heard. Nine."
+			],
+			"next": "b_flat"
+		},
+		"f_safe": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"That's what she says too. You'll fit right in — the two of you can wait at each other. Me, I count days. I'm at twenty-two.",
+				"Sure, sure — alive and mummified. You and Madame will get along; waiting's her religion. I'm at day twenty-two of the novena."
+			],
+			"next": "b_flat"
+		},
+		"b_flat": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"The lieutenant confuses a corridor with a cage. Soup is at eight. The other one will come tonight with the bread — he is charming. Note that I did not say more than that.",
+				"He calls it a cage; I call it a floor nobody has died on. Soup at eight. Tonight the bread comes, and the young man who carries it is charming — and note, monsieur, that this is the entire compliment."
+			]
+		}
+	}
+}

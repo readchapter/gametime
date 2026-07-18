@@ -1,0 +1,42 @@
+{
+	"id": "ch4_probe_crash",
+	"start": "l_farmers",
+	"nodes": {
+		"l_farmers": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"You know the line pays the farmers who hid you? Quietly, after. It is the honour of the thing. So — where did you come down? A village, a field, anything; I match it to the ledger and someone's courage becomes bread.",
+				"A gentle question, for the ledger: where did the sky put you? The line pays the houses that opened. A parish, a road, a beet field — any thread, and I can see the right pocket is filled."
+			],
+			"choices": [
+				{"text": "Pay every farm in Picardy, then. I never asked the parish.", "next": "l_crash_deflect",
+					"autoplay": true},
+				{"text": "North of a river. There was a barn. It was dark.", "next": "l_crash_vague"},
+				{"text": "A beet field near a farm — the family had a boy, Luc. They earned it.", "next": "l_crash_reveal",
+					"effects": {"+exposure": 1, "told_lucien_farm": true}}
+			]
+		},
+		"l_crash_deflect": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Every farm in Picardy! You are a philanthropist. All right, all right — the ledger stays thin and the courage stays anonymous. It is more elegant that way, if less nourishing.",
+				"Ha — pay the whole north, why not. You give like a bishop, my friend. Fine: anonymous courage. The purest kind, and the cheapest for me."
+			]
+		},
+		"l_crash_vague": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"A river, a barn, the dark. My friend, you describe France. No matter — the ledger has heard vaguer and paid anyway.",
+				"North of a river! There are four rivers and nine hundred barns. Poetic and useless — like most true things. The ledger will cope."
+			],
+			"effects": {"told_lucien_vague": true}
+		},
+		"l_crash_reveal": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"A boy called Luc — how good you are with the details. The ledger loves details; they are how the right family gets the right bread. Consider their courage… banked.",
+				"Near a beet field, a family, a boy Luc. Perfect. Exactly what the ledger wants — precision is kindness, you see. They will be looked after, monsieur. Personally."
+			]
+		}
+	}
+}

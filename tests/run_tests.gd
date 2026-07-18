@@ -20,6 +20,15 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch3/safehouse_plan.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch3/checkpoint.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch4/door17.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/apartment_meet.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/lucien_meet.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/probe_name.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/probe_crash.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/probe_carry.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/paine_book.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/warnings.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/the_choice.json")
+	_test_ch4_probes_and_choice()
 	_test_road_handoff_branches()
 	_test_checkpoint_paths()
 	_test_farm_table_walkthrough_good_landing()
@@ -83,6 +92,30 @@ func _test_road_handoff_branches() -> void:
 	_check("s_sharp" in visited, "doubting Willis earns the sharp greeting")
 	_check("s_rules" in visited, "handoff reaches the rules")
 	_check(bool(GameState.get_flag("trust_sylvie")), "first choice sets trust_sylvie")
+
+func _test_ch4_probes_and_choice() -> void:
+	# Careful path: deflect everything — zero exposure, stays with Béranger.
+	GameState.flags.clear()
+	GameState.set_flag("exposure", 0)
+	for p in ["probe_name", "probe_crash", "probe_carry"]:
+		_run_dialogue("res://data/dialogue/ch4/%s.json" % p)
+	_check(int(GameState.get_flag("exposure", 0)) == 0, "deflections accrue no exposure")
+	var visited := _run_dialogue("res://data/dialogue/ch4/the_choice.json")
+	_check("stay_slow" in visited, "first-choice path stays with Béranger")
+	_check(not bool(GameState.get_flag("ch4_took_fast_route")), "fast route flag false on stay")
+	# Careless path: reveal everything — max exposure; the paper probe only
+	# presses harder when the Ch2 lie travelled up the line.
+	GameState.flags.clear()
+	GameState.set_flag("exposure", 0)
+	GameState.set_flag("lied_document", true)
+	for p in ["probe_name", "probe_crash", "probe_carry"]:
+		_run_dialogue("res://data/dialogue/ch4/%s.json" % p, true)
+	_check(int(GameState.get_flag("exposure", 0)) == 4, "reveals accrue exposure (got %d)"
+		% int(GameState.get_flag("exposure", 0)))
+	_check(bool(GameState.get_flag("told_lucien_paper")), "paper reveal flagged")
+	visited = _run_dialogue("res://data/dialogue/ch4/the_choice.json", true)
+	_check("go_fast" in visited, "last-choice path takes the fast route")
+	_check(bool(GameState.get_flag("ch4_took_fast_route")), "fast route flag set")
 
 func _test_checkpoint_paths() -> void:
 	# Clean cover, no document lie: correct (first) choices pass.

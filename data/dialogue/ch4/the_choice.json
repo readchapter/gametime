@@ -1,0 +1,80 @@
+{
+	"id": "ch4_the_choice",
+	"start": "f_news",
+	"nodes": {
+		"f_news": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"Boyd. Boyd — it's on. Lucien's route, the fast one. Courtyard on the Rue Traversière, tomorrow, before light. Forty-eight hours later I'm looking at Spain. He held two places. TWO, Boyd.",
+				"Hey — pack light, tail gunner. Lucien came through: the fast route, tomorrow before dawn, a courtyard two streets over. Spain in two days. And he saved two seats — one's got your name on it if you want it."
+			],
+			"next": "f_pitch"
+		},
+		"f_pitch": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"Look — I know what the old lady thinks, I've had three weeks of her soup and her proverbs. But every day on this floor is a day some clerk gets closer to this address. Waiting isn't safe, Boyd. Waiting is just slow getting caught.",
+				"Don't give me the look. I know Madame's sermon — the helpful ones, the bread, the dogs. Three weeks I've heard it, and in three weeks her route has moved me zero kilometres. The address is a clock, Boyd. I'm done listening to it tick."
+			],
+			"next": "b_enters"
+		},
+		"b_enters": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"(From the stove, without turning:) The soup is nearly ready, gentlemen. It is a slow soup. It has never poisoned anyone.",
+				"(Not looking up from the pot:) Supper in ten minutes, messieurs. Slow soup. Every man who ever ate it is accounted for."
+			],
+			"next": "the_choice"
+		},
+		"the_choice": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"Before light, Boyd. Two seats. I need your answer.",
+				"Dawn, the courtyard, two seats. In or out, Boyd — I need it now."
+			],
+			"choices": [
+				{"text": "I stay with Madame's route. Kindness that fast has a price.", "next": "stay_slow",
+					"effects": {"ch4_took_fast_route": false}, "autoplay": true},
+				{"text": "Don't take it, Dale. Nine days to Spain — nobody's that good. Wait with me.", "next": "warn",
+					"effects": {"warned_freeman": true}},
+				{"text": "I'm in. Waiting is its own kind of risk.", "next": "go_fast",
+					"effects": {"ch4_took_fast_route": true}}
+			]
+		},
+		"warn": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"...You sound like her. Maybe you're both right. Maybe careful people write the histories because the fast ones aren't around to. But my ankle's healed, my nerve isn't, and if I count one more day of wallpaper I'm going to do something dumber than trust a fast route. I'm going, Boyd. Last chance — with me, or waving from the window?",
+				"Damn it, Boyd, don't do the soup-and-proverbs thing, not you too. ...Look. Maybe it smells. I can't smell anything anymore, that's the truth — three weeks and my nose is all wallpaper. I'd rather be wrong moving than right in a wardrobe. I'm on that route. You coming?"
+			],
+			"choices": [
+				{"text": "No. And I'll be at that window praying I'm the fool.", "next": "stay_slow",
+					"effects": {"ch4_took_fast_route": false}, "autoplay": true},
+				{"text": "Then I'm coming. Somebody has to watch your back.", "next": "go_fast",
+					"effects": {"ch4_took_fast_route": true}}
+			]
+		},
+		"go_fast": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"(The spoon stops. Only a moment.) Then eat first, messieurs. Even the fast route is slower than a meal. — I will wrap bread for two.",
+				"(A silence exactly the length of a prayer.) Very well. Soup first. No route was ever missed for soup. I will wrap bread; the fast ones never think of bread."
+			]
+		},
+		"stay_slow": {
+			"speaker": "FREEMAN",
+			"lines": [
+				"Yeah. Well. When you're still doing wallpaper appreciation in August, think of me eating oranges in Gibraltar. ...No hard feelings, Boyd. Every man picks his own door out of this.",
+				"Your funeral — the long, boring kind. ...Ah, hell. Forget I said that. You're a good gunner, Boyd. If the slow road works, drink one for the fast one, huh?"
+			],
+			"next": "b_after"
+		},
+		"b_after": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"(Quietly, to the pot:) One bread to wrap, then.",
+				"(To the pot, not to you:) So. One portion of sense on this floor after all."
+			]
+		}
+	}
+}

@@ -1,0 +1,56 @@
+{
+	"id": "ch4_probe_carry",
+	"start": "l_search",
+	"nodes": {
+		"l_search": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Last thing, then I vanish till the bread runs out. At the demarcation they search — hands in every seam. If you carry anything… sensitive — letters, photographs, souvenirs with opinions — better it travels ahead with me. I have pockets the Reich has never imagined.",
+				"One more matter and I am gone. The searches on the trains are becoming... intimate. If there is anything on you that argues — papers, keepsakes, anything with words — give it to me tonight and it crosses France without a heartbeat. My pockets are diplomatic territory."
+			],
+			"next": "l_search_branch"
+		},
+		"l_search_branch": {
+			"branch": {"flag": "lied_document", "if_true": "l_search_pressed", "if_false": "l_search_open"}
+		},
+		"l_search_pressed": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"…And I ask because a little bird in the country says an airman came down with something worth a file in Berlin. Birds exaggerate. But if it were true, that man's pockets would be a debt to every hand that hid him, no?",
+				"I ask specially of YOU, my friend, because the country talks — some paper, they say, that fell with an airman and made Berlin sit up. Gossip, surely. But a man carrying such a thing owes it to the line to unload it. No?"
+			],
+			"choices": [
+				{"text": "(Nothing. Birds exaggerate.)", "next": "l_carry_deflect", "autoplay": true},
+				{"text": "There was a paper. The schoolmaster kept it. It's gone ahead already.", "next": "l_carry_reveal",
+					"effects": {"+exposure": 2, "told_lucien_paper": true}}
+			]
+		},
+		"l_search_open": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"So? Empty pockets, clean seams? Even a photograph of a girl — the censors read love letters like tax men, believe me.",
+				"Well? Anything? A letter, a snapshot, a lucky charm with a serial number? The searchers have no romance in them at all."
+			],
+			"choices": [
+				{"text": "Nothing on me but lint and Madame's soup.", "next": "l_carry_deflect",
+					"autoplay": true},
+				{"text": "There was something once. A paper. It went to London another way.", "next": "l_carry_reveal",
+					"effects": {"+exposure": 2, "told_lucien_paper": true}}
+			]
+		},
+		"l_carry_deflect": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Lint and soup — the ideal passenger. Then we are done, and I take my curiosity elsewhere. It is my only vice, you know. Everyone should have just the one.",
+				"Clean as a collection plate. Good. Forgive the questions — curiosity is my one vice and I feed it so it stays small. Sleep well, my friend."
+			]
+		},
+		"l_carry_reveal": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Ahh — so the bird sang true. Gone to London 'another way'… of course. The schoolmaster's way. You see how the line works when it works? Beautiful. Forget I asked, and I will forget you answered.",
+				"So there WAS a paper. And the schoolmaster has his own road to London — naturally, naturally. What a machine we are when the parts don't know each other! There — forgotten. Both of us. Completely."
+			]
+		}
+	}
+}

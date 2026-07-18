@@ -1,0 +1,41 @@
+{
+	"id": "ch4_paine_book",
+	"start": "l_spot",
+	"nodes": {
+		"l_spot": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Wait — what is this in your kit? English print? My friend. My dear friend. In this city that little book is a signed confession with a cover.",
+				"Oh no. No no no. A book — in ENGLISH — riding in your pocket across my nice safe floor? That is not literature, that is evidence with page numbers."
+			],
+			"next": "b_take"
+		},
+		"b_take": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"Give it here. — Paine. 'These are the times that try men's souls.' My husband had the French of it. I will keep this for after the war, monsieur; paper burns, and so do the men who carry it.",
+				"To me, not to him. — Thomas Paine. My husband kept the French edition behind the flour. It stays with me until your war and mine are finished. Paper burns, monsieur. So do carriers."
+			],
+			"choices": [
+				{"text": "It came from Hempstead with me. Keep it safe, Madame.", "next": "b_keep",
+					"effects": {"paine_kept": true}, "autoplay": true},
+				{"text": "I'd rather burn it myself than let it out of my hands.", "next": "b_burn_refused",
+					"effects": {"paine_kept": true}}
+			]
+		},
+		"b_keep": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"Then it has crossed one ocean and it can sit out the rest in a flour tin. You will drink a coffee in this room after the war, monsieur, and I will hand it back with the receipt.",
+				"From Texas to my flour tin — it has had a war already. It will be here when you come back for it. Men return for books; I have seen it. It is the medals they leave in drawers."
+			]
+		},
+		"b_burn_refused": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"No. You will not burn it and you will not keep it; both are sentiments and sentiments leak. The flour tin has kept better secrets than yours. After the war, monsieur. That is the arrangement.",
+				"Burn it! And mourn it loudly where Fouchet can hear? No. The tin. After the war you may be sentimental on your own floor."
+			]
+		}
+	}
+}

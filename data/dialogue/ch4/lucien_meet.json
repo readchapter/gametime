@@ -1,0 +1,50 @@
+{
+	"id": "ch4_lucien_meet",
+	"start": "l_in",
+	"nodes": {
+		"l_in": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Bread, real coffee — do not ask — and… ah! The new guest! Madame, you kept him from me a whole hour. Lucien. I am the errand boy of this arrondissement, and tonight the errand is welcome.",
+				"Ladies, gentlemen — bread that is bread, coffee that is nearly coffee, and — the new face! An hour in Paris and hidden from me already, Madame, you wound me. I am Lucien; I fetch things. Tonight I fetch a welcome."
+			],
+			"next": "l_warm"
+		},
+		"l_warm": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"An American. No — do not say anything, the boots say it, the shoulders say it. My English is from the cinema, forgive it. You are safe here, my friend. Madame's floor is the best address in the city that does not exist.",
+				"American, yes? No no — say nothing, I read boots the way Madame reads faces. Forgive the cinema English. But look at you — safe! On the best floor of the invisible city, with the best landlady in it."
+			],
+			"choices": [
+				{"text": "(A nod. Let him talk; talkers draw maps of themselves.)", "next": "l_maps",
+					"autoplay": true},
+				{"text": "Good to meet a friendly face. It's been all fields and cellars.", "next": "l_fields",
+					"effects": {"+exposure": 1}}
+			]
+		},
+		"l_maps": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"And careful too! Good. Careful men reach Spain; friendly men reach photographs in the wrong offices. You see? I approve of you already.",
+				"Quiet, hm? Excellent. The quiet ones I get to Spain; the chatty ones I read about later. We will be great friends — I will do the talking for us both."
+			],
+			"next": "l_leave"
+		},
+		"l_fields": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Fields and cellars! The whole tour — Picardy mud, I would guess, from the state of those boots. You poor man. Well: no more cellars. From here it is trains and papers, and papers are my little kingdom.",
+				"Cellars — of course. And mud with chalk in it, that is the north, that is Picardy on your boots. Done with all that now. Here it is papers and timetables, and I am a very minor king of both."
+			],
+			"next": "l_leave"
+		},
+		"l_leave": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"The bread, Lucien. The soup will not wait on your theatre.",
+				"Bread on the table, Lucien. Your performance is between courses."
+			]
+		}
+	}
+}

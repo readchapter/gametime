@@ -1,0 +1,49 @@
+{
+	"id": "ch4_warnings",
+	"start": "b_stove",
+	"nodes": {
+		"b_stove": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"Stir this while I sit; my back is older than the Republic. — You watch the door for the boy with the bread. I have watched that door eleven years. May I tell you what I know about doors?",
+				"Hold the spoon; the soup respects no one. — You listen for Lucien's knock like the others did. Eleven years I have owned that door. Shall I tell you what doors have taught me?"
+			],
+			"next": "b_warn1"
+		},
+		"b_warn1": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"In this city the helpful ones bury you. Not the cruel ones — the cruel ones you smell. The helpful ones smell of bread. I say nothing about anyone. I say something about bread.",
+				"It is never the wolf that empties a floor like mine; wolves are loud. It is the retriever. Eager, warm, comes when called, brings things. I accuse nobody, monsieur. I describe a dog."
+			],
+			"choices": [
+				{"text": "You're speaking about Lucien.", "next": "b_direct", "autoplay": true},
+				{"text": "(Stir the soup. Let her decide how much to say.)", "next": "b_oblique",
+					"effects": {"trust_beranger": true}}
+			]
+		},
+		"b_direct": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"I am speaking about soup, monsieur; look, you have let it stick. — In eleven years, four floors like mine have emptied in a single night each. Every one of them had a young man everyone loved. Perhaps four coincidences. I no longer believe in three.",
+				"I am speaking of dogs and bread and you are putting names to it, which is reckless of you and useless of me to prevent. Four safe floors gone in four years, monsieur. Each had its darling. Draw nothing; I drew nothing. Merely count."
+			],
+			"next": "b_close"
+		},
+		"b_oblique": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"Good. You stir and say nothing. My husband stirred like that. He lasted three years at a war other men lasted three weeks at; the spoon knows why.",
+				"There. A man who lets a warning be a warning without demanding it become an accusation. You may live to be old, monsieur. Stir."
+			],
+			"next": "b_close"
+		},
+		"b_close": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"The slow route is slow because it checks its own pockets. When the lieutenant tells you about the fast one — and he will, tonight, his eyes are full of it — remember the soup.",
+				"Tonight the lieutenant will offer you speed; it is all over him like pollen. Speed in this city is a smell too, monsieur. When he offers, remember what stuck to the pot."
+			]
+		}
+	}
+}

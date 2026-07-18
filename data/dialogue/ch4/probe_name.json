@@ -1,0 +1,42 @@
+{
+	"id": "ch4_probe_name",
+	"start": "l_papers",
+	"nodes": {
+		"l_papers": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Now — business, forgive me. Papers. Jean Caillet is a fine coat but it is Sylvie's stitching; the city needs its own. For the file behind the file I need the true name — spelling exact. London confirms it, the line pays out, everything breathes easier.",
+				"A small ugly necessity, my friend: papers. The Caillet coat was country cut; Paris tailors deeper. For the real file — the one London checks — I need the true name, letter by letter. It is how the line gets paid for you, you see."
+			],
+			"choices": [
+				{"text": "Sylvie said my name stays behind my teeth. Ask London for it.", "next": "l_name_deflect",
+					"autoplay": true},
+				{"text": "They call me Tex. That's all any file needs.", "next": "l_name_partial"},
+				{"text": "Boyd. Travis Boyd. Spell it how it sounds.", "next": "l_name_reveal",
+					"effects": {"+exposure": 1, "told_lucien_name": true}}
+			]
+		},
+		"l_name_deflect": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Ha! Wonderful. Exactly right — and if you had answered, I would have worried for you. London it is; slower, but slow money spends the same. You have been well taught, my careful friend.",
+				"Perfect answer! Truly — I test, you pass, everyone is prettier for it. London will send the name by the long road. Bravo. Whoever trained you, I owe them a drink."
+			]
+		},
+		"l_name_partial": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Tex! Of course you are. Half of Texas is flying over us and the other half is walking through my kitchen. Fine — 'Tex' goes in my little book, and London can dress it properly.",
+				"'Tex.' The great American surname. You know I have three Texes this season? Fine, fine — the book takes what it is given."
+			],
+			"effects": {"told_lucien_nickname": true}
+		},
+		"l_name_reveal": {
+			"speaker": "LUCIEN",
+			"lines": [
+				"Boyd. B-O-Y-D, Travis. There — was that so dangerous? Now the file is real, the money is real, and you, my friend, are one signature closer to Spain.",
+				"Travis Boyd. Good. A name a man can be paid for— that the LINE can be paid for, I mean. My English, forgive it. One step closer to the mountains, monsieur Boyd."
+			]
+		}
+	}
+}
