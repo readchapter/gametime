@@ -402,6 +402,20 @@ def radio_static(dur=22.0):
     voice = lp(brown(dur), 400) * 0.25 * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * t(dur) / 3.7)))
     return static + whine + pips + voice
 
+def chapter_sting(dur=9.0):
+    """End-of-chapter sting: one dark swell on the title theme's A-minor
+    root, surfacing and sinking. Non-looping."""
+    n = int(SR * dur)
+    x = np.zeros(n)
+    for f, g in ((55.0, 0.5), (82.4, 0.3), (110.0, 0.18), (164.8, 0.08)):
+        ph = rng.uniform(0, 6.28)
+        for d in (-0.3, 0.0, 0.3):
+            x += np.sin(2 * np.pi * (f + d) * t(dur) + ph) * g / 3
+    x = lp(x, 420)
+    swell = np.sin(np.pi * np.clip(t(dur) / dur, 0, 1)) ** 1.6
+    hi = np.sin(2 * np.pi * 659.3 * t(dur)) * 0.03 * np.clip(swell - 0.5, 0, 1) * 2
+    return (x * swell) + hi
+
 def stamp_thunk():
     """A rubber stamp brought down hard on papers over wood, twice."""
     dur = 1.1
@@ -468,5 +482,6 @@ if __name__ == "__main__":
     write_wav("ambient/station_dusk", loopify(np.stack([station_dusk(30), station_dusk(30)])), -19)
     write_wav("sfx/radio_static", radio_static(), -16)
     write_wav("sfx/stamp_thunk", stamp_thunk(), -11)
+    write_wav("sfx/chapter_sting", chapter_sting(), -15)
     write_wav("music/title_theme", loopify(np.stack([title_theme(52), title_theme(52)]), 1.0), -16)
     print("done")

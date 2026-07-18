@@ -186,16 +186,7 @@ func _seated(mb: MeshBuilder, at: Vector3, cloth: Color) -> void:
 		mb.box(Vector3(0.09, 0.5, 0.12), at + Vector3(side, 0.60, 0.04), cloth.darkened(0.1))
 
 func _standing(at: Vector3, yaw: float, cloth: Color, armed: bool) -> Node3D:
-	var mb := MeshBuilder.new()
-	for side: float in [-0.10, 0.10]:
-		mb.box(Vector3(0.13, 0.78, 0.15), Vector3(side, 0.39, 0.0), cloth.darkened(0.25))
-	mb.box(Vector3(0.40, 0.62, 0.24), Vector3(0, 1.09, 0.0), cloth)
-	for side: float in [-0.245, 0.245]:
-		mb.box(Vector3(0.09, 0.55, 0.12), Vector3(side, 1.10, 0.0), cloth.darkened(0.1))
-	mb.sphere(0.115, 0.23, Vector3(0, 1.55, 0.0), SKIN)
-	if armed:
-		mb.box(Vector3(0.06, 1.15, 0.06), Vector3(0.30, 1.05, -0.05), Color(0.10, 0.08, 0.06), 0.15)
-	var node := mb.commit_instance("Figure")
+	var node := Figures.standing(cloth, false, armed)
 	node.position = at
 	node.rotation.y = yaw
 	add_child(node)
@@ -280,6 +271,7 @@ func _pass() -> void:
 	await get_tree().create_timer(2.0, false).timeout
 	AudioManager.stop_ambient(3.0)
 	await SceneDirector.fade_out(2.5)
+	AudioManager.play_sfx("chapter_sting", -6.0)
 	await CutscenePlayer.caption("At dawn, Jean Caillet moves west.", 4.0)
 	await CutscenePlayer.caption("The paper goes to London by a route that is not him.\nSomewhere, someone opens a file about it.", 5.0)
 	await CutscenePlayer.caption("END OF CHAPTER TWO", 4.0)

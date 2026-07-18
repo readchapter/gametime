@@ -84,15 +84,7 @@ func _night() -> void:
 			Kit.tint_node(child, Color(0.16, 0.18, 0.20))
 
 func _figure(at: Vector3) -> Node3D:
-	var node := ModelLib.get_model("villager_standing", func() -> Node3D:
-		var mb := MeshBuilder.new()
-		for side: float in [-0.10, 0.10]:
-			mb.box(Vector3(0.13, 0.78, 0.15), Vector3(side, 0.39, 0.0), CLOTH_MARCEL.darkened(0.25))
-		mb.box(Vector3(0.40, 0.62, 0.24), Vector3(0, 1.09, 0.0), CLOTH_MARCEL)
-		for side: float in [-0.245, 0.245]:
-			mb.box(Vector3(0.09, 0.55, 0.12), Vector3(side, 1.10, 0.0), CLOTH_MARCEL.darkened(0.1))
-		mb.sphere(0.115, 0.23, Vector3(0, 1.55, 0.0), Color(0.42, 0.33, 0.27))
-		return mb.commit_instance("Marcel"))
+	var node := Figures.villager(CLOTH_MARCEL, "Marcel")
 	node.position = Vector3(at.x, _h(at.x, at.z), at.z)
 	add_child(node)
 	return node

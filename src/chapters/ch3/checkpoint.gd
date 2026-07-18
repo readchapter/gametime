@@ -154,18 +154,38 @@ func _build_forecourt() -> void:
 	pillar.box(Vector3(0.9, 5.0, 0.9), VOSS_AT + Vector3(-0.9, 2.5, 0), STONE.darkened(0.25))
 	add_child(pillar.commit_instance("Pillar"))
 
-func _standing(at: Vector3, yaw: float, cloth: Color, hat := false) -> Node3D:
+	_build_dressing()
+
+## Sandbags at the table, rope posts along the queue, notices on the walls.
+func _build_dressing() -> void:
 	var mb := MeshBuilder.new()
-	for side: float in [-0.10, 0.10]:
-		mb.box(Vector3(0.13, 0.78, 0.15), Vector3(side, 0.39, 0.0), cloth.darkened(0.25))
-	mb.box(Vector3(0.40, 0.62, 0.24), Vector3(0, 1.09, 0.0), cloth)
-	for side: float in [-0.245, 0.245]:
-		mb.box(Vector3(0.09, 0.55, 0.12), Vector3(side, 1.10, 0.0), cloth.darkened(0.1))
-	mb.sphere(0.115, 0.23, Vector3(0, 1.55, 0.0), SKIN)
-	if hat:
-		mb.box(Vector3(0.30, 0.05, 0.30), Vector3(0, 1.64, 0), cloth.darkened(0.2))
-		mb.box(Vector3(0.22, 0.14, 0.22), Vector3(0, 1.72, 0), cloth.darkened(0.2))
-	var node := mb.commit_instance("Figure")
+	var bag := Color(0.33, 0.30, 0.22)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 43
+	# Sandbag revetment flanking the table
+	for row in 3:
+		for i in 4 - row:
+			for side: float in [-1.0, 1.0]:
+				mb.box(Vector3(0.62, 0.26, 0.34),
+					TABLE_AT + Vector3(side * 2.6 + (i - 1.5 + row * 0.5) * 0.64,
+						0.13 + row * 0.26, 0.55 + rng.randf_range(-0.04, 0.04)),
+					bag.lightened(rng.randf_range(-0.05, 0.08)), rng.randf_range(-0.08, 0.08))
+	# Rope posts guiding the queue
+	for z: float in [-1.0, 1.4, 3.8, 6.2]:
+		for side: float in [-1.3, 1.9]:
+			mb.box(Vector3(0.09, 1.0, 0.09), Vector3(side, 0.5, z), Color(0.13, 0.12, 0.11))
+			mb.box(Vector3(0.05, 0.05, 2.4), Vector3(side, 0.88, z + 1.2), Color(0.30, 0.26, 0.20))
+	# Bekanntmachung notices: pale sheets with a dark header band
+	for spec: Array in [[Vector3(-6.5, 2.0, -10.05), 0.0], [Vector3(5.8, 1.8, -10.05), 0.0],
+			[Vector3(-13.55, 1.9, -3.0), PI / 2], [Vector3(13.55, 2.1, 4.0), -PI / 2]]:
+		var yaw: float = spec[1]
+		var b := Basis(Vector3.UP, yaw)
+		mb.box(Vector3(0.9, 1.25, 0.04), spec[0], Color(0.72, 0.70, 0.62), yaw)
+		mb.box(Vector3(0.9, 0.28, 0.05), spec[0] + b * Vector3(0, 0.44, -0.005), Color(0.12, 0.10, 0.10), yaw)
+	add_child(mb.commit_instance("Dressing"))
+
+func _standing(at: Vector3, yaw: float, cloth: Color, hat := false) -> Node3D:
+	var node := Figures.standing(cloth, hat)
 	node.position = at
 	node.rotation.y = yaw
 	add_child(node)
@@ -282,6 +302,7 @@ func _through() -> void:
 	await get_tree().create_timer(4.0, false).timeout
 	AudioManager.stop_ambient(2.5)
 	await SceneDirector.fade_out(2.5)
+	AudioManager.play_sfx("chapter_sting", -6.0)
 	await CutscenePlayer.caption("The city swallows Jean Caillet whole.", 4.5)
 	await CutscenePlayer.caption("Behind him, a man in a long coat gets into a car\nand opens a folder with one photograph in it.", 5.5)
 	await CutscenePlayer.caption("END OF CHAPTER THREE", 4.0)

@@ -41,6 +41,7 @@ CC-BY with attribution recorded in `CREDITS.md`). Good sources: freesound.org
 | `alarm_bell` | The B-17 bail-out bell: three hard rings. |
 | `radio_static` | BBC under a blanket: static, heterodyne drift, time pips. (Ch3) |
 | `stamp_thunk` | A rubber stamp brought down twice on papers over wood. (Ch3) |
+| `chapter_sting` | End-of-chapter sting: one dark A-minor swell, ~9s. |
 
 Search-term suggestions: "b17 interior", "bomber engine loop", "50 cal single",
 "flak", "parachute deploy", "wind howl loop", "fireplace crackle room tone",

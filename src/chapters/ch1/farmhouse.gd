@@ -415,6 +415,7 @@ func _on_bed(player: Node) -> void:
 	GameState.chapter = 2
 	GameState.save_game()
 	AudioManager.stop_ambient(3.0)
+	AudioManager.play_sfx("chapter_sting", -6.0)
 	await CutscenePlayer.play("res://data/cutscenes/ch1/farmhouse_end.json", self)
 	# Straight into Chapter 2: the morning after, same rooms.
 	SceneDirector.goto_beat("ch2_morning", 0.1)

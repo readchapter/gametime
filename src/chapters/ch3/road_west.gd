@@ -84,16 +84,7 @@ func _dawn() -> void:
 	sky_mat.set_shader_parameter("cloud_shadow_color", Color(0.40, 0.42, 0.50))
 
 func _figure(at: Vector3, cloth: Color, fig_name: String) -> Node3D:
-	var node := ModelLib.get_model("villager_standing", func() -> Node3D:
-		var mb := MeshBuilder.new()
-		for side: float in [-0.10, 0.10]:
-			mb.box(Vector3(0.13, 0.78, 0.15), Vector3(side, 0.39, 0.0), cloth.darkened(0.25))
-		mb.box(Vector3(0.40, 0.62, 0.24), Vector3(0, 1.09, 0.0), cloth)
-		for side: float in [-0.245, 0.245]:
-			mb.box(Vector3(0.09, 0.55, 0.12), Vector3(side, 1.10, 0.0), cloth.darkened(0.1))
-		mb.sphere(0.115, 0.23, Vector3(0, 1.55, 0.0), SKIN)
-		return mb.commit_instance(fig_name))
-	node.name = fig_name
+	var node := Figures.villager(cloth, fig_name)
 	node.position = Vector3(at.x, _h(at.x, at.z), at.z)
 	add_child(node)
 	return node

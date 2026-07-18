@@ -206,14 +206,7 @@ func _build_furnishing() -> void:
 	add_child(_day_light)
 
 func _build_people() -> void:
-	var mb := MeshBuilder.new()
-	for side: float in [-0.10, 0.10]:
-		mb.box(Vector3(0.13, 0.78, 0.15), Vector3(side, 0.39, 0.0), CLOTH_SYLVIE.darkened(0.25))
-	mb.box(Vector3(0.40, 0.62, 0.24), Vector3(0, 1.09, 0.0), CLOTH_SYLVIE)
-	for side: float in [-0.245, 0.245]:
-		mb.box(Vector3(0.09, 0.55, 0.12), Vector3(side, 1.10, 0.0), CLOTH_SYLVIE.darkened(0.1))
-	mb.sphere(0.115, 0.23, Vector3(0, 1.55, 0.0), SKIN)
-	_sylvie = mb.commit_instance("Sylvie")
+	_sylvie = Figures.villager(CLOTH_SYLVIE, "Sylvie")
 	_sylvie.position = Vector3(1.1, 0, -0.9)
 	_sylvie.rotation.y = -0.6
 	add_child(_sylvie)
