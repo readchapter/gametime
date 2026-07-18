@@ -322,7 +322,8 @@ func _through() -> void:
 	GameState.chapter = 4
 	GameState.set_flag("ch3_complete")
 	GameState.save_game()
-	get_tree().change_scene_to_file("res://src/ui/title.tscn")
+	await CutscenePlayer.caption("CHAPTER FOUR\n\nTHE HELPFUL ONES", 4.5)
+	SceneDirector.goto_beat("ch4_arrival", 0.1)
 
 func _process(delta: float) -> void:
 	_t += delta

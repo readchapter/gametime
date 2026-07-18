@@ -237,6 +237,8 @@ func _test_beat_scene_lookup() -> void:
 		"ch2 beat resolves")
 	_check(SceneDirector.beat_scene("ch3_checkpoint").ends_with("checkpoint.tscn"),
 		"ch3 beat resolves")
+	_check(SceneDirector.beat_scene("ch4_break").ends_with("the_break.tscn"),
+		"ch4 beat resolves")
 	_check(SceneDirector.beat_scene("nope") == "", "unknown beat resolves empty")
 
 func _test_landing_grades() -> void:
