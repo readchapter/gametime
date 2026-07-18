@@ -71,7 +71,7 @@ func _build_family() -> void:
 	_standing_figure(Vector3(-2.75, 0, 1.25), PI / 2 + 0.5, CLOTH_MARG, "Marguerite")
 	var luc := ModelLib.get_model("villager_seated", func() -> Node3D:
 		var mb := MeshBuilder.new()
-		_figure(mb, Vector3.ZERO, 0.0, CLOTH_LUC)
+		Figures.seated(mb, Vector3.ZERO, CLOTH_LUC, 0.0)
 		return mb.commit_instance("Luc"))
 	luc.position = TABLE + Vector3(0.95, 0, 0.0)
 	luc.rotation.y = -PI / 2

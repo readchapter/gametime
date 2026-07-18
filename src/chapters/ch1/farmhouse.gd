@@ -264,20 +264,11 @@ func _build_family() -> void:
 		var cloth: Color = s[2]
 		var node := ModelLib.get_model("villager_seated", func() -> Node3D:
 			var mb := MeshBuilder.new()
-			_figure(mb, Vector3.ZERO, 0.0, cloth)
+			Figures.seated(mb, Vector3.ZERO, cloth, 0.0)
 			return mb.commit_instance("Villager"))
 		node.position = s[0]
 		node.rotation.y = s[1]
 		add_child(node)
-
-## A seated figure: abstract, dark-clothed, readable in lamplight.
-func _figure(mb: MeshBuilder, at: Vector3, yaw: float, cloth: Color) -> void:
-	var b := Basis(Vector3.UP, yaw)
-	mb.box(Vector3(0.38, 0.58, 0.26), at + b * Vector3(0, 0.80, 0.02), cloth, yaw)
-	mb.sphere(0.115, 0.23, at + b * Vector3(0, 1.22, 0.0), SKIN)
-	mb.box(Vector3(0.34, 0.16, 0.30), at + b * Vector3(0, 0.54, -0.14), cloth.darkened(0.2), yaw)
-	for side in [-0.235, 0.235]:
-		mb.box(Vector3(0.09, 0.5, 0.12), at + b * Vector3(side, 0.78, 0.0), cloth.darkened(0.1), yaw)
 
 func _build_lights() -> void:
 	# Oil lamp over the table
