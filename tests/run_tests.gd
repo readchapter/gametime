@@ -28,7 +28,10 @@ func _ready() -> void:
 	_test_dialogue_data_valid("res://data/dialogue/ch4/paine_book.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch4/warnings.json")
 	_test_dialogue_data_valid("res://data/dialogue/ch4/the_choice.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/voss_interview.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch4/escape_contingency.json")
 	_test_ch4_probes_and_choice()
+	_test_voss_knows_what_you_told_lucien()
 	_test_road_handoff_branches()
 	_test_checkpoint_paths()
 	_test_farm_table_walkthrough_good_landing()
@@ -116,6 +119,24 @@ func _test_ch4_probes_and_choice() -> void:
 	visited = _run_dialogue("res://data/dialogue/ch4/the_choice.json", true)
 	_check("go_fast" in visited, "last-choice path takes the fast route")
 	_check(bool(GameState.get_flag("ch4_took_fast_route")), "fast route flag set")
+
+func _test_voss_knows_what_you_told_lucien() -> void:
+	# A careful prisoner: Voss falls back on records, no farm, no paper.
+	GameState.flags.clear()
+	var visited := _run_dialogue("res://data/dialogue/ch4/voss_interview.json")
+	_check("v_records" in visited, "careful path: the name came from records")
+	_check(not ("v_farm" in visited), "careful path: the farm stays unnamed")
+	_check(not ("v_paper" in visited), "careful path: the paper stays unnamed")
+	_check(bool(GameState.get_flag("met_voss")), "met_voss set")
+	# A careless one: every reveal comes back across the table.
+	GameState.flags.clear()
+	GameState.set_flag("told_lucien_name", true)
+	GameState.set_flag("told_lucien_farm", true)
+	GameState.set_flag("told_lucien_paper", true)
+	visited = _run_dialogue("res://data/dialogue/ch4/voss_interview.json")
+	_check("v_gift" in visited, "careless path: you spelled it yourself")
+	_check("v_farm" in visited, "careless path: the farm is visited")
+	_check("v_paper" in visited, "careless path: the paper is hunted")
 
 func _test_checkpoint_paths() -> void:
 	# Clean cover, no document lie: correct (first) choices pass.

@@ -1,0 +1,118 @@
+{
+	"id": "ch4_voss_interview",
+	"start": "v_enter",
+	"nodes": {
+		"v_enter": {
+			"speaker": "VOSS",
+			"lines": [
+				"Good morning. I apologise for the room; the building was a bank and interrogation inherited the vaults. I am Kriminalkommissar Voss. Sit properly — this is a conversation, not a beating. Beatings are for men who matter less than you.",
+				"Sit, please. Coffee will come; it is bad, but it is coffee, which in this city is a distinction. Voss, Kriminalkommissar. You have been an expensive man to meet, and I find expensive things are best treated gently."
+			],
+			"next": "v_name"
+		},
+		"v_name": {
+			"speaker": "VOSS",
+			"lines": [
+				"Now. You are Sergeant Travis Earl Boyd, tail gunner, of Hempstead, Texas — the watermelons, yes? — and you have been Jean Caillet for eleven days. A quiet man, Caillet. I almost regret retiring him.",
+				"Let us not waste your training. Boyd, Travis Earl; sergeant; the tail of a B-17 that is now scattered across a beet field. Jean Caillet served you well — deaf, mute, and bored. It was the boredom I admired. Very disciplined."
+			],
+			"next": "v_source_branch"
+		},
+		"v_source_branch": {
+			"branch": {"flag": "told_lucien_name", "if_true": "v_gift", "if_false": "v_records"}
+		},
+		"v_gift": {
+			"speaker": "VOSS",
+			"lines": [
+				"And before you construct a heroic explanation for my knowing this: you spelled it yourself, for a man with kind eyes and a little book. B-O-Y-D. Please do not feel foolish. He has spelled better men than you.",
+				"You wonder which torture found me your name. None. You gave it — spelled it, even — to our mutual friend with the bread. I mention this not to be cruel but to save you inventing traitors. The traitor was hospitality."
+			],
+			"next": "v_farm_branch"
+		},
+		"v_records": {
+			"speaker": "VOSS",
+			"lines": [
+				"How do I know? Crew manifests float down with their aircraft, Sergeant. Paper survives fire better than men do. It is the first sad lesson of my profession.",
+				"No one betrayed the name, if that comforts you. Your own service wrote it down and your own aircraft delivered the file. Bureaucracy is the only honest informer I have."
+			],
+			"next": "v_farm_branch"
+		},
+		"v_farm_branch": {
+			"branch": {"flag": "told_lucien_farm", "if_true": "v_farm", "if_false": "v_paine"}
+		},
+		"v_farm": {
+			"speaker": "VOSS",
+			"lines": [
+				"The ledger, by the way — the one that pays the farmers. A beet field, a family, a boy called Luc who counts the guns on a fortress. My men visit them this week. You may spend the transfer east deciding which of your sentences did that.",
+				"One detail from your file I confess I did not need: the farm. The boy, Luc. The ledger that repays courage. It repaid them, Sergeant. This week. That entry is yours, not mine."
+			],
+			"next": "v_paine"
+		},
+		"v_paine": {
+			"speaker": "VOSS",
+			"lines": [
+				"(He turns the little book over, unhurried.) Thomas Paine. 'These are the times that try men's souls.' Found in a flour tin, five floors up. Your file says gunner; your luggage says believer. Believers are my favourite reading — they annotate.",
+				"(The book sits between you like a third chair.) Paine. The flour tin was a good instinct; flour muffles a great many convictions. 'The summer soldier and the sunshine patriot' — which are you, Sergeant? No — do not answer. The margins already did."
+			],
+			"choices": [
+				{"text": "(Silence. Let him perform to an empty theatre.)", "next": "v_silence",
+					"effects": {"silent_voss": true}, "autoplay": true},
+				{"text": "The woman who kept that book has nothing to do with me.", "next": "v_beranger",
+					"effects": {"defended_beranger": true}},
+				{"text": "You read Paine. And still wear that coat.", "next": "v_defy",
+					"effects": {"defied_voss": true}}
+			]
+		},
+		"v_silence": {
+			"speaker": "VOSS",
+			"lines": [
+				"Silence. Yes — Caillet's old habit. But you see, silence was a coat for a deaf man, and you have been measured for a different one now. Still: it is the correct move, and I respect correct moves.",
+				"Nothing. Quite right. I would coach you to it myself. You will find, though, that silence in this building is not a shield; it is merely a slower alphabet."
+			],
+			"next": "v_pat"
+		},
+		"v_beranger": {
+			"speaker": "VOSS",
+			"lines": [
+				"Ah — gallantry. She said the same of you, with the same face, in the same chair, at four this morning. Two liars defending each other is almost a marriage. I have recommended she keep her building. Informants are cheaper in buildings they keep.",
+				"The widow. Yes. She sat where you sit and lied with the same posture. It was almost familial. Rest easy — Madame is more useful worried than martyred, and I am an economical man."
+			],
+			"next": "v_pat"
+		},
+		"v_defy": {
+			"speaker": "VOSS",
+			"lines": [
+				"The coat keeps the reading honest, Sergeant. A man who reads revolutions in a police coat learns exactly what they cost and who pays. Your Mr Paine billed a king. My ledger is longer.",
+				"I do read him. Carefully — the way one reads an opponent's mail. Conviction is a weather, Sergeant; my coat is for all of it. Yours, I notice, got you a cell."
+			],
+			"next": "v_pat"
+		},
+		"v_pat": {
+			"speaker": "VOSS",
+			"lines": [
+				"One more name, then the paperwork. Pasquale Costa — 'Pat.' Waist gunner. The medal of Saint Christopher, an orphanage in Brooklyn, a brother he cannot find. You see how a crew reads? We have him, Sergeant. How gently we have him is a conversation for the train.",
+				"Ah — and Costa. The talker. Touched a small saint before every take-off; the fingerprints are on the medal. You counted chutes over the field, I am told. Count again on the train east; you may find the arithmetic improves. We have him."
+			],
+			"next": "v_paper_branch"
+		},
+		"v_paper_branch": {
+			"branch": {"flag": "told_lucien_paper", "if_true": "v_paper", "if_false": "v_close"}
+		},
+		"v_paper": {
+			"speaker": "VOSS",
+			"lines": [
+				"And the paper. The one the schoolmaster is walking to London by 'another road.' Every road is another road, Sergeant; they all have ditches, and my men are patient in ditches. You carried the war's most expensive page in a pocket and told a stranger. Berlin will name a filing cabinet after you.",
+				"Lastly: BIGOT. You blushed just now — no, it is useful, do not train it away before the train. The schoolmaster's road to London is being walked backwards as we speak. When the page is found, Sergeant, it will owe its finding to a kindness you did a charming man."
+			],
+			"next": "v_close"
+		},
+		"v_close": {
+			"speaker": "VOSS",
+			"lines": [
+				"Paperwork, then. Transfer east — Dulag Luft, then a camp with a library and a theatre society, I am told. You will sit out the war, Sergeant Boyd, which is a better ending than the people who fed you will write. (He rises.) Keep the book. I have finished with the margins.",
+				"We are done. You go east: processing, then a camp — chess, cabbage, amateur theatricals. You will live, which I point out because you seem to be weighing alternatives. (He stands, taps the book once.) Take it. Margins and all. I know how it ends; the king loses money."
+			],
+			"effects": {"met_voss": true, "voss_named_pat": true}
+		}
+	}
+}

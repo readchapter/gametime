@@ -1,0 +1,40 @@
+{
+	"id": "ch4_escape_contingency",
+	"start": "b_wake",
+	"nodes": {
+		"b_wake": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"Up. Not the lamp — your boots, your coat, nothing else. The stairs have visitors and Fouchet's door has already opened, which tells you whose side her ears retired to.",
+				"Boots. Coat. No lamp, no questions. Four floors of stairs and too many boots on them, and they are not lost. It is tonight after all."
+			],
+			"next": "b_drill"
+		},
+		"b_drill": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"The window. The plank is under the zinc, it reaches the Morel roof — I measured it the day I took my first airman. You cross, you keep the chimneys between you and the street, you go DOWN at the coal chute and not before. You do not look down and you do not wait for me.",
+				"Listen once: window, plank, the Morel parapet. The plank has held every man I have fed; it will hold you. Chimneys between you and the street. Down at the coal chute — the yard gate is oiled. Do not look down. Do not wait for me."
+			],
+			"choices": [
+				{"text": "Come with me. The plank holds two, one at a time.", "next": "b_refuse",
+					"autoplay": true},
+				{"text": "(Go. Her voice is a drill sergeant's; obey it.)", "next": "b_go"}
+			]
+		},
+		"b_refuse": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"And leave them an empty floor to burn? No. An old woman at her own stove is a fact, monsieur; an empty bed is a confession. I have argued with better policemen than these at that door. Go — the book and I will see you after the war.",
+				"Across a plank, at my age, in a nightdress — I would be a flag, monsieur. Here I am furniture. Furniture survives. I have soup on the stove and eleven years of practice being no one. GO. You owe me a coffee after the war and I collect my debts."
+			]
+		},
+		"b_go": {
+			"speaker": "MME BÉRANGER",
+			"lines": [
+				"Good — a man who obeys a kitchen. The Morel roof, the chimneys, the chute. Va-t'en.",
+				"Yes. Go. You were the quiet one; be quiet one more time, on zinc."
+			]
+		}
+	}
+}
