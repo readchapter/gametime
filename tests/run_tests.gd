@@ -17,6 +17,7 @@ func _ready() -> void:
 	_test_vetting_pass_path()
 	_test_vetting_fail_path()
 	_test_dialogue_data_valid("res://data/dialogue/ch3/road_handoff.json")
+	_test_dialogue_data_valid("res://data/dialogue/ch3/safehouse_plan.json")
 	_test_road_handoff_branches()
 	_test_farm_table_walkthrough_good_landing()
 	_test_farm_table_walkthrough_bad_landing()

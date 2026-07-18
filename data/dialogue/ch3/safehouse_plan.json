@@ -1,0 +1,70 @@
+{
+	"id": "ch3_safehouse_plan",
+	"start": "s_rules",
+	"nodes": {
+		"s_rules": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Sit. The rules of the house: above this floor you do not exist. The board by the window creaks — that board is a traitor, step around it.",
+				"Sit down. House rules: you are not here. Also, the floorboard nearest the window informs on everyone who stands on it. Step around."
+			],
+			"next": "s_plan"
+		},
+		"s_plan": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Tomorrow, the eight-forty to the city. Your papers say Jean Caillet is unfit for the labour service and works for his uncle. You cannot smell of work, so you will look unemployed and a little ashamed. It is a good look for you.",
+				"We take the eight-forty tomorrow. On paper, Jean Caillet is unfit and does nothing worth taxing. Look like a man who knows it. You will manage."
+			],
+			"choices": [
+				{"text": "And at the barrier? They'll speak to me — in German, in French...", "next": "s_barrier",
+					"autoplay": true},
+				{"text": "Why risk the shop? For strangers?", "next": "s_why",
+					"effects": {"asked_sylvie_why": true}},
+				{"text": "(Say nothing. Listen.)", "next": "s_listen"}
+			]
+		},
+		"s_barrier": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"They will speak. And Jean is deaf and mute since the fever, so German is only weather on your face. The face is the whole examination: bored. Not patient — patient looks like waiting for something. Bored.",
+				"Of course they will speak. Jean has been deaf since he was six; to him their German is wind in a chimney. What they read is the face. Give them a bored one. Bored, not brave."
+			],
+			"next": "s_paper"
+		},
+		"s_why": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"The shop was my mother's. She would have hidden your whole squadron and complained about the cooking. I ration myself to one airman at a time.",
+				"My mother's shop. She hid three men the winter she died. I keep the average respectable."
+			],
+			"next": "s_paper"
+		},
+		"s_listen": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Good. Listening is tomorrow's entire job, and you have started early.",
+				"Nothing to say. Keep that. It is exactly the size of Jean's whole vocabulary."
+			],
+			"next": "s_paper"
+		},
+		"s_paper": {
+			"branch": {"flag": "lied_document", "if_true": "s_warn", "if_false": "s_rest"}
+		},
+		"s_warn": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"One more thing. Étienne's letter says your tongue slipped once, under a lamp, about a paper. At the barrier there is no lamp — there is a man from Paris who reads faces for his living. Whatever your ears hear tomorrow, your tongue stays behind your teeth.",
+				"And this: the letter from Étienne mentions a paper, and a tongue that slipped once. Tomorrow there is a man from Paris at the barrier who is paid to notice tongues. Yours does not exist. Like you."
+			],
+			"next": "s_rest"
+		},
+		"s_rest": {
+			"speaker": "SYLVIE",
+			"lines": [
+				"Rest while the light lasts. The bed is the traitor board's neighbour — mind both of them.",
+				"Now rest. The cot is beside the traitor board; they are old enemies, do not introduce them."
+			]
+		}
+	}
+}
