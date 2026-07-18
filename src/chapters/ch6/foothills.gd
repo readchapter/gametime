@@ -1,7 +1,199 @@
 extends Node3D
-## Chapter 6 — foothills. STUB (built in a later CH6 milestone).
+## Chapter 6 — the shepherd's hut at the third bell tower: the last roof in
+## France. Fire, cheese that argues back, a dog with judicial authority,
+## and a Basque shepherd who has taken ninety-one parcels over the top —
+## plus the bad stone in the bread: a man in a city coat went up the valley
+## yesterday, asking for a parcel by name. He is ahead, not behind.
+
+const PLAYER_SCENE := preload("res://src/player/player.tscn")
+
+const STONE := Color(0.33, 0.31, 0.28)
+const WOOD_DARK := Color(0.15, 0.11, 0.08)
+const CLOTH_SHEPHERD := Color(0.28, 0.26, 0.22)
+const CLOTH_PAT := Color(0.27, 0.25, 0.18)
+
+const W := 5.8
+const D := 4.6
+const H := 2.4
+
+var _player: CharacterBody3D
+var _shepherd: Node3D
+var _pat: Node3D
+var _fire_light: OmniLight3D
+var _door: Interactable
+var _talk_done := false
+var _t := 0.0
 
 func _ready() -> void:
-	SceneDirector.fade_in(1.0)
-	await CutscenePlayer.caption("— THE FOOTHILLS —", 3.0)
-	SceneDirector.goto_beat("ch6_crossing", 1.0)
+	_build_environment()
+	_build_hut()
+	_build_people()
+	_player = PLAYER_SCENE.instantiate()
+	_player.position = Vector3(-0.2, 0.05, 1.4)
+	_player.rotation.y = PI / 2 - 0.5  # facing the fire and the shepherd
+	add_child(_player)
+	_player.camera.make_current()
+	_player.move_enabled = false
+	AudioManager.play_ambient("night_interior")
+	SceneDirector.fade_in(2.0)
+	Hud.subtitle("", "(The last roof in France: stone, smoke, hanging cheeses, and a dog who has already decided about you.)", 5.5)
+	CaptureHarness.snap("ch6_hut")
+	_evening()
+
+func _build_environment() -> void:
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.015, 0.02, 0.035)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.14, 0.13, 0.13)
+	env.ambient_light_energy = 0.8
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	var we := WorldEnvironment.new()
+	we.environment = env
+	add_child(we)
+
+func _build_hut() -> void:
+	var mb := MeshBuilder.new()
+	mb.box(Vector3(W, 0.2, D), Vector3(0, -0.1, 0), Color(0.24, 0.20, 0.15))
+	mb.box(Vector3(W, 0.2, D), Vector3(0, H + 0.1, 0), WOOD_DARK)
+	for x: float in [-1.6, 0.8]:
+		mb.box(Vector3(0.16, 0.2, D), Vector3(x, H - 0.1, 0), WOOD_DARK.darkened(0.2))
+	mb.box(Vector3(0.25, H, D), Vector3(-W / 2, H / 2, 0), STONE)
+	mb.box(Vector3(0.25, H, D), Vector3(W / 2, H / 2, 0), STONE.darkened(0.05))
+	mb.box(Vector3(W, H, 0.25), Vector3(0, H / 2, -D / 2), STONE)
+	# South wall with the door gap (door x -0.3..0.7)
+	mb.box(Vector3(2.6, H, 0.25), Vector3(-1.9, H / 2, D / 2), STONE)
+	mb.box(Vector3(2.1, H, 0.25), Vector3(1.75, H / 2, D / 2), STONE)
+	mb.box(Vector3(1.0, H - 1.95, 0.25), Vector3(0.2, (H + 1.95) / 2, D / 2), STONE.darkened(0.1))
+	# The hearth on the west wall
+	mb.box(Vector3(0.5, 1.6, 1.5), Vector3(-2.7, 0.8, -0.6), STONE.darkened(0.2))
+	mb.box(Vector3(0.35, 0.7, 0.9), Vector3(-2.65, 0.4, -0.6), Color(0.04, 0.03, 0.02))
+	# Bench, table, cheeses hanging from the beams, staffs by the wall
+	mb.box(Vector3(1.6, 0.45, 0.45), Vector3(0.3, 0.22, -1.5), WOOD_DARK)
+	mb.box(Vector3(1.1, 0.7, 0.8), Vector3(1.7, 0.35, 0.3), WOOD_DARK.lightened(0.08))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 61
+	for i in 5:
+		var cx := rng.randf_range(-1.4, 1.6)
+		var cz := rng.randf_range(-1.6, 0.6)
+		mb.cylinder(0.16, 0.19, 0.22, Vector3(cx, H - 0.45, cz), Color(0.62, 0.54, 0.34))
+		mb.box(Vector3(0.02, 0.35, 0.02), Vector3(cx, H - 0.18, cz), Color(0.1, 0.09, 0.08))
+	for sx: float in [2.5, 2.62]:
+		mb.box(Vector3(0.05, 2.1, 0.05), Vector3(sx, 1.05, -1.9), Color(0.30, 0.22, 0.12), 0.1)
+	add_child(mb.commit_instance("Hut"))
+
+	# The night outside the door: far ridge silhouettes
+	var ridge := MeshBuilder.new()
+	ridge.prism(Vector3(14, 5.0, 3.0), Vector3(1.0, 2.0, D / 2 + 9.0), Color(0.05, 0.06, 0.09))
+	ridge.prism(Vector3(10, 3.6, 2.5), Vector3(-5.0, 1.4, D / 2 + 7.0), Color(0.04, 0.05, 0.08))
+	add_child(ridge.commit_instance("Ridge"))
+
+	var body := StaticBody3D.new()
+	for spec: Array in [
+		[Vector3(W, 0.2, D), Vector3(0, -0.1, 0)],
+		[Vector3(0.4, H, D), Vector3(-W / 2, H / 2, 0)],
+		[Vector3(0.4, H, D), Vector3(W / 2, H / 2, 0)],
+		[Vector3(W, H, 0.4), Vector3(0, H / 2, -D / 2)],
+		[Vector3(2.6, H, 0.4), Vector3(-1.9, H / 2, D / 2)],
+		[Vector3(2.1, H, 0.4), Vector3(1.75, H / 2, D / 2)],
+		[Vector3(1.1, 0.7, 0.8), Vector3(1.7, 0.35, 0.3)],
+	]:
+		var cs := CollisionShape3D.new()
+		var shape := BoxShape3D.new()
+		shape.size = spec[0]
+		cs.shape = shape
+		cs.position = spec[1]
+		body.add_child(cs)
+	add_child(body)
+
+	# Fire glow + embers
+	var embers := MeshInstance3D.new()
+	var eb := BoxMesh.new()
+	eb.size = Vector3(0.25, 0.1, 0.6)
+	embers.mesh = eb
+	var emat := StandardMaterial3D.new()
+	emat.albedo_color = Color(0.95, 0.4, 0.1)
+	emat.emission_enabled = true
+	emat.emission = Color(0.95, 0.4, 0.1)
+	emat.emission_energy_multiplier = 2.2
+	embers.material_override = emat
+	embers.position = Vector3(-2.62, 0.12, -0.6)
+	add_child(embers)
+	_fire_light = OmniLight3D.new()
+	_fire_light.position = Vector3(-2.3, 0.7, -0.6)
+	_fire_light.light_color = Color(1.0, 0.5, 0.2)
+	_fire_light.light_energy = 1.6
+	_fire_light.omni_range = 6.5
+	_fire_light.shadow_enabled = true
+	add_child(_fire_light)
+
+func _build_people() -> void:
+	_shepherd = Figures.villager(CLOTH_SHEPHERD, "Shepherd")
+	_shepherd.position = Vector3(-1.6, 0, -1.3)
+	_shepherd.rotation.y = -0.9
+	add_child(_shepherd)
+	# The dog: a small judicial presence by the hearth
+	var mb := MeshBuilder.new()
+	mb.box(Vector3(0.22, 0.28, 0.55), Vector3(0, 0.2, 0), Color(0.16, 0.14, 0.11))
+	mb.box(Vector3(0.16, 0.18, 0.2), Vector3(0, 0.42, -0.32), Color(0.18, 0.16, 0.12))
+	mb.box(Vector3(0.05, 0.14, 0.05), Vector3(0, 0.32, 0.32), Color(0.14, 0.12, 0.10), 0.4)
+	var dog := mb.commit_instance("Dog")
+	dog.position = Vector3(-1.9, 0, 0.4)
+	dog.rotation.y = 2.3
+	add_child(dog)
+	if GameState.get_flag("with_pat"):
+		_pat = Figures.villager(CLOTH_PAT, "Pat")
+		_pat.position = Vector3(0.8, 0, -1.3)
+		_pat.rotation.y = 0.6
+		add_child(_pat)
+
+func _evening() -> void:
+	await get_tree().create_timer(3.0, false).timeout
+	DialogueManager.start("res://data/dialogue/ch6/shepherd_talk.json")
+	if "--autoplay" in OS.get_cmdline_user_args():
+		DialogueManager.autoplay()
+	await DialogueManager.dialogue_ended
+	_talk_done = true
+	_player.move_enabled = true
+	CaptureHarness.snap("ch6_talk")
+	Hud.subtitle("", "(Sleep, of a kind. Then a cold nose against your hand, twice, formally: the dog, serving her warrant.)", 5.5)
+	await get_tree().create_timer(4.0, false).timeout
+	_door = Interactable.new()
+	_door.name = "HutDoor"
+	_door.prompt = "Out, before light"
+	_door.one_shot = true
+	_door.position = Vector3(0.2, 0, D / 2 - 0.3)
+	var cs := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(1.2, 2.0, 0.9)
+	cs.shape = shape
+	cs.position = Vector3(0, 1.0, 0.2)
+	_door.add_child(cs)
+	_door.interacted.connect(_on_leave)
+	add_child(_door)
+
+func _on_leave(player: Node) -> void:
+	player.move_enabled = false
+	player.look_enabled = false
+	Hud.hide_prompt()
+	AudioManager.stop_ambient(1.5)
+	GameState.set_flag("ch6_foothills_done", true)
+	SceneDirector.goto_beat("ch6_crossing", 1.5)
+
+func _process(delta: float) -> void:
+	_t += delta
+	if _fire_light:
+		_fire_light.light_energy = 1.6 + sin(_t * 9.0) * 0.08 + sin(_t * 4.3 + 0.7) * 0.07
+	_autoplay_step(delta)
+
+func _autoplay_step(delta: float) -> void:
+	if not ("--autoplay" in OS.get_cmdline_user_args()):
+		return
+	if _player == null or not _player.move_enabled or not _talk_done:
+		return
+	if _door and is_instance_valid(_door):
+		var target := Vector3(_door.position.x, _player.position.y, _door.position.z - 0.4)
+		if _player.position.distance_to(target) > 1.2:
+			_player.position = _player.position.move_toward(target, delta * 3.0)
+		else:
+			_door.interact(_player)

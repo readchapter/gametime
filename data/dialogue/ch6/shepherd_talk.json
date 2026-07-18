@@ -1,0 +1,74 @@
+{
+	"id": "ch6_shepherd_talk",
+	"start": "s_open",
+	"nodes": {
+		"s_open": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"Sit. Eat. The cheese argues back, like everything worth keeping in this country. So — you are the widow's parcel come walking. The water said one parcel; the mountain hears better than the water.",
+				"The parcel arrives. Good. Bread, cheese, and no questions — that is the whole menu and the whole law of this house. The dog decides who sleeps where; do not appeal her rulings."
+			],
+			"next": "s_pat_branch"
+		},
+		"s_pat_branch": {
+			"branch": {"flag": "with_pat", "if_true": "s_two", "if_false": "s_one"}
+		},
+		"s_two": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"Two parcels. The manifest said one; God and I discussed it this morning and He was no help, as usual. No matter — the col does not count. The col only weighs. Eat, both. The loud one eats like a man with a brother to find; I respect it.",
+				"And TWO of you. Ha! The paperwork of heaven is worse than the préfecture. Fine, fine — the mountain has never once checked a manifest. You, the talker: chew slower, the cheese has seniority."
+			],
+			"next": "p_take"
+		},
+		"p_take": {
+			"speaker": "PAT",
+			"lines": [
+				"I like him, Tex. First guy since England whose questions are all about cheese. — Don't worry, padre, I climb like a Brooklyn fire escape. It's him you gotta watch; Texas is FLAT.",
+				"This is my kinda parish. — Hey Tex, you hear that? The mountain 'only weighs.' Sister Immaculata used to say the same thing about the scales of judgment, except with more yelling."
+			],
+			"next": "s_plan"
+		},
+		"s_one": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"One parcel, travelling light and quiet. The quiet ones climb better; they have less to leave on the slope. But eat double — the mountain taxes silence too.",
+				"Alone. Yes. The river said you walk like a man doing arithmetic. Leave the arithmetic here; the col has no room for ledgers, only lungs."
+			],
+			"next": "s_plan"
+		},
+		"s_plan": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"Before light, we climb. Sheep first, then us — sheep are the best papers in these hills; no patrol has ever arrested a flock. At the top there is a cairn where France runs out of stones. Past the cairn, the ground is Spanish and the sky stops caring about you. You touch the cairn, you keep walking, you do not make speeches.",
+				"The plan is old and it works: up with the flock in the dark, the long shoulder, then the col. There is a cairn — every stone put there by a hand that was leaving something. You will want to stop at it. Do not. Spain is thirty steps past sentiment."
+			],
+			"next": "s_warning"
+		},
+		"s_warning": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"One thing more, and I say it plainly because the mountain hates surprises. A man came up the valley yesterday. City coat, city shoes, a folder under his arm like a missal. He asked the villages about parcels — by NAME, they say. He went up toward the col with a guide who owes the wrong people money. The mountain will weigh him too. But he is ahead of you, not behind.",
+				"Now the bad stone in the bread. Yesterday a man walked up my valley in a coat that has never seen weather. Polite. Asked about a parcel by name — YOUR name, if the baker heard right. He is on the mountain tonight, above us, waiting where the paths become one path. I have argued with God about it twice and we agree for once: you cannot go around. Only through."
+			],
+			"choices": [
+				{"text": "Then we go through. Before light.", "next": "s_through", "autoplay": true},
+				{"text": "He's come this far for a folder. His war must be very small.", "next": "s_small"}
+			]
+		},
+		"s_through": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"Through. Good. Sleep now — the dog will wake you; she enjoys it. And parcel... the men who built that cairn left worse things than fear on it. There is room on it for his folder too, if it comes to that. The mountain does not testify.",
+				"So. Sleep while the fire lasts. And hear an old man who has taken ninety-one parcels over: at the cairn, whatever happens, the mountain keeps every secret it is given. It has kept worse than yours."
+			]
+		},
+		"s_small": {
+			"speaker": "SHEPHERD",
+			"lines": [
+				"Small wars are the ones that climb mountains, parcel. Big wars send other men. Remember that when you see his face: whatever is in that folder, he carried it up here HIMSELF. That is not duty. That is a debt he thinks you owe him. Sleep. The dog will wake you.",
+				"Ha — small. Perhaps. But a small war in one man is a heavy thing to carry uphill, and he carried it. When a policeman climbs, parcel, it is no longer policing. Remember it at the col. Now sleep; God and I have some shouting to finish."
+			]
+		}
+	}
+}
