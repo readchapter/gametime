@@ -1,0 +1,85 @@
+name: Fetch CC0 PBR textures
+
+# Realism roadmap step 1: downloads CC0 PBR texture sets (Poly Haven,
+# ambientCG) and the Terrain3D GDExtension release on a GitHub runner (the
+# dev container cannot reach asset sites) and commits them to the orphan
+# branch `assets-tex`, plus a FILELIST.txt inventory. Dev sessions inspect
+# the list, pick sets into assets/textures/, and record licenses in
+# assets/textures/CREDITS.md. Re-run manually to add sets.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-textures.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Poly Haven texture sets (1k jpg/png maps via API)
+        run: |
+          mkdir -p /tmp/tex
+          # Slugs picked for the Ch1 field slice: grass ground, dirt/leaf
+          # litter for hedgerow floor and crop rows, forest floor, gravel.
+          # Unknown slugs 404 harmlessly and are skipped.
+          for slug in aerial_grass_rock brown_mud_leaves_01 forrest_ground_01 \
+                      forest_leaves_03 gravel_road rocky_trail_02 dirt_road \
+                      leafy_grass sparse_grass_02; do
+            json=$(curl -sfL --max-time 30 "https://api.polyhaven.com/files/$slug") || {
+              echo "skip $slug (no such asset)"; continue; }
+            d="/tmp/tex/polyhaven/$slug"
+            mkdir -p "$d"
+            echo "$json" | jq -r '.. | objects | .url? // empty' \
+              | grep '/1k/' | grep -Ei '\.(jpg|png)$' | sort -u \
+              | while read -r url; do
+                  echo "fetch $slug <- $url"
+                  curl -sfL --max-time 120 -o "$d/$(basename "$url")" "$url" || true
+                done
+          done
+
+      - name: ambientCG texture sets (1K JPG zips)
+        run: |
+          mkdir -p /tmp/zips
+          for id in Grass001 Grass004 Ground003 Ground037 Ground048 \
+                    Gravel022 Gravel026 Rock035 Bark012; do
+            url="https://ambientcg.com/get?file=${id}_1K-JPG.zip"
+            echo "fetch $id"
+            curl -sfL --max-time 120 -A "gametime-asset-fetch" \
+              -o "/tmp/zips/${id}.zip" "$url" || { echo "skip $id"; continue; }
+            d="/tmp/tex/ambientcg/$id"
+            mkdir -p "$d"
+            unzip -q -o "/tmp/zips/${id}.zip" -d "$d" || rm -rf "$d"
+          done
+
+      - name: Terrain3D GDExtension (latest release zip)
+        run: |
+          mkdir -p /tmp/terrain3d
+          url=$(curl -sf https://api.github.com/repos/TokisanGames/Terrain3D/releases/latest \
+            | jq -r '.assets[].browser_download_url' | grep -i '\.zip$' | head -1)
+          echo "Terrain3D release asset: $url"
+          if [ -n "$url" ]; then
+            curl -sfL --max-time 300 -o "/tmp/terrain3d/$(basename "$url")" "$url" || true
+            curl -sf https://api.github.com/repos/TokisanGames/Terrain3D/releases/latest \
+              | jq -r .tag_name > /tmp/terrain3d/VERSION || true
+          fi
+
+      - name: Commit to assets-tex branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan assets-tex
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p textures terrain3d
+          cp -r /tmp/tex/. textures/ 2>/dev/null || true
+          cp -r /tmp/terrain3d/. terrain3d/ 2>/dev/null || true
+          find textures terrain3d -type f -printf '%10s  %p\n' | sort -k2 > FILELIST.txt
+          echo "--- inventory:"; cat FILELIST.txt
+          git add textures terrain3d FILELIST.txt
+          git commit -m "CC0 PBR texture sets + Terrain3D release for asset picking" || exit 0
+          git push -f origin assets-tex
