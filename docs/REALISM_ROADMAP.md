@@ -52,6 +52,16 @@ The trust ledger is the game; the renderer is clothing.
 1. **Look-dev slice: the descent + field** — Terrain3D + Poly Haven
    ground/hedgerow textures + fog tuning. One scene proves the pipeline
    (CI texture fetch → import → material pass → capture).
+   **STATUS: done (July 2026)** — `fetch-textures.yml` → `assets-tex`
+   branch (7 Poly Haven + 8 ambientCG 1k sets + Terrain3D v1.0.2 zip);
+   4 hero sets picked into `assets/textures/`; `Grade` material pass;
+   `terrain_blend.gdshader` grass/dirt heightmap terrain + textured
+   road/hedge masses in field_gen; descent far-ground now bocage
+   patchwork; fog/sun retuned; zero-asset fallback re-verified.
+   Terrain3D loads + instantiates under pinned 4.7 headless (probed) but
+   scene adoption (data dir, region import, height/collider rewiring,
+   committing platform bins) is deliberately deferred to code change #4 —
+   the heightmap ArrayMesh already delivers the step-1 look.
 2. **Characters everywhere**: Mixamo pipeline documented + first three
    humans (Travis hands/POV needs nothing; Pat, Henri, Voss). ModelLib v2.
 3. **Farmhouse + hut interiors** (plaster/wood/fabric textures, lightmap

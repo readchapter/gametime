@@ -134,5 +134,6 @@ in Ch2 (consult in Ch3+): `trust_henri`, `trust_etienne`, `doubted_willis`,
 - **Autoplay walkers** get pinned on colliders — keep interact thresholds
   ≥ collider half-extent + ~0.5m.
 - **Engine/network:** container can't fetch GitHub release assets or asset
-  sites; use the CI workflows (`fetch-engine.yml`, `fetch-assets.yml` →
-  orphan branches) or user uploads. Engine: `tools/setup_engine.sh`.
+  sites; use the CI workflows (`fetch-engine.yml`, `fetch-assets.yml`,
+  `fetch-textures.yml` → orphan branches) or user uploads. Engine:
+  `tools/setup_engine.sh`.

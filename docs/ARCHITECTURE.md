@@ -60,6 +60,12 @@ bedroom → bed → end cards → back to title). No fail state anywhere in Ch1.
 - `Kit` (src/systems/procgen/kit.gd): curated CC0 models with cohesion
   tint; `ModelLib` remains the per-name drop-in override; `Aircraft` holds
   the hand-built planes. See docs/ART_DIRECTION.md for the tint rule.
+- `Grade` (src/systems/procgen/grade.gd): the realism-pivot material pass —
+  loads CC0 PBR texture sets from assets/textures/<set>/ (fetched by
+  fetch-textures.yml → assets-tex branch, picked by hand) into graded
+  StandardMaterial3Ds; returns null for missing sets so every call site
+  keeps its procedural fallback. Terrain blending lives in
+  src/shaders/terrain_blend.gdshader (see docs/REALISM_ROADMAP.md).
 - Audio: every manifest slot ships a synthesized placeholder from
   `tools/synth_audio.py`; same-name files replace them without code changes.
 

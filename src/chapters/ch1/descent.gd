@@ -23,14 +23,16 @@ func _ready() -> void:
 	# Much thinner haze than the ground-level scene: the player has to read
 	# the hedgerow / road / village zones from altitude to steer.
 	var we: WorldEnvironment = _field.get_node("WorldEnvironment")
-	we.environment.fog_density = 0.0006
-	we.environment.fog_light_color = Color(0.42, 0.35, 0.28)
+	we.environment.fog_density = 0.0009
+	we.environment.fog_light_color = Color(0.40, 0.36, 0.32)
 	we.environment.ambient_light_energy = 1.15
+	we.environment.ambient_light_color = Color(0.27, 0.28, 0.33)
 	# Earlier in the evening than the ground scene: sun high enough (~25 deg)
 	# that the terrain is actually lit from above — the player steers by it.
 	var sun: DirectionalLight3D = _field.get_node("Sun")
 	sun.rotation_degrees = Vector3(-25, -110, 0)
-	sun.light_energy = 1.5
+	sun.light_energy = 1.35
+	sun.light_color = Color(1.0, 0.80, 0.64)
 	# The detailed field is only ~260m wide; from altitude most of the view
 	# is past its edge. Continue the world: far countryside plane + a
 	# field-toned sky ground hemisphere instead of the void.
@@ -242,36 +244,58 @@ func _add_tracer(from: Vector3, vel: Vector3) -> void:
 	add_child(mi)
 	_tracers.append({"node": mi, "vel": vel, "life": 2.8, "near": false})
 
-## Coarse patchwork countryside continuing beyond the detailed field.
-func _far_ground() -> MeshInstance3D:
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var tint := FastNoiseLite.new()
-	tint.seed = 33
-	tint.frequency = 0.004
-	var cell := 90.0
+## Countryside continuing beyond the detailed field: an irregular patchwork
+## of low-contrast field tones over a dark underlay that shows through the
+## gaps between patches as hedgerow boundary lines — how bocage actually
+## reads from a canopy. Palette stays near the textured field's olive-brown
+## so the detailed terrain blends at its edge.
+func _far_ground() -> Node3D:
+	var root := Node3D.new()
+	root.name = "FarGround"
 	var half := 1800.0
 	var y := -3.0
-	var x := -half
-	while x < half:
-		var z := -half
-		while z < half:
-			var t := (tint.get_noise_2d(x, z) + 1.0) * 0.5
-			var c := Color(0.19, 0.26, 0.13).lerp(Color(0.30, 0.28, 0.15), t)
-			if tint.get_noise_2d(x * 3.0 + 500.0, z * 3.0) > 0.32:
-				c = Color(0.24, 0.19, 0.13)  # plowed patches
-			for p in [Vector3(x, y, z), Vector3(x + cell, y, z), Vector3(x + cell, y, z + cell),
-					Vector3(x, y, z), Vector3(x + cell, y, z + cell), Vector3(x, y, z + cell)]:
+	# Hedgerow-dark underlay; patch gaps read as boundary lines.
+	var base := MeshBuilder.new()
+	base.box(Vector3(half * 2.0, 0.1, half * 2.0), Vector3(0, y - 0.6, 0),
+		Color(0.09, 0.11, 0.07))
+	root.add_child(base.commit_instance("HedgeLines"))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 33
+	var tones := [Color(0.18, 0.23, 0.11), Color(0.27, 0.25, 0.14),
+		Color(0.31, 0.28, 0.15), Color(0.20, 0.16, 0.11), Color(0.24, 0.24, 0.13)]
+	var xs := _fence_posts(rng, half)
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var gap := 4.0
+	for i in xs.size() - 1:
+		# Fresh boundary posts per strip: offset field corners, not a lattice.
+		var zs := _fence_posts(rng, half)
+		for j in zs.size() - 1:
+			var c: Color = tones[rng.randi() % tones.size()].lightened(rng.randf_range(-0.04, 0.04))
+			var x0: float = xs[i] + gap
+			var x1: float = xs[i + 1] - gap
+			var z0: float = zs[j] + gap
+			var z1: float = zs[j + 1] - gap
+			for p in [Vector3(x0, y, z0), Vector3(x1, y, z0), Vector3(x1, y, z1),
+					Vector3(x0, y, z0), Vector3(x1, y, z1), Vector3(x0, y, z1)]:
 				st.set_color(c)
 				st.set_normal(Vector3.UP)
 				st.add_vertex(p)
-			z += cell
-		x += cell
 	var mi := MeshInstance3D.new()
-	mi.name = "FarGround"
+	mi.name = "Patches"
 	mi.mesh = st.commit()
 	mi.material_override = MeshBuilder.vertex_color_material()
-	return mi
+	root.add_child(mi)
+	return root
+
+## Irregular field-boundary coordinates from -half to half, 60-160m apart.
+func _fence_posts(rng: RandomNumberGenerator, half: float) -> PackedFloat32Array:
+	var out := PackedFloat32Array([-half])
+	var v := -half
+	while v < half:
+		v += rng.randf_range(60.0, 160.0)
+		out.append(minf(v, half))
+	return out
 
 func _build_bomber() -> void:
 	_bomber = ModelLib.get_model("b17", Aircraft.b17)
