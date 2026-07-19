@@ -27,6 +27,9 @@ var _doc_paper: MeshInstance3D
 var _doc_grabbed := false
 var _jumped := false
 var _formation: Array[Node3D] = []
+var _spinners: Array[Node3D] = []
+var _puffs: Array[MeshInstance3D] = []
+var _ship_trails := {}
 var _falling_ship: Node3D
 var _fall_smoke_t := 0.0
 var _kill_subtitle_done := false
@@ -64,6 +67,14 @@ func _process(delta: float) -> void:
 	_update_flak(delta)
 	_update_fire(delta)
 	_update_papers(delta)
+	# Props spin; contrail puffs stream backward off the engines
+	for s in _spinners:
+		if is_instance_valid(s):
+			s.rotation.z += delta * 38.0
+	for p in _puffs:
+		if is_instance_valid(p):
+			var span: float = p.get_meta("span")
+			p.position.z = fmod(float(p.get_meta("phase")) + _t * 26.0, span) - span / 2.0
 	# Smoke trail behind the falling sister ship
 	if is_instance_valid(_falling_ship):
 		_fall_smoke_t += delta
@@ -172,21 +183,44 @@ func _build_interior() -> void:
 		Color(0.30, 0.33, 0.38), 0.6)
 
 func _build_formation() -> void:
+	var idx := 0
 	for spec in [[Vector3(25, 8, 90), 0.0], [Vector3(-32, 16, 130), 0.06], [Vector3(12, 24, 175), -0.05]]:
 		var b17 := ModelLib.get_model("b17", Aircraft.b17)
 		b17.position = spec[0]
 		b17.rotation.y = spec[1]
 		add_child(b17)
 		_formation.append(b17)
+		# Spinning props: the formation reads as flying, not parked in the sky
+		for ex: float in [-8.8, -4.6, 4.6, 8.8]:
+			var spinner := Node3D.new()
+			spinner.position = Vector3(ex, -0.55 + absf(ex) * 0.03, -6.3)
+			# One blade bar instanced twice at 60° = a four-blade cross that
+			# shimmers when the spinner turns
+			var blades := MeshBuilder.new()
+			blades.box(Vector3(0.15, 3.1, 0.08), Vector3.ZERO, Color(0.10, 0.10, 0.11))
+			var bm := blades.commit_instance("Blades")
+			spinner.add_child(bm)
+			var bm2 := blades.commit_instance("Blades2")
+			bm2.rotation.z = PI / 3
+			spinner.add_child(bm2)
+			_spinners.append(spinner)
+			b17.add_child(spinner)
+		var trails: Array[Node3D] = []
 		for engine_x in [-8.6, -4.4, 4.4, 8.6]:
-			_contrail(spec[0] + Vector3(engine_x, -0.4, 130), 240.0, 0.28)
+			trails.append(_contrail(spec[0] + Vector3(engine_x, -0.4, 130), 240.0, 0.28))
+		_ship_trails[idx] = trails
+		idx += 1
 
 func _build_own_contrails() -> void:
 	for spec in [Vector3(-8.6, -0.9, 90), Vector3(-4.4, -0.75, 90),
 			Vector3(4.4, -0.75, 90), Vector3(8.6, -0.9, 90)]:
 		_contrail(spec, 200.0, 0.32)
 
-func _contrail(at: Vector3, length: float, alpha: float) -> void:
+## A contrail: the long persistent ribbon plus three brighter puffs that
+## stream backward, so the trail reads as being made, not painted on.
+func _contrail(at: Vector3, length: float, alpha: float) -> Node3D:
+	var root := Node3D.new()
+	root.position = at
 	var mi := MeshInstance3D.new()
 	var b := BoxMesh.new()
 	b.size = Vector3(0.9, 0.9, length)
@@ -196,8 +230,24 @@ func _contrail(at: Vector3, length: float, alpha: float) -> void:
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.albedo_color = Color(0.92, 0.94, 0.97, alpha)
 	mi.material_override = mat
-	mi.position = at
-	add_child(mi)
+	root.add_child(mi)
+	for p in 3:
+		var puff := MeshInstance3D.new()
+		var pb := BoxMesh.new()
+		pb.size = Vector3(1.5, 1.5, 7.0)
+		puff.mesh = pb
+		var pmat := StandardMaterial3D.new()
+		pmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		pmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		pmat.albedo_color = Color(0.97, 0.98, 1.0, alpha * 0.9)
+		puff.material_override = pmat
+		puff.set_meta("phase", float(p) * length / 3.0)
+		puff.set_meta("span", length)
+		puff.position = Vector3(0, 0, 0)
+		root.add_child(puff)
+		_puffs.append(puff)
+	add_child(root)
+	return root
 
 func _build_cloud_deck() -> void:
 	var mi := MeshInstance3D.new()
@@ -410,6 +460,14 @@ func _ship_down() -> void:
 		return
 	AudioManager.play_sfx("engine_dying", -6.0)
 	_falling_ship = _formation[1]
+	# Her contrails stop being made: fade the ribbons out behind her
+	# instead of leaving them hanging where she used to fly.
+	for trail: Node3D in _ship_trails.get(1, []):
+		for c in trail.get_children():
+			var m := c as MeshInstance3D
+			if m and m.material_override:
+				create_tween().tween_property(
+					m.material_override, "albedo_color:a", 0.0, 5.0)
 	var start := _falling_ship.position
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.tween_property(_falling_ship, "position", start + Vector3(-90, -520, 240), 26.0)

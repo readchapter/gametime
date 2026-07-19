@@ -52,6 +52,32 @@ func _ready() -> void:
 	box.add_child(_button("RESUME", _resume))
 	box.add_child(_button("RESTART THIS PART", _restart_beat))
 	box.add_child(_button("QUIT TO TITLE", _quit_to_title))
+
+	# TEMPORARY (playtest): jump to the start of any chapter.
+	var jump_label := Label.new()
+	jump_label.text = "PLAYTEST — JUMP TO CHAPTER"
+	jump_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	jump_label.add_theme_font_size_override("font_size", 14)
+	jump_label.add_theme_color_override("font_color", Color(0.48, 0.45, 0.40))
+	box.add_child(jump_label)
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 14)
+	box.add_child(row)
+	for spec: Array in [
+		["1", 1, "hardstand", {}],
+		["2", 2, "ch2_morning", {}],
+		["3", 3, "ch3_road", {"ch2_vetting_passed": true}],
+		["4", 4, "ch4_arrival", {"kept_cover": true}],
+		["5A", 5, "ch5_train", {"ch4_captured": true, "met_voss": true}],
+		["5B", 5, "ch5_barge", {"ch4_escaped": true, "paine_kept": true}],
+		["6", 6, "ch6_foothills", {"with_pat": true, "met_voss": true}],
+	]:
+		var chapter: int = spec[1]
+		var beat: String = spec[2]
+		var flags: Dictionary = spec[3]
+		row.add_child(_button(spec[0], func() -> void:
+			_jump_to(chapter, beat, flags)))
 	_layer.hide()
 
 func _button(text: String, action: Callable) -> Button:
@@ -101,7 +127,22 @@ func _update_label() -> void:
 func _restart_beat() -> void:
 	_resume()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	var beat: String = GameState.beat if SceneDirector.CH1_BEATS.has(GameState.beat) else "hardstand"
+	# Any chapter's beat restarts in place; only an unknown beat falls back.
+	var beat := GameState.beat
+	if SceneDirector.beat_scene(beat).is_empty():
+		beat = "hardstand"
+	SceneDirector.goto_beat(beat, 0.4)
+
+## TEMPORARY (playtest): start a chapter fresh with just enough flags set
+## for its scenes to read coherently.
+func _jump_to(chapter: int, beat: String, flags: Dictionary) -> void:
+	_resume()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	AudioManager.stop_ambient(0.3)
+	GameState.flags.clear()
+	for k: String in flags:
+		GameState.set_flag(k, flags[k])
+	GameState.chapter = chapter
 	SceneDirector.goto_beat(beat, 0.4)
 
 func _quit_to_title() -> void:

@@ -48,6 +48,25 @@ func _ready() -> void:
 
 	_build_bomber()
 	_build_distant_chutes()
+	# Landing legibility (playtest note): the danger zone announces itself.
+	# Vehicle lamps strung along the road east — from altitude, "away from
+	# the lights" is an instruction you can see.
+	var lamps := MeshBuilder.new()
+	for lz: float in [-70.0, -35.0, -5.0, 30.0, 65.0]:
+		lamps.box(Vector3(1.6, 0.5, 0.7), Vector3(62.0, 0.6, lz), Color(0.25, 0.22, 0.18))
+	var lnode := lamps.commit_instance("RoadTraffic")
+	add_child(lnode)
+	for lz: float in [-70.0, -35.0, -5.0, 30.0, 65.0]:
+		var glow := MeshInstance3D.new()
+		var gb := BoxMesh.new()
+		gb.size = Vector3(0.5, 0.3, 0.3)
+		glow.mesh = gb
+		var gmat := StandardMaterial3D.new()
+		gmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		gmat.albedo_color = Color(1.0, 0.8, 0.45)
+		glow.material_override = gmat
+		glow.position = Vector3(61.2, 0.8, lz - 0.6)
+		add_child(glow)
 	AudioManager.play_ambient("wind_descent")
 	SceneDirector.fade_in(0.5)
 	_beats()
@@ -111,6 +130,7 @@ static func grade_landing(pos: Vector3) -> String:
 func _on_deploy() -> void:
 	AudioManager.play_sfx("chute_open")
 	CaptureHarness.snap("canopy")
+	Hud.subtitle("", "(WASD steers the drift. West: the dark hedgerow line — cover. East: the road, and there are already lights moving on it.)", 6.5)
 
 func _on_landed(pos: Vector3) -> void:
 	CaptureHarness.snap("impact")

@@ -74,7 +74,7 @@ func _build_family() -> void:
 		Figures.seated(mb, Vector3.ZERO, CLOTH_LUC, 0.0)
 		return mb.commit_instance("Luc"))
 	luc.position = TABLE + Vector3(0.95, 0, 0.0)
-	luc.rotation.y = -PI / 2
+	luc.rotation.y = PI / 2  # facing the table
 	add_child(luc)
 
 func _standing_figure(at: Vector3, yaw: float, cloth: Color, fig_name: String) -> Node3D:
@@ -108,9 +108,10 @@ func _build_interactables() -> void:
 
 func _spawn_player() -> void:
 	_player = PLAYER_SCENE.instantiate()
-	# Beside the bed — NOT inside its collision blocker (x 3..5, z 0.75..1.85):
-	# physics depenetration will pin an autoplay walker spawned intersecting it.
-	_player.position = Vector3(3.6, 0.05, 2.3)
+	# Beside the bed — NOT inside its collision blocker (now x 3..5, z
+	# 1.55..2.65 against the south wall): physics depenetration will pin an
+	# autoplay walker spawned intersecting it. The doorway corridor is clear.
+	_player.position = Vector3(3.6, 0.05, 0.9)
 	_player.rotation.y = PI / 2  # facing the doorway through to the main room
 	add_child(_player)
 

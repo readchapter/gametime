@@ -25,7 +25,9 @@ const LAMP_TINT := Color(0.62, 0.55, 0.44)
 const H := 2.7  # room height
 # Table sits at the centre of the main room; everything keys off it.
 const TABLE := Vector3(-1.0, 0, 0.0)
-const BED := Vector3(4.0, 0, 1.3)
+# Against the south wall — the doorway corridor (z 0.5..1.5) stays clear so
+# walking straight through the gap never runs into the bed (playtest note).
+const BED := Vector3(4.0, 0, 2.1)
 const DOORWAY := Vector3(1.35, 0, 1.0)  # gap in the dividing wall
 
 var _player: CharacterBody3D
@@ -217,9 +219,10 @@ func _build_furniture() -> void:
 	add_child(mb.commit_instance("TableSettings"))
 	_place("bread", Color(0.5, 0.36, 0.2), 0.4, TABLE + Vector3(0.0, 0.78, -0.05), 0.4, func(): return _null_node())
 	# Family chairs (Travis's is a separate Interactable, built later)
-	_place("chair", WOOD_TINT, 1.4, TABLE + Vector3(-0.95, 0, 0.0), PI / 2, _proc_chair)   # Henri (west)
-	_place("chair", WOOD_TINT, 1.4, TABLE + Vector3(0.0, 0, -0.9), 0.0, _proc_chair)       # Marguerite (north)
-	_place("chairRounded", WOOD_TINT, 1.4, TABLE + Vector3(0.95, 0, 0.0), -PI / 2, _proc_chair)  # Luc (east)
+	# Chairs face the table (backrest outward); the seated figures match.
+	_place("chair", WOOD_TINT, 1.4, TABLE + Vector3(-0.95, 0, 0.0), -PI / 2, _proc_chair)  # Henri (west)
+	_place("chair", WOOD_TINT, 1.4, TABLE + Vector3(0.0, 0, -0.9), PI, _proc_chair)        # Marguerite (north)
+	_place("chairRounded", WOOD_TINT, 1.4, TABLE + Vector3(0.95, 0, 0.0), PI / 2, _proc_chair)  # Luc (east)
 	# Bed + nightstand in the bedroom
 	_place("bedSingle", BED_TINT, 1.9, BED, PI / 2, _proc_bed)
 	_place("lampRoundTable", LAMP_TINT, 1.4, Vector3(4.5, 0.0, -0.1), 0.0, func(): return _null_node())
@@ -255,10 +258,11 @@ func _proc_bed() -> Node3D:
 	return mb.commit_instance("ProcBed")
 
 func _build_family() -> void:
+	# Facing the table: local -Z (face and knees) points at the tabletop.
 	var seats := [
-		[TABLE + Vector3(-0.95, 0, 0.0), PI / 2, CLOTH_HENRI],   # Henri (west)
-		[TABLE + Vector3(0.0, 0, -0.9), 0.0, CLOTH_MARG],        # Marguerite (north)
-		[TABLE + Vector3(0.95, 0, 0.0), -PI / 2, CLOTH_LUC],     # Luc (east)
+		[TABLE + Vector3(-0.95, 0, 0.0), -PI / 2, CLOTH_HENRI],  # Henri (west)
+		[TABLE + Vector3(0.0, 0, -0.9), PI, CLOTH_MARG],         # Marguerite (north)
+		[TABLE + Vector3(0.95, 0, 0.0), PI / 2, CLOTH_LUC],      # Luc (east)
 	]
 	for s in seats:
 		var cloth: Color = s[2]
@@ -342,7 +346,7 @@ func _build_interactables() -> void:
 	var vis := Kit.model("chair", WOOD_TINT, 1.4)
 	if vis == null:
 		vis = _proc_chair()
-	vis.rotation.y = PI
+	vis.rotation.y = 0.0  # backrest south, seat open toward the table
 	chair.add_child(vis)
 	chair.interacted.connect(_on_sit)
 	add_child(chair)
@@ -353,7 +357,10 @@ func _build_interactables() -> void:
 	bed.required_flag = "table_scene_done"
 	bed.one_shot = true
 	bed.position = BED
-	_box_shape_i(bed, Vector3(2.0, 0.9, 1.1), Vector3(0, 0.45, 0))
+	# Tall target matching the blocker footprint: the prompt appears when
+	# looking at the bed from anywhere in the room, and the interact body
+	# adds no invisible lip beyond the bed itself (playtest note).
+	_box_shape_i(bed, Vector3(2.1, 1.5, 1.15), Vector3(0, 0.75, 0))
 	bed.interacted.connect(_on_bed)
 	add_child(bed)
 
